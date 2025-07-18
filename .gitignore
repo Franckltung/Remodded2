@@ -348,3 +348,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Updated dependencies
+!HPL2/dependencies/lib/Win64/Debug/
+!HPL2/dependencies/lib/Win64/Release/
+!HPL2/dependencies/lib/Win64/Debug/OpenAL32.pdb
