@@ -1,12 +1,9 @@
-# Amnesia 64
-64-bit Windows port of Amnesia: The Dark Descent
+﻿# Amnesia: Remodded 2.0
+The all Not-So **New!** And Seriously **Improved** One!
+Based on the [64-bit Windows port](https://github.com/buzer2020/Amnesia64) of Amnesia: The Dark Descent by [buzer2020](https://github.com/buzer2020)
 
 ## Key changes:
-- Can be compiled in both 32-bit and 64-bit modes using VS2019 with latest build tools.
-- Single solution file for all projects (main game, HPL2, dependencies and editors). No need to compile the engine separately.
-- Produces self-contained .exe files without dependency on 3rd party dlls (this prevents cluttering user's game folder with 64-bit dlls).
-- Some libraries were changed, most notably:
-	- SDL2 was upgraded from 2.0.4 to 2.0.12
-	- alut was replaced with freealut
-	- Newton Dynamics was upgraded from 2.08 to 2.32 (I simply couldn't find the source code for 2.08)
-	- Fbx support is temporarily removed (I'm planning to re-implement it using OpenFBX)
+- Contains all the latest changes (As of 18/07/2025) to the libraries and the codebase from Amnesia64.
+- Includes FBX support (AUTODESK FBX SDK 2020.3.7)
+- OpenAL Soft Implementation (By Nathan Barnes)
+- All around fixed dependencies.
