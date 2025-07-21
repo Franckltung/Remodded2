@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\angelscript.h" />
+    <ClInclude Include="include\scriptbuilder.h" />
     <ClInclude Include="sources\as_array.h" />
     <ClInclude Include="sources\as_arrayobject.h" />
     <ClInclude Include="sources\as_atomic.h" />
@@ -96,6 +97,7 @@
     <ClCompile Include="sources\as_tokenizer.cpp" />
     <ClCompile Include="sources\as_typeinfo.cpp" />
     <ClCompile Include="sources\as_variablescope.cpp" />
+    <ClCompile Include="sources\scriptbuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="sources\as_callfunc_x64_msvc_asm.asm">
@@ -224,6 +226,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>26495</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>H:\AmnesiaSrc\Remodded2\HPL2\dependencies\sources\AngelScript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

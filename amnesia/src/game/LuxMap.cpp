@@ -1161,7 +1161,8 @@ void cLuxMap::AddDissolveEntity(cMeshEntity *apMeshEntity, float afTime)
 
 //-----------------------------------------------------------------------
 
-cLuxLampLightConnection* cLuxMap::AddLampLightConnection(cLuxProp_Lamp *apLamp, iLight *apLight, float afAmount, bool abUseOnColor, bool abUseSpec)
+cLuxLampLightConnection* cLuxMap::AddLampLightConnection(cLuxProp_Lamp *apLamp, iLight *apLight, float afAmount,
+	bool abUseOnColor, bool abUseSpec, eLuxLampLightConnectionType aConnectionType)
 {
 	cLuxLampLightConnection *pConnection = GetLampLightConnection(apLight);
 	if(pConnection == NULL)
@@ -1170,7 +1171,7 @@ cLuxLampLightConnection* cLuxMap::AddLampLightConnection(cLuxProp_Lamp *apLamp, 
 		mlstLampLightConnections.push_back(pConnection);
 	}
     
-	pConnection->AddLamp(apLamp, afAmount, abUseOnColor, abUseSpec);
+	pConnection->AddLamp(apLamp, afAmount, abUseOnColor, abUseSpec, aConnectionType);
 	pConnection->Update(0.001f);
 	return pConnection;
 }

@@ -81,7 +81,7 @@ namespace hpl {
 				mbUseEnvironmentalAudio(false),
 				mbUseThreading(true),
 				mbUseVoiceManagement(true),
-				mbLowLevelLogging(false),
+				mbLowLevelLogging(true),
 				mlStreamUpdateFreq(10),
 				mlMaxChannels(32),
 				mlMaxMonoChannelsHint(0),

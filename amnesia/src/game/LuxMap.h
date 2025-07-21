@@ -172,7 +172,8 @@ public:
 	
 	void AddDissolveEntity(cMeshEntity *apMeshEntity, float afTime);
 
-	cLuxLampLightConnection* AddLampLightConnection(cLuxProp_Lamp *apLamp, iLight *apLight, float afAmount, bool abUseOnColor, bool abUseSpec);
+	cLuxLampLightConnection* AddLampLightConnection(cLuxProp_Lamp *apLamp, iLight *apLight, float afAmount,
+		bool abUseOnColor, bool abUseSpec, eLuxLampLightConnectionType aConnectionType);
 	cLuxLampLightConnection* GetLampLightConnection(iLight *apLight);
 
 	cLuxScriptVar* GetVar(const tString &asName);

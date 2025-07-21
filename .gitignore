@@ -350,6 +350,10 @@ MigrationBackup/
 .ionide/
 
 # Updated dependencies
-!HPL2/dependencies/lib/Win64/Debug/
-!HPL2/dependencies/lib/Win64/Release/
+!HPL2/dependencies/lib/Win64/Debug/OpenAL32.lib
 !HPL2/dependencies/lib/Win64/Debug/OpenAL32.pdb
+!HPL2/dependencies/lib/Win64/Release/OpenAL32.lib
+
+HPL2/dependencies/include/fbxsdk.h
+HPL2/dependencies/include/fbxsdk/
+HPL2/dependencies/include/libxml2/
