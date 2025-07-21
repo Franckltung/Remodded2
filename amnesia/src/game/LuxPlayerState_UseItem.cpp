@@ -205,7 +205,12 @@ void cLuxPlayerState_UseItem::UseItem()
             // Running the script MAY destroy this item so "Backup" the check flag.
             bool bAutoDestroy = pCallback->mbAutoDestroy;
 			tString sName = pCallback->msName;
-            pMap->RunScript(pCallback->msFunction+ "(\"" + pCallback->msItem + "\", \"" + pCallback->msEntity + "\")" );
+			if (pMap->RunFunc(pCallback->msFunction))
+			{
+				pMap->GetScript()->SetPreparedFuncArg(0, (void*) &pCallback->msItem);
+				pMap->GetScript()->SetPreparedFuncArg(1, (void*) &pCallback->msEntity);
+				pMap->GetScript()->RunPreparedFunc();
+			}
 
 			if(bAutoDestroy)
 			{

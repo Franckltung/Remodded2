@@ -210,7 +210,12 @@ bool cLuxItemType_Diary::BeforeAddItem(cLuxInventory_Item *apItem)
 	{
 		cLuxMap *pMap = gpBase->mpMapHandler->GetCurrentMap();
 	
-		pMap->RunScript(sCallbackFunc+"(\""+apItem->GetName()+ "\","+ cString::ToString(lDiaryIdx)+")" );
+		if (pMap->RunFunc(sCallbackFunc))
+		{
+			pMap->GetScript()->SetPreparedFuncArg(0, (void*) &apItem->GetName());
+			pMap->GetScript()->SetPreparedFuncArg(1, lDiaryIdx);
+			pMap->GetScript()->RunPreparedFunc();
+		}
 	}
 
 	if(mbShowJournalOnPickup)

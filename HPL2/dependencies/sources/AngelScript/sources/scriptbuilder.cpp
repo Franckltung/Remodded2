@@ -85,6 +85,7 @@ void CScriptBuilder::DefineWord(const char *word)
 
 void CScriptBuilder::ClearAll()
 {
+	modifiedScript.clear();
 	includedScripts.clear();
 
 #if AS_PROCESS_METADATA == 1	
@@ -361,8 +362,10 @@ int CScriptBuilder::ProcessScriptSection(const char *script, const char *section
 int CScriptBuilder::Build()
 {
 	int r = module->Build();
-	if( r < 0 )
+	if (r < 0)
+	{
 		return r;
+	}
 
 #if AS_PROCESS_METADATA == 1
 	// After the script has been built, the metadata strings should be 

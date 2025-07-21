@@ -41,6 +41,7 @@
 #include "impl/SqScript.h"
 #include "system/Platform.h"
 
+
 #if USE_SDL2
 #include "SDL2/SDL.h"
 #else
@@ -411,7 +412,7 @@ namespace hpl {
 	cLowLevelSystemSDL::cLowLevelSystemSDL()
 	{
 		mpScriptEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
-		if(mpScriptEngine==NULL)
+		if (mpScriptEngine == NULL)
 		{
 			Error("Failed to start angel script!\n");
 		}
@@ -420,6 +421,9 @@ namespace hpl {
 		mpScriptEngine->SetMessageCallback(asMETHOD(cScriptOutput,AddMessage), mpScriptOutput, asCALL_THISCALL);
 
 		RegisterScriptString(mpScriptEngine);
+
+		mpScriptBuilder = hplNew(CScriptBuilder, ());
+		mpScriptBuilder->DefineWord("REMODDED");
 	
 		mlHandleCount = 0;
 
@@ -440,6 +444,9 @@ namespace hpl {
 		mpScriptEngine->Release();
 		hplDelete(mpScriptOutput);
 
+		mpScriptBuilder->SetIncludeCallback(NULL, NULL);
+		hplDelete(mpScriptBuilder);
+
 		//perhaps not the best thing to skip :)
 		//if(gpLogWriter)	hplDelete(gpLogWriter);
 		//gpLogWriter = NULL;
@@ -456,7 +463,7 @@ namespace hpl {
 	
 	iScript* cLowLevelSystemSDL::CreateScript(const tString& asName)
 	{
-		return hplNew( cSqScript, (asName,mpScriptEngine,mpScriptOutput,mlHandleCount++) );
+		return hplNew( cSqScript, (asName,mpScriptEngine,mpScriptBuilder,mpScriptOutput,mlHandleCount++) );
 	}
 
 	//-----------------------------------------------------------------------
@@ -491,6 +498,17 @@ namespace hpl {
 	//////////////////////////////////////////////////////////////////////////
 	
 	//-----------------------------------------------------------------------
+
+	int cLowLevelSystemSDL::IncludeScript(const char* include, const char* from, CScriptBuilder* builder, void* userParam)
+	{
+		Log("Include: %s\n", include);
+		Log("From: %s\n", from);
+
+		cSqScript* pScript = (cSqScript*)userParam;
+		Log("Search: %s\n", pScript->GetFullPath().c_str());
+
+		return 0;
+	}
 
 	//-----------------------------------------------------------------------
 }

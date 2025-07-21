@@ -88,7 +88,8 @@ public:
 	
 	void Update(float afTimeStep);
 
-	void RunScript(const tString& asCommand);
+	bool RunFunc(const tString& asFuncName);
+	iScript* GetScript() { return mpScript; }
 	bool RecompileScript(tString *apOutput);
 
 	void OnRenderSolid(cRendererCallbackFunctions* apFunctions);

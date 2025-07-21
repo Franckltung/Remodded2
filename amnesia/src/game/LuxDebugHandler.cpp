@@ -1347,7 +1347,7 @@ void cLuxDebugHandler::TestChangeMapSave()
 	
 	pSavedMaps->LoadMap(pMap);
 
-	pMap->RunScript("OnEnter()");
+	if (pMap->RunFunc("OnEnter")) pMap->GetScript()->RunPreparedFunc();
 
 	///////////////////
 	// Destroy mesh and animation cache

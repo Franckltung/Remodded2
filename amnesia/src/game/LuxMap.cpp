@@ -397,16 +397,22 @@ void cLuxMap::Update(float afTimeStep)
 	UpdateToBeDesotroyedEntities(true);
 
 	UpdateLampLightConnections(afTimeStep);
+
+	if (RunFunc("OnUpdate"))
+	{
+		mpScript->SetPreparedFuncArg(0, afTimeStep);
+		mpScript->RunPreparedFunc();
+	}
 }
 
 //-----------------------------------------------------------------------
 
-void cLuxMap::RunScript(const tString& asCommand)
+bool cLuxMap::RunFunc(const tString& asFuncName)
 {
-	if(mpScript==NULL) return;
-	if(this != gpBase->mpMapHandler->GetCurrentMap()) return;
+	if (mpScript == NULL) return false;
+	if (this != gpBase->mpMapHandler->GetCurrentMap()) return false;
 
-    mpScript->Run(asCommand);
+	return mpScript->PrepareRunFunc(asFuncName);
 }
 
 bool cLuxMap::RecompileScript(tString *apOutput)
@@ -540,7 +546,12 @@ void cLuxMap::LoadCheckPoint()
 
 	//////////////////////////////
 	// Run script (last thing done!)
-	RunScript(msCheckPointCallback + "(\""+ msCheckPointName + "\", "+cString::ToString(mlCheckPointCount)+")"  );
+	if (RunFunc(msCheckPointCallback))
+	{
+		mpScript->SetPreparedFuncArg(0, (void*) &msCheckPointName);
+		mpScript->SetPreparedFuncArg(1, mlCheckPointCount);
+		mpScript->RunPreparedFunc();
+	}
 	
 	mlCheckPointCount++;
 }
@@ -1344,7 +1355,12 @@ void cLuxMap::UpdateTimers(float afTimeStep)
 
 		if(pTimer->mfCount <=0 && pTimer->mbDestroyMe==false)
 		{
-			RunScript(pTimer->msFunction+"(\""+pTimer->msName+"\")");
+			if (RunFunc(pTimer->msFunction))
+			{
+				mpScript->SetPreparedFuncArg(0, (void*) &pTimer->msName);
+				mpScript->RunPreparedFunc();
+			}
+
 			it = mlstTimers.erase(it);
 			hplDelete(pTimer);
 			

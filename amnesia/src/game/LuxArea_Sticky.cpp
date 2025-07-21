@@ -211,7 +211,11 @@ void cLuxArea_Sticky::DetachBody()
 	//Callback function
 	if(msDetachFunction!="")
 	{
-		mpMap->RunScript(GetCallbackFunc(msDetachFunction,mpAttachedBody));
+		if (mpMap->RunFunc(msDetachFunction))
+		{
+			mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &mpAttachedBody->GetName());
+			mpMap->GetScript()->RunPreparedFunc();
+		}
 	}
 
 	//Sound
@@ -401,7 +405,13 @@ void cLuxArea_Sticky::UpdateCollision(float afTimeStep)
 		// Call callback and see if it should be attached.
 		if(msAttachFunction!="")
 		{
-			mpMap->RunScript(GetCallbackFunc(msAttachFunction,pBody));
+			
+			if (mpMap->RunFunc(msAttachFunction))
+			{
+				mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &pBody->GetName());
+				mpMap->GetScript()->RunPreparedFunc();
+			}
+				
 
 			if(mbAllowAttachment==false) continue;
 		}

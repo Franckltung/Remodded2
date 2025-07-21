@@ -366,9 +366,11 @@ void cLuxProp_MultiSlider::ChangeState(int alState, bool abEffects)
 
 	///////////////////////
 	//Callback
-	if(msChangeStateCallback!="")
+	if(msChangeStateCallback!="" && mpMap->RunFunc(msChangeStateCallback))
 	{
-		mpMap->RunScript(msChangeStateCallback + "(\""+msName+"\", "+cString::ToString(mlCurrentState)+")");
+		mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &msName);
+		mpMap->GetScript()->SetPreparedFuncArg(1, mlCurrentState);
+		mpMap->GetScript()->RunPreparedFunc();
 	}
 }
 

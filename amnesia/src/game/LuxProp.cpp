@@ -1207,8 +1207,11 @@ void iLuxProp::UpdateAnimation(float afTimeStep)
 	if(pAnimState->IsOver())
 	{
 		mlCurrentNonLoopAnimIndex = -1;
-		if(msAnimCallback !="")
-			mpMap->RunScript(msAnimCallback + "(\""+ msName + "\")");
+		if (msAnimCallback != "" && mpMap->RunFunc(msAnimCallback))
+		{
+			mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &msName);
+			mpMap->GetScript()->RunPreparedFunc();
+		}
 	}
 }
 

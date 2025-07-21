@@ -56,6 +56,16 @@ namespace hpl {
 		virtual bool Run(const tString& asFuncLine)=0;
 		
 		virtual bool Run(int alHandle)=0;
+
+		virtual bool PrepareRunFunc(const tString& asFuncName)=0;
+		virtual bool RunPreparedFunc()=0;
+
+		virtual void SetPreparedFuncArg(int alArgID, void* aObj) = 0;
+		virtual void SetPreparedFuncArg(int alArgID, tString asString) = 0;
+		virtual void SetPreparedFuncArg(int alArgID, float afValue) = 0;
+		virtual void SetPreparedFuncArg(int alArgID, bool abX) = 0;
+		virtual void SetPreparedFuncArg(int alArgID, int alValue) = 0;
+		virtual void SetPreparedFuncArg(int alArgID, double alValue) = 0;
 	};
 };
 #endif // HPL_SCRIPT_H

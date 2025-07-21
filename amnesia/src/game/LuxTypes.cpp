@@ -175,8 +175,14 @@ void iLuxCollideCallbackContainer::CheckCollisionCallback(const tString& asName,
             pCallback->mbColliding = bCollide;
 			if(lState == pCallback->mlStates || pCallback->mlStates==0)
 			{
-				tString sCommand = pCallback->msCallbackFunc+"(\"" + asName + "\", \""+ pEntity->GetName()+"\", "+cString::ToString(lState)+")" ;
-				apMap->RunScript(sCommand);
+				if (apMap->RunFunc(pCallback->msCallbackFunc))
+				{
+					iScript* pScript = apMap->GetScript();
+					pScript->SetPreparedFuncArg(0, (void*) &asName);
+					pScript->SetPreparedFuncArg(1, (void*) &pEntity->GetName());
+					pScript->SetPreparedFuncArg(2, lState);
+					pScript->RunPreparedFunc();
+				}
 			
 				///////////////////////
 				// Auto remove
