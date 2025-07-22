@@ -22,6 +22,8 @@
 
 #include "physics/PhysicsJoint.h"
 
+class CScriptBuilder;
+
 namespace hpl {
 	
 	class cGraphics;
@@ -65,6 +67,9 @@ namespace hpl {
 					cSound *apSound,
 					cEngine *apGame
 					);
+
+		static int IncludeScript(const char* include, const char* from, CScriptBuilder* builder, void* userParam);
+		static char* LoadCharBuffer(const tWString& asFileName, int& alLength);
 	};
 
 };

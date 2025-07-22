@@ -126,6 +126,9 @@
     <ClInclude Include="sources\as_variablescope.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\scriptbuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sources\as_arrayobject.cpp">
@@ -240,6 +243,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sources\as_variablescope.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\scriptbuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -51,6 +51,7 @@ public:
 	float mfAmount;
 	bool mbUseLightOnColor;
 	bool mbUseLightSpec;
+	eLuxLampLightConnectionType mType;
 };
 
 typedef std::list<cLuxLampLightConnection_Lamp*> tLuxLampLightConnection_LampList;
@@ -65,7 +66,7 @@ public:
 	void Update(float afTimeStep);
 	
 	iLight* GetLight(){ return mpLight;}
-	void AddLamp(cLuxProp_Lamp *apLamp, float afAmount, bool abUseOnColor, bool abUseSpec);
+	void AddLamp(cLuxProp_Lamp *apLamp, float afAmount, bool abUseOnColor, bool abUseSpec, eLuxLampLightConnectionType aConnectionType);
 	void RemoveLamp(cLuxProp_Lamp *apLamp);
 
 private:
@@ -135,6 +136,7 @@ private:
 	float mfConnectionLightAmount;
 	bool mbConnectionLightUseOnColor;
 	bool mbConnectionLightUseSpec;
+	eLuxLampLightConnectionType mConnectionType;
 
 	
 	//Data

@@ -148,7 +148,11 @@ void cLuxArea_SlimeDamage::OnUpdate(float afTimeStep)
 		//Run Callback
 		if(msCallback != "")
 		{
-			mpMap->RunScript(msCallback+"(\""+msName+"\")");
+			if (mpMap->RunFunc(msCallback))
+			{
+				mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &msName);
+				mpMap->GetScript()->RunPreparedFunc();
+			}
 		}
 
 		/////////////////////////

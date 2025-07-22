@@ -26,6 +26,7 @@
 #include "impl/scripthelper.h"
 #include "resources/BinaryBuffer.h"
 #include "resources/Resources.h"
+#include "engine/ScriptFuncs.h"
 
 namespace hpl {
 
@@ -46,14 +47,16 @@ namespace hpl {
 	//-----------------------------------------------------------------------
 
 	cSqScript::cSqScript(const tString& asName,asIScriptEngine *apScriptEngine,
-							cScriptOutput *apScriptOutput, int alHandle)
+							CScriptBuilder *apScriptBuilder,cScriptOutput *apScriptOutput, int alHandle)
 		: iScript(asName, _W(""))
 	{
 		mpScriptEngine = apScriptEngine;
+		mpScriptBuilder = apScriptBuilder;
 		mpScriptOutput = apScriptOutput;
 		mlHandle = alHandle;
 
 		mpContext = mpScriptEngine->CreateContext();
+		mpContext->SetExceptionCallback(asMETHOD(cSqScript, HandleException), this, asCALL_THISCALL);
 
 		//Create a unique module name
 		msModuleName = "Module_"+cString::ToString(cMath::RandRectl(0,1000000))+
@@ -77,6 +80,7 @@ namespace hpl {
 
 	bool cSqScript::CreateFromFile(const tWString& asFileName, tString *apCompileMessages)
 	{
+		mbPreparedFunction = false;
 		SetFullPath(asFileName);
 
 		tWString sExt = cString::ToLowerCaseW(cString::GetFileExtW(asFileName));
@@ -90,7 +94,7 @@ namespace hpl {
 		// Normal load
 		if(sExt == _W("hps"))
 		{
-			pCharBuffer = LoadCharBuffer(asFileName,lLength);
+			pCharBuffer = cScriptFuncs::LoadCharBuffer(asFileName,lLength);
 			if(pCharBuffer==NULL){
 				Error("Couldn't load script '%s'!\n",asFileName.c_str());
 				return false;
@@ -148,18 +152,22 @@ namespace hpl {
 		
 		/////////////////////////////////////////
 		// Create module
-		mpModule = mpScriptEngine->GetModule(msModuleName.c_str(), asGM_ALWAYS_CREATE);
-		if(mpModule->AddScriptSection("main", pCharBuffer, lLength)<0)
+		mpScriptBuilder->SetIncludeCallback(cScriptFuncs::IncludeScript, this);
+		int r = mpScriptBuilder->StartNewModule(mpScriptEngine, msModuleName.c_str());
+		r = mpScriptBuilder->AddSectionFromMemory(pCharBuffer, "main");
+		if(r<0)
 		{
-			Error("Couldn't add script '%s'!\n",asFileName.c_str());
+			Error("Couldn't add script '%s'!\n", asFileName.c_str());
 			hplDeleteArray(pCharBuffer);
+			mpScriptBuilder->SetIncludeCallback(NULL, NULL);
 			return false;
 		}
 
-		int lBuildOutput = mpModule->Build();
-		if(apCompileMessages) *apCompileMessages = mpScriptOutput->GetMessage();
+		r = mpScriptBuilder->BuildModule();
+		mpModule = mpScriptEngine->GetModule(msModuleName.c_str());
+		if (apCompileMessages) *apCompileMessages = mpScriptOutput->GetMessage();
 
-		if(lBuildOutput<0)
+		if(r<0)
 		{
 			Error("Couldn't build script '%s'!\n",cString::To8Char(asFileName).c_str());
 			Log("------- SCRIPT OUTPUT BEGIN --------------------------\n");
@@ -168,11 +176,13 @@ namespace hpl {
 			Log("------- SCRIPT OUTPUT END ----------------------------\n");
 			
 			hplDeleteArray(pCharBuffer);
+			mpScriptBuilder->SetIncludeCallback(NULL, NULL);
 			return false;
 		}
 		mpScriptOutput->Clear();
 
 		hplDeleteArray(pCharBuffer);
+		mpScriptBuilder->SetIncludeCallback(NULL, NULL);
 		return true;
 	}
 
@@ -214,32 +224,100 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	bool cSqScript::PrepareRunFunc(const tString& asFuncName)
+	{
+		if (mbPreparedFunction) return false;
+
+		int alHandle = mpModule->GetFunctionIdByName(asFuncName.c_str());
+		if (alHandle == asNO_FUNCTION) {
+			return false;
+		}
+
+		int alResult = mpContext->Prepare(alHandle);
+		if (alResult == asCONTEXT_ACTIVE)
+		{
+			Error("Context active???");
+			return false;
+		}
+		mbPreparedFunction = true;
+
+		return true;
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cSqScript::SetPreparedFuncArg(int alArgID, void* aObj)
+	{
+		if(!mbPreparedFunction) return;
+
+		mpContext->SetArgObject(alArgID, aObj);
+	}
+
+	void cSqScript::SetPreparedFuncArg(int alArgID, tString asString)
+	{
+		if (!mbPreparedFunction) return;
+
+		mpContext->SetArgObject(alArgID, &asString);
+	}
+
+	void cSqScript::SetPreparedFuncArg(int alArgID, float afValue)
+	{
+		if (!mbPreparedFunction) return;
+
+		mpContext->SetArgFloat(alArgID, afValue);
+	}
+
+	void cSqScript::SetPreparedFuncArg(int alArgID, bool abX)
+	{
+		if (!mbPreparedFunction) return;
+
+		mpContext->SetArgByte(alArgID, abX);
+	}
+
+	void cSqScript::SetPreparedFuncArg(int alArgID, int alValue)
+	{
+		if (!mbPreparedFunction) return;
+
+		mpContext->SetArgDWord(alArgID, alValue);
+	}
+
+	void cSqScript::SetPreparedFuncArg(int alArgID, double alValue)
+	{
+		if (!mbPreparedFunction) return;
+
+		mpContext->SetArgDouble(alArgID, alValue);
+	}
+
+	//-----------------------------------------------------------------------
+
+	bool cSqScript::RunPreparedFunc()
+	{
+		mpContext->Execute();
+		mbPreparedFunction = false;
+
+		return true;
+	}
+
+	//-----------------------------------------------------------------------
+
 	//////////////////////////////////////////////////////////////////////////
 	// PRIVATE METHODS
 	//////////////////////////////////////////////////////////////////////////
 
 	//-----------------------------------------------------------------------
 
-	char* cSqScript::LoadCharBuffer(const tWString& asFileName, int& alLength)
+	void cSqScript::HandleException(asIScriptContext* ctx)
 	{
-		FILE *pFile = cPlatform::OpenFile(asFileName, _W("rb"));
-		if(pFile==NULL){
-			return NULL;
-		}
+		asIScriptEngine* engine = ctx->GetEngine();
 
-		fseek(pFile,0,SEEK_END);
-		int lLength = (int)ftell(pFile);
-		rewind(pFile);
-		
-		alLength = lLength;
-
-		char *pBuffer = hplNewArray(char,lLength);
-		fread(pBuffer, lLength, 1, pFile);
-
-		fclose(pFile);
-
-		return pBuffer;
+		Error("Script Exception: %s\n", ctx->GetExceptionString());
+		int function = ctx->GetExceptionFunction();
+		Log("Function: %s\n", mpModule->GetFunctionDescriptorById(function));
+		Log("Module: %s\n", mpModule->GetName());
+		Log("Line: %s\n", ctx->GetExceptionLineNumber());
 	}
+
+	//-----------------------------------------------------------------------
 
 	//-----------------------------------------------------------------------
 

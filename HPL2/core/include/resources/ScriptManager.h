@@ -22,6 +22,8 @@
 
 #include "resources/ResourceManager.h"
 
+class CScriptBuilder;
+
 namespace hpl {
 	
 	class cSystem;

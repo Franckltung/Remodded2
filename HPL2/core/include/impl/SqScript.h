@@ -24,13 +24,12 @@
 #include "impl/LowLevelSystemSDL.h"
 #include <angelscript.h>
 
-
 namespace hpl {
 
 	class cSqScript : public iScript
 	{
 	public:
-		cSqScript(const tString& asName, asIScriptEngine *apScriptEngine,cScriptOutput *apScriptOutput, int alHandle); 
+		cSqScript(const tString& asName, asIScriptEngine *apScriptEngine,CScriptBuilder *apScriptBuilder,cScriptOutput *apScriptOutput, int alHandle);
 		~cSqScript();
 
 		bool CreateFromFile(const tWString& asFileName, tString *apCompileMessages=NULL);
@@ -41,8 +40,19 @@ namespace hpl {
 		bool Run(const tString& asFuncLine);
 		bool Run(int alHandle);
 
+		bool PrepareRunFunc(const tString& asFuncName);
+		bool RunPreparedFunc();
+
+		void SetPreparedFuncArg(int alArgID, void* aObj);
+		void SetPreparedFuncArg(int alArgID, tString asString);
+		void SetPreparedFuncArg(int alArgID, float afValue);
+		void SetPreparedFuncArg(int alArgID, bool abX);
+		void SetPreparedFuncArg(int alArgID, int alValue);
+		void SetPreparedFuncArg(int alArgID, double alValue);
+
 	private:
 		asIScriptEngine *mpScriptEngine;
+		CScriptBuilder *mpScriptBuilder;
 		cScriptOutput *mpScriptOutput;
         
 		asIScriptContext *mpContext;
@@ -50,8 +60,9 @@ namespace hpl {
 		
 		int mlHandle;
 		tString msModuleName;
+		bool mbPreparedFunction;
 
-		char* LoadCharBuffer(const tWString& asFileName, int& alLength);
+		void HandleException(asIScriptContext* ctx);
 	};
 };
 #endif // HPL_SCRIPT_H

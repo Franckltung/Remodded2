@@ -57,6 +57,9 @@
 #include "scene/BillBoard.h"
 #include "scene/Beam.h"
 #include "graphics/Renderer.h"
+#include "resources/FileSearcher.h"
+#include "system/Platform.h"
+#include "scriptbuilder.h"
 
 namespace hpl {
 
@@ -348,13 +351,82 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	int cScriptFuncs::IncludeScript(const char* include, const char* from, CScriptBuilder* builder, void* userParam)
+	{
+		//Log("Include: %s\n", include);
+		//Log("From: %s\n", from);
+
+		iScript* pScript = (iScript*)userParam;
+		tString sScriptName(include);
+		tString sScriptPath = cString::To8Char(cString::GetFilePathW(pScript->GetFullPath()));
+		//Log("Search: %s\n", sScriptPath.c_str());
+
+		tWString swScriptFile = gpResources->GetFileSearcher()->GetFilePath(sScriptPath + sScriptName);
+		if (swScriptFile == _W(""))
+		{
+			FatalError("Include Script File \"%s\" Not found!\n", include);
+			return -1;
+		}
+
+		tWString sExt = cString::ToLowerCaseW(cString::GetFileExtW(swScriptFile));
+
+		/////////////////////////////////////////
+		// Load file
+		int lLength = 0;
+		char* pCharBuffer = NULL;
+
+		/////////////////////////////////////
+		// Normal load
+		if (sExt == _W("hps"))
+		{
+			pCharBuffer = LoadCharBuffer(swScriptFile, lLength);
+			if (pCharBuffer == NULL) {
+				FatalError("Couldn't load include script \"%s\"\n", swScriptFile.c_str());
+				return -1;
+			}
+		}
+
+		int r = builder->AddSectionFromMemory(pCharBuffer, include);
+		if (r < 0)
+		{
+			Error("Couldn't add include script '%s'!\n", swScriptFile.c_str());
+			hplDeleteArray(pCharBuffer);
+			return -1;
+		}
+
+		return 0;
+	}
+
+	//-----------------------------------------------------------------------
+
 	//////////////////////////////////////////////////////////////////////////
 	// PRIVATE METHODS
 	//////////////////////////////////////////////////////////////////////////
 
 	//-----------------------------------------------------------------------
 
+	char* cScriptFuncs::LoadCharBuffer(const tWString& asFileName, int& alLength)
+	{
+		FILE* pFile = cPlatform::OpenFile(asFileName, _W("rb"));
+		if (pFile == NULL) {
+			return NULL;
+		}
 
+		fseek(pFile, 0, SEEK_END);
+		size_t lLength = ftell(pFile);
+		rewind(pFile);
+
+		//There's some weird stuff going on, looks like the string finalizer character wasn't created, and the new script loader no likey reading garbage data
+		alLength = (int)++lLength;
+
+		char* pBuffer = hplNewArray(char, lLength);
+		fread(pBuffer, lLength - 1, 1, pFile);
+		pBuffer[lLength - 1] = *"\0";
+
+		fclose(pFile);
+
+		return pBuffer;
+	}
 
 	//-----------------------------------------------------------------------
 

@@ -1082,8 +1082,8 @@ void cLuxEffect_PlayVoice::Update(float afTimeStep)
 		mfVolumeMul = fPreVolMul;
 		SetActive(false);
 
-		if(sCallback!="")
-			gpBase->mpMapHandler->GetCurrentMap()->RunScript(sCallback+"()");
+		cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+		if (sCallback != "" && pMap->RunFunc(sCallback)) pMap->GetScript()->RunPreparedFunc();
 		
 		return;
 	}
@@ -1137,8 +1137,9 @@ void cLuxEffect_PlayVoice::Update(float afTimeStep)
 		Reset();
 		SetActive(false);
 		
-		if(msOverCallback!="")
-			gpBase->mpMapHandler->GetCurrentMap()->RunScript(msOverCallback+"()");
+		cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+		if (msOverCallback != "" && pMap->RunFunc(msOverCallback))
+			pMap->GetScript()->RunPreparedFunc();
 	}
 }
 

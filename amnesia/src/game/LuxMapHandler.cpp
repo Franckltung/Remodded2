@@ -620,7 +620,7 @@ void cLuxMapHandler::CheckMapChange(float afTimeStep)
 
 		//////////////////////
 		// Run onleave before saving!
-		mpCurrentMap->RunScript("OnLeave()");//since script is not run in SetCurrenMap
+		if (mpCurrentMap->RunFunc("OnLeave")) mpCurrentMap->GetScript()->RunPreparedFunc();
 
 		///////////////////////////////////////
 		// Draw loading screen
@@ -679,8 +679,8 @@ void cLuxMapHandler::CheckMapChange(float afTimeStep)
 
 		//////////////////////
 		// Run enter script! (otherwise a save in oneter will not be correct!)
-		if(bFirstTime) mpCurrentMap->RunScript("OnStart()");
-		mpCurrentMap->RunScript("OnEnter()");
+		if(bFirstTime && mpCurrentMap->RunFunc("OnStart")) mpCurrentMap->GetScript()->RunPreparedFunc();
+		if(mpCurrentMap->RunFunc("OnEnter")) mpCurrentMap->GetScript()->RunPreparedFunc();
 
 
 		mpSavedGameMutex->Unlock();

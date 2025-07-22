@@ -75,6 +75,15 @@ void cLuxPropLoader_Lamp::LoadVariables(iLuxProp *apProp, cXmlElement *apRootEle
 
 //-----------------------------------------------------------------------
 
+static eLuxLampLightConnectionType ToConnectionType(const tString& asStr)
+{
+	if (asStr == "Add") return eLuxLampLightConnectionType_Add;
+	if (asStr == "Mul") return eLuxLampLightConnectionType_Multiply;
+
+	Error("eLuxLampLightConnectionType behavior '%s' does not exist!\n", asStr.c_str());
+	return eLuxLampLightConnectionType_Add;
+}
+
 void cLuxPropLoader_Lamp::LoadInstanceVariables(iLuxProp *apProp, cResourceVarsObject *apInstanceVars)
 {
     cLuxProp_Lamp  *pLamp = static_cast<cLuxProp_Lamp*>(apProp);
@@ -87,6 +96,7 @@ void cLuxPropLoader_Lamp::LoadInstanceVariables(iLuxProp *apProp, cResourceVarsO
 	pLamp->mfConnectionLightAmount = apInstanceVars->GetVarFloat("ConnectionLightAmount",0);
 	pLamp->mbConnectionLightUseOnColor = apInstanceVars->GetVarBool("ConnectionLightUseOnColor",false);
 	pLamp->mbConnectionLightUseSpec = apInstanceVars->GetVarBool("ConnectionLightUseSpec",false);
+	pLamp->mConnectionType = ToConnectionType(apInstanceVars->GetVarString("ConnectionType", "Add"));
 }
 //-----------------------------------------------------------------------
 
@@ -126,11 +136,14 @@ void cLuxLampLightConnection::Update(float afTimeStep)
 		cLuxProp_Lamp *pLamp = pLampConnection->mpLamp;
 		if(pLamp->mvLights.empty()) continue;
 
-		cColor lightColor = pLampConnection->mbUseLightOnColor ?	pLamp->mvEffectLightData[0].mOnColor :
+		cColor lampColor = pLampConnection->mbUseLightOnColor ?	pLamp->mvEffectLightData[0].mOnColor :
 																	pLamp->mvLights[0]->GetDiffuseColor();
-		if(pLampConnection->mbUseLightSpec==false) lightColor.a = 0;
+		if(pLampConnection->mbUseLightSpec==false) lampColor.a = 0;
 
-	    finalColor = finalColor + lightColor * pLampConnection->mfAmount * pLampConnection->mpLamp->GetEffectsAlpha();
+		if(pLampConnection->mType == eLuxLampLightConnectionType_Multiply)
+			finalColor = finalColor * pLampConnection->mfAmount * pLampConnection->mpLamp->GetEffectsAlpha();
+		else
+			finalColor = finalColor + lampColor * pLampConnection->mfAmount * pLampConnection->mpLamp->GetEffectsAlpha();
 	}
 
 	mpLight->SetDiffuseColor(finalColor);
@@ -138,13 +151,14 @@ void cLuxLampLightConnection::Update(float afTimeStep)
 
 //-----------------------------------------------------------------------
 
-void cLuxLampLightConnection::AddLamp(cLuxProp_Lamp *apLamp, float afAmount, bool abUseOnColor, bool abUseSpec)
+void cLuxLampLightConnection::AddLamp(cLuxProp_Lamp *apLamp, float afAmount, bool abUseOnColor, bool abUseSpec, eLuxLampLightConnectionType aConnectionType)
 {
 	cLuxLampLightConnection_Lamp *pLampConnection = hplNew( cLuxLampLightConnection_Lamp, () );
 	pLampConnection->mpLamp =apLamp;
 	pLampConnection->mfAmount = afAmount;
 	pLampConnection->mbUseLightOnColor = abUseOnColor;
 	pLampConnection->mbUseLightSpec = abUseSpec;
+	pLampConnection->mType = aConnectionType;
 
 	mlstLamps.push_back(pLampConnection);
 }
@@ -354,7 +368,7 @@ void cLuxProp_Lamp::SetupLampLightConnection()
 			
 		if(pConnectionLight)
 		{
-			mpMap->AddLampLightConnection(this, pConnectionLight, mfConnectionLightAmount, mbConnectionLightUseOnColor, mbConnectionLightUseSpec);
+			mpMap->AddLampLightConnection(this, pConnectionLight, mfConnectionLightAmount, mbConnectionLightUseOnColor, mbConnectionLightUseSpec, mConnectionType);
 		}
 		else
 		{

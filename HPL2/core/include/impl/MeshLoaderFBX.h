@@ -1,23 +1,21 @@
 /*
  * Copyright © 2009-2020 Frictional Games
- * 
+ *
  * This file is part of Amnesia: The Dark Descent.
- * 
+ *
  * Amnesia: The Dark Descent is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version. 
+ * (at your option) any later version.
 
  * Amnesia: The Dark Descent is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Amnesia: The Dark Descent.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-#if 0
 
 #ifndef HPL_MESH_LOADER_FBX_H
 #define HPL_MESH_LOADER_FBX_H
@@ -47,31 +45,31 @@ namespace hpl {
 	class cMeshLoaderMSH;
 
 	//------------------------------------------------------------
-	
+
 	class cSubMeshData
 	{
 	public:
 		iVertexBuffer* mpVtxBuffer;
-        
+
 		cMatrixf m_mtxGlobal;
 		cMatrixf m_mtxLocal;
-		
+
 		tString msName;
 		tString msMaterial;
 
 		tVertexBonePairVec mvVtxBonePairs;
-		
+
 		bool mbVisible;
 	};
 
 	typedef std::list<cSubMeshData> tSubMeshDataList;
 	typedef tSubMeshDataList::iterator tSubMeshDataListIt;
-	
+
 	//------------------------------------------------------------
-	
+
 	class cTakeKeyData
 	{
-	public: 
+	public:
 		float mfTime;
 		float mfValue;
 	};
@@ -80,19 +78,19 @@ namespace hpl {
 	typedef tTakeKeyDataVec::iterator tTakeKeyDataVecIt;
 
 	//------------------------------------------------------------
-	
+
 	class cTempKeyFrameData
 	{
-	public: 
+	public:
 		float mfTime;
 		cVector3f vTrans;
 		cVector3f vScale;
 		cVector3f vRot;
 		cQuaternion qFinalRot;
 	};
-	
+
 	typedef std::vector<cTempKeyFrameData> tTempKeyFrameDataVec;
-	
+
 	//------------------------------------------------------------
 
 	class cExtraVertrices
@@ -109,7 +107,7 @@ namespace hpl {
 	class cExtraVtxValue
 	{
 	public:
-		cExtraVtxValue(int idx, const cVector3f& avVal) : mlIndexNum(idx), mvVal(avVal){}
+		cExtraVtxValue(int idx, const cVector3f& avVal) : mlIndexNum(idx), mvVal(avVal) {}
 
 		int mlIndexNum;
 		cVector3f mvVal;
@@ -117,9 +115,9 @@ namespace hpl {
 
 	typedef std::list<cExtraVtxValue> tExtraVtxValueList;
 	typedef tExtraVtxValueList::iterator tExtraVtxValueListIt;
-	
+
 	//------------------------------------------------------------
-	
+
 	typedef std::set<float> tAnimTimeSet;
 	typedef tAnimTimeSet::iterator tAnimTimeSetIt;
 
@@ -128,47 +126,46 @@ namespace hpl {
 	class cMeshLoaderFBX : public iMeshLoader
 	{
 	public:
-		cMeshLoaderFBX(iLowLevelGraphics *apLowLevelGraphics, cMeshLoaderMSH *apMeshLoaderMSH, bool abLoadAndSaveMSHFormat);
+		cMeshLoaderFBX(iLowLevelGraphics* apLowLevelGraphics, cMeshLoaderMSH* apMeshLoaderMSH, bool abLoadAndSaveMSHFormat);
 		~cMeshLoaderFBX();
 
 		virtual cMesh* LoadMesh(const tWString& asFile, tMeshLoadFlag aFlags);
-		virtual bool SaveMesh(cMesh* apMesh,const tWString& asFile) { return false; };
+		virtual bool SaveMesh(cMesh* apMesh, const tWString& asFile) { return false; };
 
 		virtual cAnimation* LoadAnimation(const tWString& asFile);
 		virtual bool SaveAnimation(cAnimation* apAnimation, const tWString& asFile) { return false; };
 
 		//bool IsSupported(const tWString asFileType);
 	private:
-		cAnimation* LoadAnimations(KFbxScene *apScene,KFbxImporter * apImporter, const tWString& asFile, cSkeleton * apSkeleton);
-		void LoadAnimationRec(KFbxScene *apScene,KFbxNode * apNode,cAnimation* apAnimation, const tString &asAnimStackName, 
-		int alDepth,cVector3f vParentT, cVector3f vParentS, cVector3f vParentR, cSkeleton * apSkeleton);
+		cAnimation* LoadAnimations(FbxScene* apScene, FbxImporter* apImporter, const tWString& asFile, cSkeleton* apSkeleton);
+		void LoadAnimationRec(FbxScene* apScene, FbxNode* apNode, cAnimation* apAnimation, const tString& asAnimStackName,
+			int alDepth, cVector3f vParentT, cVector3f vParentS, cVector3f vParentR, cSkeleton* apSkeleton);
 
 		void MakeFinalBonesRec(cBone* apBone, cMatrixf a_mtxParentGlobal, cMatrixf a_mtxParentGlobalUnscaled);
 
-		void LoadSkeletonRec(cBone* apBone,KFbxNode *apNode, int alDepth);
-		void LoadSceneRec(tSubMeshDataList* apSubMeshList,cSkeleton* apSkeleton, cNode3D* apHplNode,KFbxNode *apNode, int alDepth, bool animationOnly);
-		void LoadMeshData(tSubMeshDataList* apSubMeshList,cSkeleton* apSkeleton, cNode3D* apHplNode, KFbxNode *apNode, int alDepth, bool animationOnly);
+		void LoadSkeletonRec(cBone* apBone, FbxNode* apNode, int alDepth);
+		void LoadSceneRec(tSubMeshDataList* apSubMeshList, cSkeleton* apSkeleton, cNode3D* apHplNode, FbxNode* apNode, int alDepth, bool animationOnly);
+		void LoadMeshData(tSubMeshDataList* apSubMeshList, cSkeleton* apSkeleton, cNode3D* apHplNode, FbxNode* apNode, int alDepth, bool animationOnly);
 
-		cBone* LoadSkeletonData(cBone* apBone,KFbxNode *apNode, int alDepth);
+		cBone* LoadSkeletonData(cBone* apBone, FbxNode* apNode, int alDepth);
 
 		const char* GetTabs(int alDepth);
-		const char* GetAttrName(KFbxNodeAttribute::EAttributeType alNum);
-		const char* GetSkelTypeName(KFbxSkeleton::ESkeletonType alNum);
-		const char* GetRotOrderName(ERotationOrder alNum);
-		const char* GetLinkModeName(KFbxLink::ELinkMode alNum);
+		const char* GetAttrName(FbxNodeAttribute::EType alNum);
+		const char* GetSkelTypeName(FbxSkeleton::EType alNum);
+		const char* GetRotOrderName(EFbxRotationOrder alNum);
+		const char* GetLinkModeName(FbxCluster::ELinkMode alNum);
 
-		bool LoadScene(KFbxSdkManager* pSdkManager, KFbxDocument* pScene, const char* pFilename);
+		bool LoadScene(FbxManager* pSdkManager, FbxDocument* pScene, const char* pFilename);
 
-		KFbxSdkManager* mpSdkManager;
+		FbxManager* mpSdkManager;
 
 		tString msTemp;
 		bool mbLog;
 		bool mbLowLog;
 		bool mbLoadAndSaveMSHFormat;
 
-		cMeshLoaderMSH * mpMeshLoaderMSH;
+		cMeshLoaderMSH* mpMeshLoaderMSH;
 	};
 
 };
 #endif // HPL_MESH_LOADER_FBX_H
-#endif

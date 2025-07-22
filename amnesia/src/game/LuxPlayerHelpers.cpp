@@ -978,8 +978,11 @@ void cLuxPlayerFlashback::Update(float afTimeStep)
 			mfFlashbackStartCount = 6.0f; //Incase there is something in queue, wait 6 seconds and then start that.
 
 			cLuxMap *pMap = gpBase->mpMapHandler->GetCurrentMap();
-			if(msCallback != "")
-				pMap->RunScript(msCallback + "()");
+			if (msCallback != "")
+			{
+				if (pMap->RunFunc(msCallback))
+					pMap->GetScript()->RunPreparedFunc();
+			}
 		}
 	}
 	
@@ -1084,7 +1087,9 @@ void cLuxPlayerLookAt::Update(float afTimeStep)
 	float fTotalDist = vDist.x*vDist.x + vDist.y*vDist.y;
 	if(fTotalDist < 0.01)
 	{
-		gpBase->mpMapHandler->GetCurrentMap()->RunScript(msAtTargetCallback+"()");
+		cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+		if (pMap->RunFunc(msAtTargetCallback))
+			pMap->GetScript()->RunPreparedFunc();
 	}
 }
 
@@ -1832,7 +1837,11 @@ void cLuxPlayerLantern::SetActive(bool abX, bool abUseEffects, bool abCheckForOi
 	cLuxMap *pMap = gpBase->mpMapHandler->GetCurrentMap();
 	if(pMap->GetLanternLitCallback()!="")
 	{
-		pMap->RunScript(pMap->GetLanternLitCallback()+"(" + (mbActive ? "true" : "false") + ")" );
+		if (pMap->RunFunc(pMap->GetLanternLitCallback()))
+		{
+			pMap->GetScript()->SetPreparedFuncArg(0, mbActive);
+			pMap->GetScript()->RunPreparedFunc();
+		}
 	}
 }
 

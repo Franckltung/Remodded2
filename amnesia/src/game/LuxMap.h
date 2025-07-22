@@ -88,7 +88,8 @@ public:
 	
 	void Update(float afTimeStep);
 
-	void RunScript(const tString& asCommand);
+	bool RunFunc(const tString& asFuncName);
+	iScript* GetScript() { return mpScript; }
 	bool RecompileScript(tString *apOutput);
 
 	void OnRenderSolid(cRendererCallbackFunctions* apFunctions);
@@ -172,7 +173,8 @@ public:
 	
 	void AddDissolveEntity(cMeshEntity *apMeshEntity, float afTime);
 
-	cLuxLampLightConnection* AddLampLightConnection(cLuxProp_Lamp *apLamp, iLight *apLight, float afAmount, bool abUseOnColor, bool abUseSpec);
+	cLuxLampLightConnection* AddLampLightConnection(cLuxProp_Lamp *apLamp, iLight *apLight, float afAmount,
+		bool abUseOnColor, bool abUseSpec, eLuxLampLightConnectionType aConnectionType);
 	cLuxLampLightConnection* GetLampLightConnection(iLight *apLight);
 
 	cLuxScriptVar* GetVar(const tString &asName);

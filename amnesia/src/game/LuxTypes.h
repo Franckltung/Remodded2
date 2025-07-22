@@ -168,6 +168,14 @@ enum eLuxEnemyType
 	eLuxEnemyType_LastEnum
 };
 
+enum eLuxLampLightConnectionType
+{
+	eLuxLampLightConnectionType_Add,
+	eLuxLampLightConnectionType_Multiply,
+
+	eLuxLampLightConnectionType_LastEnum
+};
+
 //----------------------------------------------
 
 enum eLuxObjectType

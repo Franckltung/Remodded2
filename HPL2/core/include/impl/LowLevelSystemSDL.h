@@ -22,6 +22,7 @@
 
 #include "system/LowLevelSystem.h"
 #include <angelscript.h>
+#include <scriptbuilder.h>
 #include <stdio.h>
 
 namespace hpl {
@@ -79,7 +80,9 @@ namespace hpl {
 		bool AddScriptVar(const tString& asVarDecl, void *pVar);
 
 	private:
+
 		asIScriptEngine *mpScriptEngine;
+		CScriptBuilder* mpScriptBuilder;
 		cScriptOutput *mpScriptOutput;
 		int mlHandleCount;
 	};
