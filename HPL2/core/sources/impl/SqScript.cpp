@@ -26,6 +26,7 @@
 #include "impl/scripthelper.h"
 #include "resources/BinaryBuffer.h"
 #include "resources/Resources.h"
+#include "engine/ScriptFuncs.h"
 
 namespace hpl {
 
@@ -93,7 +94,7 @@ namespace hpl {
 		// Normal load
 		if(sExt == _W("hps"))
 		{
-			pCharBuffer = LoadCharBuffer(asFileName,lLength);
+			pCharBuffer = cScriptFuncs::LoadCharBuffer(asFileName,lLength);
 			if(pCharBuffer==NULL){
 				Error("Couldn't load script '%s'!\n",asFileName.c_str());
 				return false;
@@ -151,7 +152,7 @@ namespace hpl {
 		
 		/////////////////////////////////////////
 		// Create module
-		mpScriptBuilder->SetIncludeCallback(cLowLevelSystemSDL::IncludeScript, this);
+		mpScriptBuilder->SetIncludeCallback(cScriptFuncs::IncludeScript, this);
 		int r = mpScriptBuilder->StartNewModule(mpScriptEngine, msModuleName.c_str());
 		r = mpScriptBuilder->AddSectionFromMemory(pCharBuffer, "main");
 		if(r<0)
@@ -302,31 +303,6 @@ namespace hpl {
 	//////////////////////////////////////////////////////////////////////////
 	// PRIVATE METHODS
 	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
-
-	char* cSqScript::LoadCharBuffer(const tWString& asFileName, int& alLength)
-	{
-		FILE *pFile = cPlatform::OpenFile(asFileName, _W("rb"));
-		if(pFile==NULL){
-			return NULL;
-		}
-
-		fseek(pFile,0,SEEK_END);
-		size_t lLength = ftell(pFile);
-		rewind(pFile);
-
-		//There's some weird stuff going on, looks like the string finalizer character wasn't created, and the new script loader no likey reading garbage data
-		alLength = (int)++lLength;
-
-		char *pBuffer = hplNewArray(char,lLength);
-		fread(pBuffer, lLength-1, 1, pFile);
-		pBuffer[lLength-1] = *"\0";
-
-		fclose(pFile);
-
-		return pBuffer;
-	}
 
 	//-----------------------------------------------------------------------
 

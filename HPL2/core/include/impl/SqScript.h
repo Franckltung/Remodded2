@@ -62,8 +62,6 @@ namespace hpl {
 		tString msModuleName;
 		bool mbPreparedFunction;
 
-		char* LoadCharBuffer(const tWString& asFileName, int& alLength);
-
 		void HandleException(asIScriptContext* ctx);
 	};
 };

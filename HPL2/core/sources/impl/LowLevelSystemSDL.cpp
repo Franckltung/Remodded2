@@ -499,16 +499,5 @@ namespace hpl {
 	
 	//-----------------------------------------------------------------------
 
-	int cLowLevelSystemSDL::IncludeScript(const char* include, const char* from, CScriptBuilder* builder, void* userParam)
-	{
-		Log("Include: %s\n", include);
-		Log("From: %s\n", from);
-
-		cSqScript* pScript = (cSqScript*)userParam;
-		Log("Search: %s\n", pScript->GetFullPath().c_str());
-
-		return 0;
-	}
-
 	//-----------------------------------------------------------------------
 }

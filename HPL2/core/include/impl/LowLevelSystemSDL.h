@@ -79,8 +79,6 @@ namespace hpl {
 		bool AddScriptFunc(const tString& asFuncDecl, void* pFunc);
 		bool AddScriptVar(const tString& asVarDecl, void *pVar);
 
-		static int IncludeScript(const char* include, const char* from, CScriptBuilder* builder, void* userParam);
-
 	private:
 
 		asIScriptEngine *mpScriptEngine;
