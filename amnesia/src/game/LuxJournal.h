@@ -167,7 +167,13 @@ public:
 	void SetOpenedFromInventory(bool abX){ mbOpenedFromInventory = abX;}
 
     cLuxNote* AddNote(const tString& asNameAndTextEntry, const tString& asImage);
+	void RemoveNote(const tString& asNameAndTextEntry);
+	void RemoveAllNotes();
+
 	cLuxDiary* AddDiary(const tString& asNameAndTextEntry, const tString& asImage, int &alCurrentEntryIdx);
+	void RemoveDiary(const tString& asNameAndTextEntry, int alEntryIdx);
+	void RemoveDiaries(const tString& asNameAndTextEntry);
+	void RemoveAllDiaries();
 	
 	bool AddQuestNote(const tString& asName, const tString& asNameAndTextEntry);
 	bool DisableQuestNote(const tString& asName);
@@ -185,6 +191,7 @@ public:
 	
 private:
 	cLuxDiaryContainer* CreateDiaryContainer(const tString& asType);
+	cLuxDiaryContainer* GetDiaryContainer(const tString& asType);
 
 	void SetupLabel(cWidgetLabel *apLabel, const cVector2f& avSize, int alIdx, eLuxJournalState aState, iFontData *apFont=NULL, eFontAlign aFontAlign=eFontAlign_Center);
 	void SetupImage(cWidgetImage *apImage, int alIdx, eLuxJournalState aState);

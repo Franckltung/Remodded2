@@ -23,6 +23,7 @@
 #include "LuxPlayer.h"
 #include "LuxPlayerHelpers.h"
 #include "LuxMapHandler.h"
+#include "LuxMapHelper.h"
 #include "LuxInputHandler.h"
 #include "LuxInventory.h"
 #include "LuxMoveState_Normal.h"
@@ -447,6 +448,10 @@ void cLuxScriptHandler::InitScriptFunctions()
 
 	AddFunc("void SetInDarknessEffectsActive(bool abX)",(void *)SetInDarknessEffectsActive);
 
+	AddFunc("void ShowScreenImage(string &in asImageName, float afX, float afY, float afScale, bool abUseRelativeCoordinates, float afDuration, float afFadeIn, float afFadeOut)", (void*)ShowScreenImage);
+	AddFunc("void HideScreenImageImmediately()", (void*)HideScreenImageImmediately);
+	AddFunc("void HideScreenImageWithFade(float afFadeOut)", (void*)HideScreenImageWithFade);
+
 	AddFunc("void AddEffectVoice(string &in asVoiceFile, string &in asEffectFile, string &in asTextCat, string &in asTextEntry, bool abUsePostion,  string &in asPosEnitity, float afMinDistance, float afMaxDistance)",(void *)AddEffectVoice);
 	AddFunc("void StopAllEffectVoices(float afFadeOutTime)",(void *)StopAllEffectVoices);
 	AddFunc("bool GetEffectVoiceActive()",(void *)GetEffectVoiceActive);
@@ -523,7 +528,12 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void DisableDeathStartSound()",(void *)DisableDeathStartSound);
 
 	AddFunc("void AddNote(string &in asNameAndTextEntry, string &in asImage)",(void *)AddNote);
-	AddFunc("void AddDiary(string &in asNameAndTextEntry, string &in asImage)",(void *)AddDiary);
+	AddFunc("void RemoveNote(string& asNameAndTextEntry)", (void*)RemoveNote);
+	AddFunc("void RemoveAllNotes()", (void*)RemoveAllNotes);
+	AddFunc("int AddDiary(string &in asNameAndTextEntry, string &in asImage)",(void *)AddDiary);
+	AddFunc("void RemoveDiary(string& asNameAndTextEntry, int alEntryIdx)", (void*)RemoveDiary);
+	AddFunc("void RemoveDiaries(string& asNameAndTextEntry)", (void*)RemoveDiaries);
+	AddFunc("void RemoveAllDiaries()", (void*)RemoveAllDiaries);
 	AddFunc("void ReturnOpenJournal(bool abOpenJournal)",(void *)ReturnOpenJournal);
 
 	AddFunc("void AddQuest(string &in asName, string &in asNameAndTextEntry)",(void *)AddQuest);
@@ -545,6 +555,10 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void GiveItemFromFile(string& asName, string& asFileName)",(void *)GiveItemFromFile);
 	AddFunc("void RemoveItem(string &in asName)",(void *)RemoveItem);
 	AddFunc("bool HasItem(string &in asName)",(void *)HasItem);
+
+	AddFunc("void SetTinderboxes(int alAmount)", (void*)SetTinderboxes);
+	AddFunc("void AddTinderboxes(int alAmount)", (void*)AddTinderboxes);
+	AddFunc("int GetTinderboxes()", (void*)GetTinderboxes);
 
 	AddFunc("void AddCombineCallback(string &in asName, string &in asItemA, string &in asItemB, string &in asFunction, bool abAutoDestroy)",(void *)AddCombineCallback);
 	AddFunc("void RemoveCombineCallback(string &in asName)",(void *)RemoveCombineCallback);
@@ -588,6 +602,8 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void SetEntityConnectionStateChangeCallback(string& asName, string& asCallback)", (void *)SetEntityConnectionStateChangeCallback);
 	AddFunc("void SetEntityInteractionDisabled(string& asName, bool abDisabled)", (void *)SetEntityInteractionDisabled);
 	AddFunc("bool GetEntitiesCollide(string &in asEntityA, string &in asEntityB)",(void *)GetEntitiesCollide);
+	AddFunc("bool CheckEntityLineOfSight(string &in asEntity1, string &in asEntity1, bool abCheckShadows)", (void*)CheckEntityLineOfSight);
+	AddFunc("float GetLightLevelAtPos(float afX, float afY, float afZ, float afRadius)", (void*)GetLightLevelAtPos);
 	
 	AddFunc("void SetPropEffectActive(string &in asName, bool abActive, bool abFadeAndPlaySounds)", (void *)SetPropEffectActive);
 	AddFunc("void SetPropActiveAndFade(string &in asName, bool abActive, float afFadeTime)",(void *)SetPropActiveAndFade);
@@ -601,6 +617,7 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void RemoveAttachedPropFromProp(string& asPropName, string& asAttachName)",(void *)RemoveAttachedPropFromProp);
 
 	AddFunc("void SetLampLit(string &in asName, bool abLit, bool abEffects)",(void *)SetLampLit); 
+	AddFunc("bool GetLampLit(string &in asName)", (void*)GetLampLit);
 	AddFunc("void SetSwingDoorLocked(string &in asName, bool abLocked, bool abEffects)",(void *)SetSwingDoorLocked);
 	AddFunc("void SetSwingDoorClosed(string &in asName, bool abClosed, bool abEffects)",(void *)SetSwingDoorClosed);
 	AddFunc("void SetSwingDoorDisableAutoClose(string &in asName, bool abDisableAutoClose)",(void *)SetSwingDoorDisableAutoClose);
@@ -1180,6 +1197,27 @@ void __stdcall cLuxScriptHandler::SetInDarknessEffectsActive(bool abX)
 
 //-----------------------------------------------------------------------
 
+void __stdcall cLuxScriptHandler::ShowScreenImage(string& asImageName, float afX, float afY, float afScale, bool abUseRelativeCoordinates, float afDuration, float afFadeIn, float afFadeOut)
+{
+	gpBase->mpEffectHandler->GetScreenImage()->ShowImage(asImageName, afX, afY, afScale, abUseRelativeCoordinates, afDuration, afFadeIn, afFadeOut);
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::HideScreenImageImmediately()
+{
+	gpBase->mpEffectHandler->GetScreenImage()->HideImmediately();
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::HideScreenImageWithFade(float afFadeOut)
+{
+	gpBase->mpEffectHandler->GetScreenImage()->HideWithFade(afFadeOut);
+}
+
+//-----------------------------------------------------------------------
+
 void __stdcall cLuxScriptHandler::AddEffectVoice(string& asVoiceFile, string& asEffectFile,
 												string& asTextCat, string& asTextEntry, bool abUsePostion, 
 												string& asPosEntity, float afMinDistance, float afMaxDistance)
@@ -1716,10 +1754,46 @@ void __stdcall cLuxScriptHandler::AddNote(string& asNameAndTextEntry, string& as
 
 //-----------------------------------------------------------------------
 
-void __stdcall cLuxScriptHandler::AddDiary(string& asNameAndTextEntry, string& asImage)
+void __stdcall cLuxScriptHandler::RemoveNote(string& asNameAndTextEntry)
+{
+	gpBase->mpJournal->RemoveNote(asNameAndTextEntry);
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::RemoveAllNotes()
+{
+	gpBase->mpJournal->RemoveAllNotes();
+}
+
+//-----------------------------------------------------------------------
+
+int __stdcall cLuxScriptHandler::AddDiary(string& asNameAndTextEntry, string& asImage)
 {
 	int lReturnNum=0;
 	gpBase->mpJournal->AddDiary(asNameAndTextEntry, asImage,lReturnNum);
+	return lReturnNum;
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::RemoveDiary(string& asNameAndTextEntry, int alEntryIdx)
+{
+	gpBase->mpJournal->RemoveDiary(asNameAndTextEntry, alEntryIdx);
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::RemoveDiaries(string& asNameAndTextEntry)
+{
+	gpBase->mpJournal->RemoveDiaries(asNameAndTextEntry);
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::RemoveAllDiaries()
+{
+	gpBase->mpJournal->RemoveAllDiaries();
 }
 
 //-----------------------------------------------------------------------
@@ -1894,6 +1968,23 @@ void __stdcall cLuxScriptHandler::RemoveItem(string& asName)
 bool __stdcall cLuxScriptHandler::HasItem(string& asName)
 {
 	return gpBase->mpInventory->GetItem(asName)!=NULL;
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetTinderboxes(int alAmount)
+{
+	gpBase->mpPlayer->SetTinderboxes(alAmount);
+}
+
+void __stdcall cLuxScriptHandler::AddTinderboxes(int alAmount)
+{
+	gpBase->mpPlayer->AddTinderboxes(alAmount);
+}
+
+int __stdcall cLuxScriptHandler::GetTinderboxes()
+{
+	return gpBase->mpPlayer->GetTinderboxes();
 }
 
 //-----------------------------------------------------------------------
@@ -2532,6 +2623,50 @@ bool __stdcall cLuxScriptHandler::GetEntitiesCollide(string& asEntityA, string& 
 
 //-----------------------------------------------------------------------
 
+bool __stdcall cLuxScriptHandler::CheckEntityLineOfSight(string& asEntity1, string& asEntity2, bool abCheckShadows)
+{
+	if (asEntity1 == asEntity2) return true;
+
+	cVector3f pPos1;
+	cVector3f pPos2;
+
+	if (asEntity1 == "Player") pPos1 = gpBase->mpPlayer->GetCharacterBody()->GetPosition();
+	else
+	{
+		iLuxEntity* pEnt = GetEntity(asEntity1, eLuxEntityType_LastEnum, -1);
+		if (pEnt == NULL)
+		{
+			Error("Could not check line of sight because '%s' doesn't exist or is not a valid entity!\n", asEntity1.c_str());
+			return false;
+		}
+		pPos1 = pEnt->GetBody(0)->GetWorldPosition();
+	}
+
+	if (asEntity2 == "Player") pPos2 = gpBase->mpPlayer->GetCharacterBody()->GetPosition();
+	else
+	{
+		iLuxEntity* pEnt = GetEntity(asEntity2, eLuxEntityType_LastEnum, -1);
+		if (pEnt == NULL)
+		{
+			Error("Could not check line of sight because '%s' doesn't exist or is not a valid entity!\n", asEntity2.c_str());
+			return false;
+		}
+		pPos2 = pEnt->GetBody(0)->GetWorldPosition();
+	}
+
+	return gpBase->mpMapHelper->CheckLineOfSight(pPos1, pPos2, abCheckShadows);
+}
+
+//-----------------------------------------------------------------------
+
+float __stdcall cLuxScriptHandler::GetLightLevelAtPos(float afX, float afY, float afZ, float afRadius)
+{
+	cVector3f pPos(afX, afY, afZ);
+	return gpBase->mpMapHelper->GetLightLevelAtPos(pPos, NULL, afRadius);
+}
+
+//-----------------------------------------------------------------------
+
 void __stdcall cLuxScriptHandler::SetPropEffectActive(string& asName, bool abActive, bool abFadeAndPlaySounds)
 {
 	BEGIN_SET_PROPERTY(eLuxEntityType_Prop,-1)
@@ -2680,6 +2815,15 @@ void __stdcall cLuxScriptHandler::SetLampLit(string& asName, bool abLit, bool ab
 		pLamp->SetLit(abLit, abEffects);
 
 	END_SET_PROPERTY
+}
+
+bool __stdcall cLuxScriptHandler::GetLampLit(string& asName)
+{
+	iLuxEntity* pEntity = GetEntity(asName, eLuxEntityType_Prop, eLuxPropType_Lamp);
+	if (pEntity == NULL) return false;
+
+	cLuxProp_Lamp* pLamp = ToLamp(pEntity);
+	return pLamp->GetLit();
 }
 
 //-----------------------------------------------------------------------
@@ -2999,10 +3143,10 @@ void __stdcall cLuxScriptHandler::ShowEnemyPlayerPosition(string& asName)
 		pEnemy->ShowPlayerPosition();
 		
 		eLuxEnemyState state = pEnemy->GetCurrentEnemyState();
-		if(	state != eLuxEnemyState_Hunt ||
-			state != eLuxEnemyState_AttackMeleeLong ||
-			state != eLuxEnemyState_AttackMeleeShort ||
-			state != eLuxEnemyState_BreakDoor)
+		if( (state != eLuxEnemyState_Hunt) ||
+			(state != eLuxEnemyState_AttackMeleeLong) ||
+			(state != eLuxEnemyState_AttackMeleeShort) ||
+			(state != eLuxEnemyState_BreakDoor))
 		{
 			pEnemy->ChangeState(eLuxEnemyState_Hunt);
 		}

@@ -344,22 +344,25 @@ void cLuxMap::OnEnter(bool abRunScript, bool abFirstTime)
 		pEntity->OnMapEnter();
 	}
 
-	if(abRunScript)
+	///////////////
+	//Run script
+	if (mpScript)
 	{
-		///////////////
-		//Run script
-		if(mpScript) 
+		if (abRunScript)
 		{
-			if(abFirstTime)
+			if (abFirstTime)
 			{
-				mpScript->Run("OnStart()");
+				if(RunFunc("OnStart")) mpScript->RunPreparedFunc();
 				CalculateTotalCompletionAmount();
 			}
 
-			mpScript->Run("OnEnter()");
+			if(RunFunc("OnEnter")) mpScript->RunPreparedFunc();
+		}
+		else
+		{
+			if(RunFunc("OnLoad")) mpScript->RunPreparedFunc();
 		}
 	}
-	
 }
 
 
