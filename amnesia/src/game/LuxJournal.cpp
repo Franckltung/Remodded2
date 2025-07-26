@@ -726,6 +726,37 @@ cLuxNote* cLuxJournal::AddNote(const tString& asNameAndTextEntry, const tString&
 
 //-----------------------------------------------------------------------
 
+void cLuxJournal::RemoveNote(const tString& asNameAndTextEntry)
+{
+	std::vector<cLuxNote*>::iterator it = mvNotes.begin();
+	for (; it != mvNotes.end(); ++it)
+	{
+		cLuxNote* pNote = *it;
+		if (pNote->msNameEntry == "Note_" + asNameAndTextEntry + "_Name")
+		{
+			hplDelete(pNote);
+			mvNotes.erase(it);
+			break;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------
+
+void cLuxJournal::RemoveAllNotes()
+{
+	while (!mvNotes.empty())
+	{
+		std::vector<cLuxNote*>::iterator it = mvNotes.begin();
+		cLuxNote* pNote = *it;
+
+		hplDelete(pNote);
+		mvNotes.erase(it);
+	}
+}
+
+//-----------------------------------------------------------------------
+
 cLuxDiary* cLuxJournal::AddDiary(const tString& asNameAndTextEntry, const tString& asImage, int &alCurrentEntryIdx)
 {
 	cLuxDiary *pDiary = hplNew( cLuxDiary, () );
@@ -745,6 +776,96 @@ cLuxDiary* cLuxJournal::AddDiary(const tString& asNameAndTextEntry, const tStrin
 	pContainer->mvDiaries.push_back(pDiary);
 
 	return pDiary;
+}
+
+//-----------------------------------------------------------------------
+
+void cLuxJournal::RemoveDiary(const tString& asNameAndTextEntry, int alEntryIdx)
+{
+	cLuxDiaryContainer* pContainer = GetDiaryContainer(asNameAndTextEntry);
+	if (pContainer == NULL) return;
+	
+	if (alEntryIdx < 0) alEntryIdx = (int)pContainer->mvDiaries.size() - 1;
+	tString sEntryName = "Diary_" + asNameAndTextEntry + "_Name" + cString::ToString(alEntryIdx);
+
+	std::vector<cLuxDiary*>::iterator it = pContainer->mvDiaries.begin();
+	for (; it != pContainer->mvDiaries.end(); ++it)
+	{
+		cLuxDiary* pDiary = *it;
+		if (pDiary->msNameEntry == sEntryName)
+		{
+			hplDelete(pDiary);
+			pContainer->mvDiaries.erase(it);
+			break;
+		}
+	}
+
+	if (pContainer->mvDiaries.empty())
+	{
+		std::vector<cLuxDiaryContainer*>::iterator itt = mvDiaryContainers.begin();
+		for (; itt != mvDiaryContainers.end(); ++itt)
+		{
+			cLuxDiaryContainer* _pContainer = *itt;
+			if (_pContainer == pContainer)
+			{
+				mvDiaryContainers.erase(itt);
+				break;
+			}
+		}
+
+		hplDelete(pContainer);
+	}
+}
+
+void cLuxJournal::RemoveDiaries(const tString& asNameAndTextEntry)
+{
+	cLuxDiaryContainer* pContainer = GetDiaryContainer(asNameAndTextEntry);
+	if (pContainer == NULL) return;
+
+	while (!pContainer->mvDiaries.empty())
+	{
+		std::vector<cLuxDiary*>::iterator it = pContainer->mvDiaries.begin();
+		cLuxDiary* pDiary = *it;
+
+		hplDelete(pDiary);
+		pContainer->mvDiaries.erase(it);
+	}
+
+	std::vector<cLuxDiaryContainer*>::iterator itt = mvDiaryContainers.begin();
+	for (; itt != mvDiaryContainers.end(); ++itt)
+	{
+		cLuxDiaryContainer* _pContainer = *itt;
+		if (_pContainer == pContainer)
+		{
+			mvDiaryContainers.erase(itt);
+			break;
+		}
+	}
+
+	hplDelete(pContainer);
+}
+
+//-----------------------------------------------------------------------
+
+void cLuxJournal::RemoveAllDiaries()
+{
+	while (!mvDiaryContainers.empty())
+	{
+		std::vector<cLuxDiaryContainer*>::iterator it = mvDiaryContainers.begin();
+		cLuxDiaryContainer* pContainer = *it;
+
+		while (!pContainer->mvDiaries.empty())
+		{
+			std::vector<cLuxDiary*>::iterator itt = pContainer->mvDiaries.begin();
+			cLuxDiary* pDiary = *itt;
+
+			hplDelete(pDiary);
+			pContainer->mvDiaries.erase(itt);
+		}
+
+		hplDelete(pContainer);
+		mvDiaryContainers.erase(it);
+	}
 }
 
 //-----------------------------------------------------------------------
@@ -969,6 +1090,19 @@ cLuxDiaryContainer* cLuxJournal::CreateDiaryContainer(const tString& asType)
 	pCont->msType = asType;
 	mvDiaryContainers.push_back(pCont);
 	return pCont;
+}
+
+//-----------------------------------------------------------------------
+
+cLuxDiaryContainer* cLuxJournal::GetDiaryContainer(const tString& asType)
+{
+	for (size_t i = 0; i < mvDiaryContainers.size(); ++i)
+	{
+		cLuxDiaryContainer* pCont = mvDiaryContainers[i];
+		if (pCont->msType == asType) return pCont;
+	}
+	
+	return NULL;
 }
 
 //-----------------------------------------------------------------------

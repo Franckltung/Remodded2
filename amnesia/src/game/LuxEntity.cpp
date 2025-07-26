@@ -489,6 +489,8 @@ kSerializeVar(msLookAtCallback,eSerializeType_String)
 kSerializeVar(mbLookAtCallbackRemove,eSerializeType_Bool)
 kSerializeVar(mbIsLookedAt,eSerializeType_Bool)
 
+kSerializeVar(mlCustomFocusCrossHair,eSerializeType_Int32)
+
 kSerializeClassContainer(mvConnections, cLuxEntityConnection_SaveData, eSerializeType_Class)
 kSerializeClassContainer(mlstCollideCallbacks, cLuxCollideCallback_SaveData, eSerializeType_Class)
 
@@ -517,6 +519,8 @@ void iLuxEntity::SaveToSaveData(iLuxEntity_SaveData* apSaveData)
 	kCopyToVar(apSaveData, msLookAtCallback);
 	kCopyToVar(apSaveData, mbLookAtCallbackRemove);
 	kCopyToVar(apSaveData, mbIsLookedAt);
+
+	apSaveData->mlCustomFocusCrossHair = (int)mCustomFocusCrossHair;
 
 	apSaveData->mvConnections.Resize(mvConnections.size());
     for(size_t i=0; i<mvConnections.size();++i)
@@ -555,6 +559,9 @@ void iLuxEntity::LoadFromSaveData(iLuxEntity_SaveData* apSaveData)
 	kCopyFromVar(apSaveData, msLookAtCallback);
 	kCopyFromVar(apSaveData, mbLookAtCallbackRemove);
 	kCopyFromVar(apSaveData, mbIsLookedAt);
+
+	int alCustomFocusCrossHair = apSaveData->mlCustomFocusCrossHair;
+	mCustomFocusCrossHair = (eLuxFocusCrosshair)alCustomFocusCrossHair;
 }
 
 //-----------------------------------------------------------------------

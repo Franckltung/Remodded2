@@ -16,10 +16,12 @@
 #include "OpenAL/OAL_Filter.h"
 #include "OpenAL/OAL_Effect_Reverb.h"
 
+#include "AL/alext.h"
 #include "system/String.h"
 #include "system/LowLevelSystem.h"
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 //-------------------------------------------------------------------------
 
@@ -108,7 +110,7 @@ bool cOAL_Device::Init( cOAL_Init_Params& acParams )
 		}
 	}
 
-	ALCint lAttrList[] = 
+	ALCint lAttrList[] =
 	{
 		ALC_FREQUENCY,		acParams.mlOutputFreq,
 		#ifdef __APPLE__
@@ -117,12 +119,12 @@ bool cOAL_Device::Init( cOAL_Init_Params& acParams )
 		ALC_STEREO_SOURCES,	acParams.mbVoiceManagement ? 0 : acParams.mlMinStereoSourcesHint,
 		#endif
 		ALC_MAX_AUXILIARY_SENDS, acParams.mlNumSendsHint,
+		ALC_HRTF_SOFT, acParams.mbUseHRTF,
 		0,
 	};
 
-	LogMsg("",eOAL_LogVerbose_Low, eOAL_LogMsg_Info, "Creating context\n");
-	// Create and set a context
-	mpContext = RUN_ALC_FUNC(alcCreateContext ( mpDevice, lAttrList ));
+	LogMsg("", eOAL_LogVerbose_Low, eOAL_LogMsg_Info, "Creating context\n");
+	mpContext = RUN_ALC_FUNC(alcCreateContext(mpDevice, lAttrList));
 
 	RUN_ALC_FUNC(alcMakeContextCurrent ( mpContext ));
 

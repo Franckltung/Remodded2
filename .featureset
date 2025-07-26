@@ -1,0 +1,27 @@
+//Add new Remodded-specific features as they get added. To keep track.
+
+----------------------------
+----  SCRIPT FUNCTIONS  ----
+----------------------------
+
++ OnLoad() callback
+
++ SetTinderboxes(int alAmount)
++ AddTinderboxes(int alAmount)
++ int GetTinderboxes()
+
++ RemoveNote(string& asNameAndTextEntry)
++ RemoveAllNotes()
++ RemoveDiary(string& asNameAndTextEntry, int alEntryIdx)
++ RemoveDiaries(string& asNameAndTextEntry)
++ RemoveAllDiaries()
+/ changed AddDiary to return the exact entry index it adds.
+/ int AddDiary(string &in asNameAndTextEntry, string &in asImage)
+
++ bool CheckEntityLineOfSight(string &in asEntity1, string &in asEntity1, bool abCheckShadows)
++ float GetLightLevelAtPos(float afX, float afY, float afZ, float afRadius)
+
++ bool GetLampLit(string &in asName)
++ DeleteEntity(string &in asName) [Supports wildcards * ]
+
+/ custom entity crosshairs now save

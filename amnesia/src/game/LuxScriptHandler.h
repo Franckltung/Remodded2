@@ -155,6 +155,10 @@ private:
 	static void __stdcall StartEffectFlash(float afFadeIn, float afWhite, float afFadeOut);
 	static void __stdcall StartEffectEmotionFlash(string &asTextCat, string &asTextEntry, string &asSound);
 	static void __stdcall SetInDarknessEffectsActive(bool abX);
+
+	static void __stdcall ShowScreenImage(string& asImageName, float afX, float afY, float afScale, bool abUseRelativeCoordinates, float afDuration, float afFadeIn, float afFadeOut);
+	static void __stdcall HideScreenImageImmediately();
+	static void __stdcall HideScreenImageWithFade(float afFadeOut);
 	
 	//This adds a voice + effect to be played. It is okay to call this many times in order to play many voices in a row. The EffectVoiceOverCallback is not called until ALL voices have finished.
 	static void __stdcall AddEffectVoice(	string& asVoiceFile, string& asEffectFile,
@@ -257,7 +261,12 @@ private:
 
 	// Journal
 	static void __stdcall AddNote(string& asNameAndTextEntry, string& asImage);
-	static void __stdcall AddDiary(string& asNameAndTextEntry, string& asImage);
+	static void __stdcall RemoveNote(string& asNameAndTextEntry);
+	static void __stdcall RemoveAllNotes();
+	static int __stdcall AddDiary(string& asNameAndTextEntry, string& asImage);
+	static void __stdcall RemoveDiary(string& asNameAndTextEntry, int alEntryIdx);
+	static void __stdcall RemoveDiaries(string& asNameAndTextEntry);
+	static void __stdcall RemoveAllDiaries();
 	/**
 	 * Only called in the pickup diary callback! If true the journal displays the entry else not.
 	 */
@@ -294,6 +303,10 @@ private:
 
 	//This is meant to be used for debug mostly as it creates the actual item and then destroys i.
 	static void __stdcall GiveItemFromFile(string& asName, string& asFileName);
+
+	static void __stdcall SetTinderboxes(int alAmount);
+	static void __stdcall AddTinderboxes(int alAmount);
+	static int __stdcall GetTinderboxes();
 	
 	/**
 	* Callback syntax: MyFunc(string &in asItemA, string &in asItemB)
@@ -350,6 +363,7 @@ private:
 	static void __stdcall SetEntityCustomFocusCrossHair(string& asName, string &asCrossHair);
 	static void __stdcall CreateEntityAtArea(string& asEntityName, string& asEntityFile, string& asAreaName, bool abFullGameSave);
 	static void __stdcall ReplaceEntity(string& asName, string& asBodyName, string& asNewEntityName, string& asNewEntityFile, bool abFullGameSave);
+	static void __stdcall DeleteEntity(string& asName);
 	static void __stdcall PlaceEntityAtEntity(string& asName, string& asTargetEntity, string& asTargetBodyName, bool abUseRotation);
 	/**
 	* Callback syntax: MyFunc(string &in entity, int alState) state: 1=looking, -1=not looking
@@ -373,6 +387,9 @@ private:
 	 */
 	static bool __stdcall GetEntitiesCollide(string& asEntityA, string& asEntityB);
 
+	static bool __stdcall CheckEntityLineOfSight(string& asEntity1, string& asEntity2, bool abCheckShadows);
+	static float __stdcall GetLightLevelAtPos(float afX, float afY, float afZ, float afRadius);
+
 	static void __stdcall SetPropEffectActive(string& asName, bool abActive, bool abFadeAndPlaySounds);
 	static void __stdcall SetPropActiveAndFade(string& asName, bool abActive, float afFadeTime);
 	static void __stdcall SetPropStaticPhysics(string& asName, bool abX);
@@ -389,6 +406,7 @@ private:
 
 	
 	static void __stdcall SetLampLit(string& asName, bool abLit, bool abEffects);
+	static bool __stdcall GetLampLit(string& asName);
 	static void __stdcall SetSwingDoorLocked(string& asName, bool abLocked, bool abEffects);
 	static void __stdcall SetSwingDoorClosed(string& asName, bool abClosed, bool abEffects);
 	static void __stdcall SetSwingDoorDisableAutoClose(string& asName, bool abDisableAutoClose);
