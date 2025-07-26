@@ -22,3 +22,6 @@
 + float GetLightLevelAtPos(float afX, float afY, float afZ, float afRadius)
 
 + bool GetLampLit(string &in asName)
++ DeleteEntity(string &in asName) [Supports wildcards * ]
+
+/ custom entity crosshairs now save

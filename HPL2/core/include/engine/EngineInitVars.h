@@ -79,6 +79,7 @@ namespace hpl {
 			cSoundVars() :
 				mlSoundDeviceID(-1),
 				mbUseEnvironmentalAudio(false),
+				mbUseHRTF(false),
 				mbUseThreading(true),
 				mbUseVoiceManagement(true),
 				mbLowLevelLogging(true),
@@ -92,6 +93,7 @@ namespace hpl {
 				
 			int	mlSoundDeviceID;
 			bool mbUseEnvironmentalAudio;
+			bool mbUseHRTF;
 			bool mbUseThreading;
 			bool mbUseVoiceManagement;
 			bool mbLowLevelLogging;

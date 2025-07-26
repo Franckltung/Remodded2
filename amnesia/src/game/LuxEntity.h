@@ -74,6 +74,8 @@ public:
 	bool mbLookAtCallbackRemove;
 	bool mbIsLookedAt;
 
+	int mlCustomFocusCrossHair;
+
 	cContainerVec<cLuxEntityConnection_SaveData> mvConnections;
 	cContainerList<cLuxCollideCallback_SaveData> mlstCollideCallbacks;
 

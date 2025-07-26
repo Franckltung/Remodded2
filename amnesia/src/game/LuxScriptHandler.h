@@ -363,6 +363,7 @@ private:
 	static void __stdcall SetEntityCustomFocusCrossHair(string& asName, string &asCrossHair);
 	static void __stdcall CreateEntityAtArea(string& asEntityName, string& asEntityFile, string& asAreaName, bool abFullGameSave);
 	static void __stdcall ReplaceEntity(string& asName, string& asBodyName, string& asNewEntityName, string& asNewEntityFile, bool abFullGameSave);
+	static void __stdcall DeleteEntity(string& asName);
 	static void __stdcall PlaceEntityAtEntity(string& asName, string& asTargetEntity, string& asTargetBodyName, bool abUseRotation);
 	/**
 	* Callback syntax: MyFunc(string &in entity, int alState) state: 1=looking, -1=not looking

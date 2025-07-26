@@ -595,6 +595,7 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void SetEntityCustomFocusCrossHair(string &in asName, string &in asCrossHair)",(void *)SetEntityCustomFocusCrossHair);
 	AddFunc("void CreateEntityAtArea(string &in asEntityName, string &in asEntityFile, string &in asAreaName, bool abFullGameSave)",(void *)CreateEntityAtArea);
 	AddFunc("void ReplaceEntity(string &in asName, string &in asBodyName, string &in asNewEntityName, string &in asNewEntityFile, bool abFullGameSave)",(void *)ReplaceEntity);
+	AddFunc("void DeleteEntity(string &in asName)", (void*)DeleteEntity);
 	AddFunc("void PlaceEntityAtEntity(string &in asName, string &in asTargetEntity, string &in asTargetBodyName, bool abUseRotation)",(void *)PlaceEntityAtEntity);
 	AddFunc("void SetEntityPlayerLookAtCallback(string &in asName, string &in asCallback, bool abRemoveWhenLookedAt)",(void *)SetEntityPlayerLookAtCallback);
 	AddFunc("void SetEntityPlayerInteractCallback(string &in asName, string &in asCallback, bool abRemoveOnInteraction)",(void *)SetEntityPlayerInteractCallback);
@@ -2514,6 +2515,18 @@ void __stdcall cLuxScriptHandler::ReplaceEntity(string& asName, string& asBodyNa
 	{
 		Error("Could not create entity '%s' from file '%s'!\n", asNewEntityName.c_str(), asNewEntityFile.c_str());
 	}
+}
+
+void __stdcall cLuxScriptHandler::DeleteEntity(string& asName)
+{
+	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+
+	BEGIN_SET_PROPERTY(eLuxEntityType_LastEnum, -1)
+
+	pMap->DestroyEntity(pEntity);
+	pMap->ResetLatestEntity();
+
+	END_SET_PROPERTY
 }
 
 void __stdcall cLuxScriptHandler::PlaceEntityAtEntity(string& asName, string& asTargetEntity, string& asTargetBodyName, bool abUseRotation)

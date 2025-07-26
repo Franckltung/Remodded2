@@ -1110,7 +1110,7 @@ bool cLuxBase::InitEngine()
 	vars.mSound.mlMaxChannels = mpConfigHandler->mlMaxSoundChannels;
 	vars.mSound.mlStreamBufferCount = mpConfigHandler->mlSoundStreamBuffers;
 	vars.mSound.mlStreamBufferSize = mpConfigHandler->mlSoundStreamBufferSize;
-	vars.mSound.mbLowLevelLogging = true;
+	vars.mSound.mbUseHRTF = mpConfigHandler->mbHRTFActive;
 
 	// Sound device filter set here (if needed)
 #if defined(_WIN32)
