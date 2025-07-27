@@ -476,6 +476,10 @@ void cLuxSaveHandler::LoadSaveGameData(cLuxSaveGame_SaveData *apSave)
 	//Hardmode
 	gpBase->mbHardMode = apSave->mbHardmode;
 
+	///////////////////
+	//OnLoad
+	if (pCurrentMap->RunFunc("OnLoad")) pCurrentMap->GetScript()->RunPreparedFunc();
+
 	//////////////////////////////////
 	//Clean up
 	gpBase->mpHelpFuncs->CleanupData();

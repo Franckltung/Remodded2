@@ -16,7 +16,7 @@
 + RemoveDiaries(string& asNameAndTextEntry)
 + RemoveAllDiaries()
 / changed AddDiary to return the exact entry index it adds.
-/ int AddDiary(string &in asNameAndTextEntry, string &in asImage)
+ᒪ int AddDiary(string &in asNameAndTextEntry, string &in asImage)
 
 + bool CheckEntityLineOfSight(string &in asEntity1, string &in asEntity1, bool abCheckShadows)
 + float GetLightLevelAtPos(float afX, float afY, float afZ, float afRadius)
@@ -24,4 +24,22 @@
 + bool GetLampLit(string &in asName)
 + DeleteEntity(string &in asName) [Supports wildcards * ]
 
-/ custom entity crosshairs now save
++ SetCurrentLantern(string &in asLantern)
++ string& GetCurrentLantern()
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+-----------------------------
+----   ENGINE FEATURES   ----
+-----------------------------
+
++ Option toggle for OpenAL Soft HRTF (only really to turn it off, engine doesn't properly support it.)
++ custom entity crosshairs now save
+
++ Lamp->Light connections now support "Multiply" connection type
+
++ Multiple lanterns support.
+
++ New Lantern item type variables
+ᒪ "LanternUseHandObject" type bool
+ᒪ "LanternHandObject" type string

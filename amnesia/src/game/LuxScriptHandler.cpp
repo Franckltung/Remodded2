@@ -523,6 +523,8 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("bool GetLanternActive()",(void *)GetLanternActive);
 	AddFunc("void SetLanternDisabled(bool abX)",(void *)SetLanternDisabled);
 	AddFunc("void SetLanternLitCallback(string &in asCallback)",(void *)SetLanternLitCallback);
+	AddFunc("void SetCurrentLantern(string &in asLantern)", (void *)SetCurrentLantern);
+	AddFunc("string& GetCurrentLantern()", (void *)GetCurrentLantern);
 	AddFunc("void SetMessage(string &in asTextCategory, string &in asTextEntry, float afTime)",(void *)SetMessage);
 	AddFunc("void SetDeathHint(string &in asTextCategory, string &in asTextEntry)",(void *)SetDeathHint);
 	AddFunc("void DisableDeathStartSound()",(void *)DisableDeathStartSound);
@@ -1723,6 +1725,20 @@ void __stdcall cLuxScriptHandler::SetLanternLitCallback(string &asCallback)
 	cLuxMap *pMap = gpBase->mpMapHandler->GetCurrentMap();
 
 	pMap->SetLanternLitCallback(asCallback);
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetCurrentLantern(string &asLantern)
+{
+	gpBase->mpPlayer->GetHelperLantern()->SetCurrentLantern(asLantern);
+}
+
+//-----------------------------------------------------------------------
+
+string& __stdcall cLuxScriptHandler::GetCurrentLantern()
+{
+	return gpBase->mpPlayer->GetHelperLantern()->GetCurrentLantern();
 }
 
 //-----------------------------------------------------------------------

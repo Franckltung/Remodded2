@@ -84,6 +84,7 @@ public:
 
 	////////////////////////
 	//Properties
+	const eLuxHandObjectType GetType() { return mType; }
 	const tString& GetName(){ return msName;}
 	
 	cMeshEntity *GetMeshEntity(){ return mpMeshEntity; }
@@ -104,6 +105,7 @@ protected:
 
 	/////////////////////////
 	// Data
+	eLuxHandObjectType mType;
 	cLuxPlayerHands *mpHands;
     tString msName;
 	

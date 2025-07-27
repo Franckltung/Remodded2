@@ -45,6 +45,15 @@ public:
 	bool DoAction(eLuxPlayerAction aAction, bool abPressed);
 	bool AnimationIsOver();
 
+	////////////////////////
+	//Properties
+	tString& GetOnSound() { return msOnSound; }
+	tString& GetOffSound() { return msOffSound; }
+	tString& GetNoOilSound() { return msNoOilSound; }
+	tString& GetDisabledSound() { return msDisabledSound; }
+
+	float GetFuelDrainSpeed() { return mfFuelDrainSpeed; }
+
 private:
 	void UpdateSwayPhysics(float afTimeStep);
 
@@ -64,6 +73,13 @@ private:
 	
 	float mfSwayAngle;
 	float mfSwayVel;
+
+	tString msOnSound;
+	tString msOffSound;
+	tString msNoOilSound;
+	tString msDisabledSound;
+
+	float mfFuelDrainSpeed;
 
 	std::vector<cColor> mvLightFadeOutColor;
 	std::vector<cColor> mvDefaultLightColors;

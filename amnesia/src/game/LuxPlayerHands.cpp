@@ -632,7 +632,6 @@ iLuxHandObject* cLuxPlayerHands::LoadHandObject(const tString& asName)
 	//Load the settings
 	pObject->LoadSettings(pSettingsElem);
 
-
 	/////////////////////
 	// Add object
 

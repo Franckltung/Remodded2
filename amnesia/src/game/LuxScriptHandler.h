@@ -248,6 +248,8 @@ private:
 	 * Syntax: MyFun(bool abLit)
 	 */
 	static void __stdcall SetLanternLitCallback(string &asCallback);
+	static void __stdcall SetCurrentLantern(string &asLantern);
+	static string& __stdcall GetCurrentLantern();
 	/**
 	* if time is <=0 then the life time is calculated based on string length.
 	*/

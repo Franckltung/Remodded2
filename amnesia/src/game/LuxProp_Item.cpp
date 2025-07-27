@@ -84,6 +84,13 @@ void cLuxPropLoader_Item::LoadVariables(iLuxProp *apProp, cXmlElement *apRootEle
 	{
 		pItem->mfAmount = GetVarFloat("OilAmount", 0);
 	}
+	///////////////////////////
+	// Lantern
+	else if (pItem->mItemType == eLuxItemType_Lantern)
+	{
+		pItem->msVal = GetVarBool("LanternUseHandObject", false) ? "true" : "false";
+		pItem->msExtraVal = GetVarString("LanternHandObject", "lantern");
+	}
 }
 
 //-----------------------------------------------------------------------
