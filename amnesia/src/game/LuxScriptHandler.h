@@ -414,6 +414,8 @@ private:
 	static void __stdcall AttachPropToProp(string& asPropName, string& asAttachName, string& asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
 	static void __stdcall AddAttachedPropToProp(string& asPropName, string& asAttachName, string& asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
 	static void __stdcall RemoveAttachedPropFromProp(string& asPropName, string& asAttachName);
+	static void __stdcall AttachPlayerCameraToEntity(string& asPropName);
+	static void __stdcall DetachPlayerCamera();
 
 	
 	static void __stdcall SetLampLit(string& asName, bool abLit, bool abEffects);

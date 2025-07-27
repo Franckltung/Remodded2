@@ -626,6 +626,8 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void AddAttachedPropToProp(string& asPropName, string& asAttachName, string& asAttachFile, float fPosX, float fPosY, float fPosZ, float fRotX, float fRotY, float fRot)",(void *)AddAttachedPropToProp);
 	AddFunc("void AttachPropToProp(string& asPropName, string& asAttachName, string& asAttachFile, float fPosX, float fPosY, float fPosZ, float fRotX, float fRotY, float fRot)",(void *)AttachPropToProp);
 	AddFunc("void RemoveAttachedPropFromProp(string& asPropName, string& asAttachName)",(void *)RemoveAttachedPropFromProp);
+	AddFunc("void AttachPlayerCameraToEntity(string &in asEntity)", (void*)AttachPlayerCameraToEntity);
+	AddFunc("void DetachPlayerCamera()", (void*)DetachPlayerCamera);
 
 	AddFunc("void SetLampLit(string &in asName, bool abLit, bool abEffects)",(void *)SetLampLit); 
 	AddFunc("bool GetLampLit(string &in asName)", (void*)GetLampLit);
@@ -2989,6 +2991,20 @@ void __stdcall cLuxScriptHandler::RemoveAttachedPropFromProp(string& asPropName,
 		}
 
 	END_SET_PROPERTY
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::AttachPlayerCameraToEntity(string& asEntity)
+{
+	gpBase->mpPlayer->SetCameraAttachedTo(asEntity);
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::DetachPlayerCamera()
+{
+	gpBase->mpPlayer->SetCameraAttachedTo("");
 }
 
 //-----------------------------------------------------------------------

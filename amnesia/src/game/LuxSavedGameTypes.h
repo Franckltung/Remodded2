@@ -387,6 +387,8 @@ public:
 	float mfCamAnimPosSpeedMul;
 	float mfCamAnimPosMaxSpeed;
 
+	tString msCamAttachedObject;
+
 	cVector2f mvHeadSpinSpeed;
 
 	bool mbScriptShowFocusIconAndCrossHair;

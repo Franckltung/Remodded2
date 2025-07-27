@@ -1172,6 +1172,8 @@ void cLuxPlayer_SaveData::FromPlayer(cLuxPlayer *apPlayer)
 	for(size_t i=0; i<mvHeadPosAdds.Size(); ++i)
 		mvHeadPosAdds[i] = apPlayer->mvHeadPosAdds[i];
 
+	msCamAttachedObject = apPlayer->GetCameraAttachedTo();
+
 	///////////////////
 	// Terror Enemies
 	tLuxEnemySetIt it = apPlayer->m_setTerrorEnemies.begin();
@@ -1354,6 +1356,8 @@ void cLuxPlayer_SaveData::ToPlayer(cLuxMap *apMap,cLuxPlayer *apPlayer)
 		for(size_t i=0; i<apPlayer->mvHeadPosAdds.size(); ++i)
 			apPlayer->mvHeadPosAdds[i] = mvHeadPosAdds[i];
 	}
+
+	apPlayer->SetCameraAttachedTo(msCamAttachedObject);
 	
 	///////////////////
 	// Terror Enemies
@@ -1449,6 +1453,8 @@ kSerializeVar(mvCamAnimPos, eSerializeType_Vector3f)
 kSerializeVar(mvCamAnimPosGoal, eSerializeType_Vector3f)
 kSerializeVar(mfCamAnimPosSpeedMul, eSerializeType_Float32)
 kSerializeVar(mfCamAnimPosMaxSpeed, eSerializeType_Float32)
+
+kSerializeVar(msCamAttachedObject, eSerializeType_String)
 
 kSerializeVar(mvHeadSpinSpeed, eSerializeType_Vector2f)
 

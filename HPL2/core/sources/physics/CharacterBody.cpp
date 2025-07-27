@@ -342,6 +342,7 @@ namespace hpl {
 
 		mpCamera = NULL;
 		mvCameraPosAdd = cVector3f(0,0,0);
+		mbCameraAttached = true;
 
 		mpEntity = NULL;
 		m_mtxEntityOffset = cMatrixf::Identity;
@@ -1995,6 +1996,7 @@ namespace hpl {
 
 	void iCharacterBody::UpdateCamera()
 	{
+		if(!mbCameraAttached) return;
 		if(mpCamera==NULL) return;
 
 		//////////////////
