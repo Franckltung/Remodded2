@@ -120,6 +120,8 @@ public:
 
 	tString msExtraLangFilePrefix;
 	tString msDefaultExtraLanguage;
+
+	tString msInitCfgFile;
 };
 
 typedef std::vector<cLuxCustomStorySettings*> tCustomStorySettingsVec;

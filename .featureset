@@ -1,6 +1,10 @@
 //Add new Remodded-specific features as they get added. To keep track.
 
-[THIS IS IN ADDITION TO NEARLY ALL THE FUNCTIONALITY OF AMNESIA:TDD 1.5]
+[THIS IS IN ADDITION TO NEARLY ALL THE FUNCTIONALITY OF AMNESIA:TDD 1.5, ANYTHING THAT'S DIFFERENT WILL BE NOTED HERE:]
+ᒪ Skybox cubemaps are not fully confirmed to be fixed, but they should be. (i couldn't notice any difference during testing)
+ᒪ ShowLocalCustomStoriesOnly doesn't really work in 1.5 anyway, and its redundant here, so now it does extra nothing.
+ᒪ Custom story full conversions have been changed to actually launch the full conversion. (noticed some weird behavior in vanilla from my testing.)
+ᒪ Whatever the changes to slime areas were, are not present here.
 
 ----------------------------
 ----  SCRIPT FUNCTIONS  ----

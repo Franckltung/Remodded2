@@ -83,6 +83,7 @@ namespace hpl {
 
         static tString GetDataDir();
 		static tWString GetWorkingDir();
+		static tWString GetExecutableName();
 		
 
 		//////////////////////////////////////////////////////
@@ -135,6 +136,8 @@ namespace hpl {
 		static bool RunProgram( const tWString& asPath, const tWString& asParams );
 
 		static bool OpenFileOnShell(const tWString& asPath);
+
+		static tWString GetLastSystemError();
 
 		//////////////////////////////////////////////////////
 		////////// THREADING /////////////////////////////////

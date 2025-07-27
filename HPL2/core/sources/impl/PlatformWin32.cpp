@@ -196,6 +196,8 @@ namespace hpl {
 		return _wfopen(asFileName.c_str(), asMode.c_str());
 	}
 
+
+
 	//-----------------------------------------------------------------------
 
 	static cDate DateFromGMTime(struct tm* apClock)
@@ -379,6 +381,18 @@ namespace hpl {
 		auto result = tWString(buffer);
 		free(buffer);
 		return result;
+	}
+
+	//-----------------------------------------------------------------------
+
+	tWString cPlatform::GetExecutableName()
+	{
+		wchar_t filename[MAX_PATH];
+		DWORD size = GetModuleFileNameW(NULL, filename, MAX_PATH);
+		if (size)
+			return filename;
+		else
+			return _W("Amnesia_Remodded.exe");
 	}
 
 	//-----------------------------------------------------------------------
@@ -648,7 +662,8 @@ namespace hpl {
 		si.cb= sizeof(si);
 		si.wShowWindow = SW_SHOW;
 
-		tWString sCommandLine = asPath + _W(" ") + asParams;
+		tWString sCommandLine = _W("\"") + asPath + _W("\" ") + asParams;
+		Log("Launching program with the following command line: %s\n", cString::To8Char(sCommandLine).c_str());
 
 		bool result = CreateProcess(asPath.c_str(), (LPWSTR)sCommandLine.c_str(), NULL, NULL, false, 0, NULL, NULL, &si, &pi) == TRUE;
 
@@ -681,6 +696,15 @@ namespace hpl {
 			cPlatform::CreateMessageBox(eMsgBoxType_Error, _W("Error"), sMessage.c_str());
 
 		return bRet;
+	}
+
+	//-----------------------------------------------------------------------
+
+	tWString cPlatform::GetLastSystemError()
+	{
+		wchar_t sTempString[2048];
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, GetLastError(), 0, sTempString, 2048, NULL);
+		return sTempString;
 	}
 
 	//-----------------------------------------------------------------------
