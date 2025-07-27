@@ -302,6 +302,8 @@ public:
 	void FromPlayerHands(cLuxPlayerHands *apPlayerHands);
 	void ToPlayerHands(cLuxMap *apMap, cLuxPlayerHands *apPlayerHands);
 	
+	tString msCurrentHands;
+
 	int mlState;
 	tString msCurrentHandObject;
 	tString msCurrentAnim;
@@ -385,12 +387,15 @@ public:
 	float mfCamAnimPosSpeedMul;
 	float mfCamAnimPosMaxSpeed;
 
+	tString msCamAttachedObject;
+
 	cVector2f mvHeadSpinSpeed;
 
 	bool mbScriptShowFocusIconAndCrossHair;
 
 	bool mbNoFallDamage;
 
+	tString msCurrentLantern;
 	bool mbLanternOn;
 	bool mbLanternDisabled;
 

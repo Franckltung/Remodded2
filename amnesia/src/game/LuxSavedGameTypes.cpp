@@ -924,6 +924,7 @@ kEndSerialize()
 
 void cLuxPlayerHands_SaveData::FromPlayerHands(cLuxPlayerHands *apPlayerHands)
 {
+	msCurrentHands = apPlayerHands->GetCurrentHands();
 	mlState = apPlayerHands->mHandState;
 	
 	if(apPlayerHands->mpCurrentHandObject)
@@ -944,6 +945,7 @@ void cLuxPlayerHands_SaveData::FromPlayerHands(cLuxPlayerHands *apPlayerHands)
 
 void cLuxPlayerHands_SaveData::ToPlayerHands(cLuxMap *apMap, cLuxPlayerHands *apPlayerHands)
 {
+	apPlayerHands->SetCurrentHands(msCurrentHands);
 	apPlayerHands->mHandState = (eLuxHandsState)mlState;
 
 	if(msCurrentHandObject != "")
@@ -974,6 +976,8 @@ void cLuxPlayerHands_SaveData::ToPlayerHands(cLuxMap *apMap, cLuxPlayerHands *ap
 //-----------------------------------------------------------------------
 
 kBeginSerializeBase(cLuxPlayerHands_SaveData)
+kSerializeVar(msCurrentHands, eSerializeType_String)
+
 kSerializeVar(mlState, eSerializeType_Int32)
 kSerializeVar(msCurrentHandObject, eSerializeType_String)
 kSerializeVar(msCurrentAnim, eSerializeType_String)
@@ -1043,6 +1047,7 @@ void cLuxPlayer_SaveData::FromPlayer(cLuxPlayer *apPlayer)
 
 	mvHeadSpinSpeed = apPlayer->mvHeadSpinSpeed;
 
+	msCurrentLantern = apPlayer->GetHelperLantern()->GetCurrentLantern();
 	mbLanternOn = apPlayer->GetHelperLantern()->IsActive();
 	mbLanternDisabled = apPlayer->GetHelperLantern()->GetDisabled();
 
@@ -1167,6 +1172,8 @@ void cLuxPlayer_SaveData::FromPlayer(cLuxPlayer *apPlayer)
 	for(size_t i=0; i<mvHeadPosAdds.Size(); ++i)
 		mvHeadPosAdds[i] = apPlayer->mvHeadPosAdds[i];
 
+	msCamAttachedObject = apPlayer->GetCameraAttachedTo();
+
 	///////////////////
 	// Terror Enemies
 	tLuxEnemySetIt it = apPlayer->m_setTerrorEnemies.begin();
@@ -1219,6 +1226,7 @@ void cLuxPlayer_SaveData::ToPlayer(cLuxMap *apMap,cLuxPlayer *apPlayer)
 
 	apPlayer->mvHeadSpinSpeed = mvHeadSpinSpeed;
 
+	apPlayer->GetHelperLantern()->SetCurrentLantern(msCurrentLantern);
 	apPlayer->GetHelperLantern()->SetActive(mbLanternOn, false, false);
 	apPlayer->GetHelperLantern()->SetDisabled(mbLanternDisabled);
 
@@ -1348,6 +1356,8 @@ void cLuxPlayer_SaveData::ToPlayer(cLuxMap *apMap,cLuxPlayer *apPlayer)
 		for(size_t i=0; i<apPlayer->mvHeadPosAdds.size(); ++i)
 			apPlayer->mvHeadPosAdds[i] = mvHeadPosAdds[i];
 	}
+
+	apPlayer->SetCameraAttachedTo(msCamAttachedObject);
 	
 	///////////////////
 	// Terror Enemies
@@ -1444,12 +1454,15 @@ kSerializeVar(mvCamAnimPosGoal, eSerializeType_Vector3f)
 kSerializeVar(mfCamAnimPosSpeedMul, eSerializeType_Float32)
 kSerializeVar(mfCamAnimPosMaxSpeed, eSerializeType_Float32)
 
+kSerializeVar(msCamAttachedObject, eSerializeType_String)
+
 kSerializeVar(mvHeadSpinSpeed, eSerializeType_Vector2f)
 
 kSerializeVar(mbNoFallDamage, eSerializeType_Bool)
 
 kSerializeVar(mbScriptShowFocusIconAndCrossHair, eSerializeType_Bool)
 
+kSerializeVar(msCurrentLantern, eSerializeType_String)
 kSerializeVar(mbLanternOn, eSerializeType_Bool)
 kSerializeVar(mbLanternDisabled, eSerializeType_Bool)
 

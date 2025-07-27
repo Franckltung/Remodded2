@@ -532,6 +532,20 @@ namespace hpl {
 		mbFrustumUpdated = true;
 	}
 
+	void cCamera::SetMatrix(const cMatrixf& a_mtx)
+	{
+		cVector3f fRot = cMath::MatrixToEulerAngles(a_mtx, eEulerRotationOrder_XYZ);
+		SetRoll(fRot.x);
+		SetPitch(fRot.z);
+		SetYaw(fRot.y);
+		mvPosition = a_mtx.GetTranslation();
+
+		mNode.SetMatrix(a_mtx);
+
+		mbViewUpdated = true;
+		mbFrustumUpdated = true;
+	}
+
 	//-----------------------------------------------------------------------
 
 	

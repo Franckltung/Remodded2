@@ -105,6 +105,8 @@ public:
 	const tString& GetCurrentAnimation(){ return msCurrentAnim; }
 	cMeshEntity *GetHandsEntity(){ return mpHandsEntity;}
 
+	void SetCurrentHands(const tString& asHands);
+	const tString& GetCurrentHands() { return msCurrentHands; }
     
 public://Only used by hand object
 	float mfHandObjectChargeCount;
@@ -126,6 +128,9 @@ private:
 	iLuxHandObject* LoadHandObject(const tString& asName);
 	iLuxHandObject* CreateObjectFromType(const tString& asName, eLuxHandObjectType aType);
 	eLuxHandObjectType ToHandObjectType(const tString& asType);
+
+	tString msNextHands;
+	tString msCurrentHands;
 
 	cMeshEntity *mpHandsEntity;
 	cMesh *mpHandsMesh;

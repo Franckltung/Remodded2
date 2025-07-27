@@ -1,5 +1,11 @@
 //Add new Remodded-specific features as they get added. To keep track.
 
+[THIS IS IN ADDITION TO NEARLY ALL THE FUNCTIONALITY OF AMNESIA:TDD 1.5, ANYTHING THAT'S DIFFERENT WILL BE NOTED HERE:]
+ᒪ Skybox cubemaps are not fully confirmed to be fixed, but they should be. (i couldn't notice any difference during testing)
+ᒪ ShowLocalCustomStoriesOnly doesn't really work in 1.5 anyway, and its redundant here, so now it does extra nothing.
+ᒪ Custom story full conversions have been changed to actually launch the full conversion. (noticed some weird behavior in vanilla from my testing.)
+ᒪ Whatever the changes to slime areas were, are not present here.
+
 ----------------------------
 ----  SCRIPT FUNCTIONS  ----
 ----------------------------
@@ -16,7 +22,7 @@
 + RemoveDiaries(string& asNameAndTextEntry)
 + RemoveAllDiaries()
 / changed AddDiary to return the exact entry index it adds.
-/ int AddDiary(string &in asNameAndTextEntry, string &in asImage)
+ᒪ int AddDiary(string &in asNameAndTextEntry, string &in asImage)
 
 + bool CheckEntityLineOfSight(string &in asEntity1, string &in asEntity1, bool abCheckShadows)
 + float GetLightLevelAtPos(float afX, float afY, float afZ, float afRadius)
@@ -24,4 +30,44 @@
 + bool GetLampLit(string &in asName)
 + DeleteEntity(string &in asName) [Supports wildcards * ]
 
-/ custom entity crosshairs now save
++ SetCurrentLantern(string &in asLantern)
++ const string& GetCurrentLantern()
++ SetCurrentHands(string &in asHands)
++ const string& GetCurrentHands()
+
++ float GetEntityRotationX(string &in asName, int body)
++ float GetEntityRotationY(string &in asName, int body)
++ float GetEntityRotationZ(string &in asName, int body)
+
++ SetEntityRotation(string &in asName, float afrX, float afrY, float afrZ, int body)
++ SetEntityRotationAndPosition(string &in asName, float afrX, float afrY, float afrZ, float afpX, float afpY, float afpZ, int body)
+
++ AttachPlayerCameraToEntity(string &in asEntity)
++ DetachPlayerCamera() [Legacy, does the same as AttachPlayerCameraToEntity("");]
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+-----------------------------
+----   ENGINE FEATURES   ----
+-----------------------------
+
++ Option toggle for OpenAL Soft HRTF (only really to turn it off, engine doesn't properly support it.)
++ custom entity crosshairs now save
+
++ Lamp->Light connections now support "Multiply" connection type
+
++ Multiple lanterns support.
++ Multiple hands support.
+
++ New Lantern item type variables
+ᒪ "LanternUseHandObject" type bool
+ᒪ "LanternHandObject" type string
+
++ New HandObject file (.ho) variables, exclusive to LightSource hand object type
+ᒪ "OnSound" type string
+ᒪ "OffSound" type string
+ᒪ "NoOilSound" type string
+ᒪ "DisabledSound" type string [Seems to be unused, in-engine.]
+ᒪ "FuelDrainSpeed" type float
+|
+ᒪ They will default to their corresponding values inside game.cfg if not set.

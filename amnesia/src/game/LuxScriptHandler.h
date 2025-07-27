@@ -248,6 +248,10 @@ private:
 	 * Syntax: MyFun(bool abLit)
 	 */
 	static void __stdcall SetLanternLitCallback(string &asCallback);
+	static void __stdcall SetCurrentLantern(string &asLantern);
+	static const string& __stdcall GetCurrentLantern();
+	static void __stdcall SetCurrentHands(string& asHands);
+	static const string& __stdcall GetCurrentHands();
 	/**
 	* if time is <=0 then the life time is calculated based on string length.
 	*/
@@ -357,6 +361,13 @@ private:
 	static float __stdcall GetEntityPosX(string& asName);
 	static float __stdcall GetEntityPosY(string& asName);
 	static float __stdcall GetEntityPosZ(string& asName);
+
+	static float __stdcall GetEntityRotationX(string& asName, int body);
+	static float __stdcall GetEntityRotationY(string& asName, int body);
+	static float __stdcall GetEntityRotationZ(string& asName, int body);
+
+	static void __stdcall SetEntityRotation(string& asName, float afX, float afY, float afZ, int body);
+	static void __stdcall SetEntityRotationAndPosition(string& asName, float afrX, float afrY, float afrZ, float afpX, float afpY, float afpZ, int body);
 	/**
 	* CrossHair can be: Default (uses default), Grab, Push, Ignite, Pick, LevelDoor, Ladder
 	 */
@@ -403,6 +414,8 @@ private:
 	static void __stdcall AttachPropToProp(string& asPropName, string& asAttachName, string& asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
 	static void __stdcall AddAttachedPropToProp(string& asPropName, string& asAttachName, string& asAttachFile, float afPosX, float afPosY, float afPosZ, float afRotX, float afRotY, float afRotZ);
 	static void __stdcall RemoveAttachedPropFromProp(string& asPropName, string& asAttachName);
+	static void __stdcall AttachPlayerCameraToEntity(string& asPropName);
+	static void __stdcall DetachPlayerCamera();
 
 	
 	static void __stdcall SetLampLit(string& asName, bool abLit, bool abEffects);

@@ -170,6 +170,7 @@ namespace hpl {
 		void SetUp(const cVector3f& avX);
 
 		void SetRotationMatrix(const cMatrixf& a_mtxRot);
+		void SetMatrix(const cMatrixf& a_mtx);
 
 		cVector3f GetForward();
 		cVector3f GetRight();

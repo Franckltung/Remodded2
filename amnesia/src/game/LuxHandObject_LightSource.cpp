@@ -24,6 +24,7 @@
 #include "LuxPlayerHands.h"
 #include "LuxMapHelper.h"
 #include "LuxHelpFuncs.h"
+#include "LuxPlayerHelpers.h"
 
 //////////////////////////////////////////////////////////////////////////
 // CONSTRUCTORS
@@ -35,6 +36,7 @@ cLuxHandObject_LightSource::cLuxHandObject_LightSource(const tString& asName, cL
 {
 	mfSwayAngle =0;
 	mfSwayVel =0;
+	mType = eLuxHandObjectType_LightSource;
 }
 
 cLuxHandObject_LightSource::~cLuxHandObject_LightSource()
@@ -71,6 +73,16 @@ void cLuxHandObject_LightSource::LoadImplementedVars(cXmlElement *apVarsElem)
 	mfSwayCameraRollMul = apVarsElem->GetAttributeFloat("SwayCameraRollMul", 0);
 
 	msSkipSwaySubMesh = apVarsElem->GetAttributeString("SkipSwaySubMesh", "");
+
+	///////////////////////
+	// Lantern attributes
+
+	msOnSound = apVarsElem->GetAttributeString("OnSound", gpBase->mpPlayer->GetHelperLantern()->GetDefaultOnSound());
+	msOffSound = apVarsElem->GetAttributeString("OffSound", gpBase->mpPlayer->GetHelperLantern()->GetDefaultOffSound());
+	msNoOilSound = apVarsElem->GetAttributeString("NoOilSound", gpBase->mpPlayer->GetHelperLantern()->GetDefaultNoOilSound());
+	msDisabledSound = apVarsElem->GetAttributeString("DisabledSound", gpBase->mpPlayer->GetHelperLantern()->GetDefaultDisabledSound());
+
+	mfFuelDrainSpeed = apVarsElem->GetAttributeFloat("FuelDrainSpeed", gpBase->mpPlayer->GetHelperLantern()->GetDefaultFuelDrainSpeed());
 }
 
 //-----------------------------------------------------------------------

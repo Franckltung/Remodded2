@@ -218,7 +218,7 @@ void cLuxMainMenu_CustomStory::SetCurrentStory(cLuxCustomStorySettings* apStory)
         cWidgetButton* pButton = mvButtons[i];
 
 		// If button is not affected by the presence of save files or there are save files, the button will be active
-		bool bButtonActive = (vButtonAffectedBySave[i]==false || bSaveFileExists);
+		bool bButtonActive = (vButtonAffectedBySave[i]==false || (bSaveFileExists && mpStory->msInitCfgFile == ""));
 
 		pButton->SetEnabled(bButtonActive);
 		pButton->SetVisible(bButtonActive);
@@ -425,7 +425,9 @@ void cLuxMainMenu_CustomStoryList::PopulateStoryList()
 
 		if(pStory->CreateFromPath(sStoryPath))
 		{
-			cWidgetItem* pItem = mpLBStories->AddItem(pStory->msName);
+			tWString sName = pStory->msName;
+			if (pStory->msInitCfgFile != "") sName += _W(" (Total Conversion)");
+			cWidgetItem* pItem = mpLBStories->AddItem(sName);
 			pItem->SetUserData(pStory);
 		}
 		else

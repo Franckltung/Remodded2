@@ -405,17 +405,30 @@ public:
 
 	iLight* GetLight(){ return mpLight;}
 
+	void SetCurrentLantern(const tString& asLantern) { msCurrentLantern = asLantern; }
+	const tString& GetCurrentLantern() { return msCurrentLantern; }
+
+	tString& GetDefaultOnSound() { return msDefaultTurnOnSound; }
+	tString& GetDefaultOffSound() { return msDefaultTurnOffSound; }
+	tString& GetDefaultNoOilSound() { return msDefaultOutOfOilSound; }
+	tString& GetDefaultDisabledSound() { return msDefaultDisabledSound; }
+
+	float GetDefaultFuelDrainSpeed() { return mfDefaultFuelDrainSpeed; }
+
 private:
+
+	tString msCurrentLantern;
+
 	cColor mDefaultColor;
 	float mfRadius;
 	tString msGobo;
 	bool mbCastShadows;
 	cVector3f mvLocalOffset;
-	tString msTurnOnSound;
-	tString msTurnOffSound;
-	tString msOutOfOilSound;
-	tString msDisabledSound;
-	float mfLowerOilSpeed;
+	tString msDefaultTurnOnSound;
+	tString msDefaultTurnOffSound;
+	tString msDefaultOutOfOilSound;
+	tString msDefaultDisabledSound;
+	float mfDefaultFuelDrainSpeed;
 	float mfFadeLightOilAmount;
 	
 	bool mbDisabled;

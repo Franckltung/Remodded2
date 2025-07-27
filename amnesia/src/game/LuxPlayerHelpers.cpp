@@ -42,7 +42,8 @@
 #include "LuxPlayerState.h"
 #include "LuxLoadScreenHandler.h"
 #include "LuxMainMenu.h"
-
+#include "LuxHandObject.h"
+#include "LuxHandObject_LightSource.h"
 
 //-----------------------------------------------------------------------
 
@@ -1636,18 +1637,20 @@ void cLuxPlayerSanity::UpdateLowSanity(float afTimeStep)
 
 cLuxPlayerLantern::cLuxPlayerLantern(cLuxPlayer *apPlayer) : iLuxPlayerHelper(apPlayer, "LuxPlayerLantern")
 {
+	msCurrentLantern = "lantern";
+
 	mDefaultColor = gpBase->mpGameCfg->GetColor("Player_Lantern","Color",cColor(0));
 	mfRadius = gpBase->mpGameCfg->GetFloat("Player_Lantern","Radius",0);
 	msGobo = gpBase->mpGameCfg->GetString("Player_Lantern","Gobo","");
 	mvLocalOffset = gpBase->mpGameCfg->GetVector3f("Player_Lantern","LocalOffset",0);
 	mbCastShadows = gpBase->mpGameCfg->GetBool("Player_Lantern","CastShadows",false);
-	mfLowerOilSpeed = gpBase->mpGameCfg->GetFloat("Player_Lantern","LowerOilSpeed",0);
+	mfDefaultFuelDrainSpeed = gpBase->mpGameCfg->GetFloat("Player_Lantern","LowerOilSpeed",0);
 	mfFadeLightOilAmount = gpBase->mpGameCfg->GetFloat("Player_Lantern","FadeLightOilAmount",0);
 
-	msOutOfOilSound = gpBase->mpGameCfg->GetString("Player_Lantern","OutOfOilSound","");
-	msDisabledSound = gpBase->mpGameCfg->GetString("Player_Lantern","DisabledSound","");
-	msTurnOnSound = gpBase->mpGameCfg->GetString("Player_Lantern","TurnOnSound","");
-	msTurnOffSound = gpBase->mpGameCfg->GetString("Player_Lantern","TurnOffSound","");
+	msDefaultOutOfOilSound = gpBase->mpGameCfg->GetString("Player_Lantern","OutOfOilSound","");
+	msDefaultDisabledSound = gpBase->mpGameCfg->GetString("Player_Lantern","DisabledSound","");
+	msDefaultTurnOnSound = gpBase->mpGameCfg->GetString("Player_Lantern","TurnOnSound","");
+	msDefaultTurnOffSound = gpBase->mpGameCfg->GetString("Player_Lantern","TurnOffSound","");
 
 	Reset();
 }
@@ -1680,6 +1683,10 @@ void cLuxPlayerLantern::Update(float afTimeStep)
 	{
 		return;
 	}
+
+	iLuxHandObject* pHandObject = mpPlayer->GetHands()->GetCurrentHandObject();
+	if(pHandObject == NULL || pHandObject->GetType() != eLuxHandObjectType_LightSource) return;
+	cLuxHandObject_LightSource* pLantern = (cLuxHandObject_LightSource*)pHandObject;
 	
 	////////////////////////////
 	// Fade in light
@@ -1708,11 +1715,11 @@ void cLuxPlayerLantern::Update(float afTimeStep)
 	if(mbActive && gpBase->mpEffectHandler->GetEmotionFlash()->IsActive()==false)
 	{
 		float fOil = mpPlayer->GetLampOil();
-		fOil -= mfLowerOilSpeed *afTimeStep;
+		fOil -= pLantern->GetFuelDrainSpeed() *afTimeStep;
 		if(fOil <=0)
 		{
 			fOil = 0;
-			gpBase->mpHelpFuncs->PlayGuiSoundData(msOutOfOilSound, eSoundEntryType_Gui);
+			gpBase->mpHelpFuncs->PlayGuiSoundData(pLantern->GetNoOilSound(), eSoundEntryType_Gui);
 			SetActive(false, true);
 		}
 		mpPlayer->SetLampOil(fOil);
@@ -1798,6 +1805,16 @@ void cLuxPlayerLantern::SetActive(bool abX, bool abUseEffects, bool abCheckForOi
 	{
 		return;
 	}
+
+	/////////////////
+	// Set Lantern Attributes
+	iLuxHandObject* pHandObject = mpPlayer->GetHands()->GetHandObject(msCurrentLantern);
+	if (pHandObject->GetType() != eLuxHandObjectType_LightSource)
+	{
+		Error("Currently equipped Lantern \"%s\" is not a valid LightSource HandObject!", msCurrentLantern.c_str());
+		return;
+	}
+	cLuxHandObject_LightSource* pLantern = (cLuxHandObject_LightSource*)pHandObject;
 	
 	/////////////////
 	// Check if there is enough oil
@@ -1806,7 +1823,7 @@ void cLuxPlayerLantern::SetActive(bool abX, bool abUseEffects, bool abCheckForOi
 		if(abUseEffects)
 		{
 			gpBase->mpHintHandler->Add("LanternNoOil", kTranslate("Hints", "LanternNoOil"), 0);
-			gpBase->mpHelpFuncs->PlayGuiSoundData(msOutOfOilSound, eSoundEntryType_Gui);
+			gpBase->mpHelpFuncs->PlayGuiSoundData(pLantern->GetNoOilSound(), eSoundEntryType_Gui);
 		}
 		return;
 	}
@@ -1817,17 +1834,17 @@ void cLuxPlayerLantern::SetActive(bool abX, bool abUseEffects, bool abCheckForOi
 	mbActive = abX;
 	if(mbActive)
 	{
-		if(abUseEffects) gpBase->mpHelpFuncs->PlayGuiSoundData(msTurnOnSound, eSoundEntryType_Gui);
+		if(abUseEffects) gpBase->mpHelpFuncs->PlayGuiSoundData(pLantern->GetOnSound(), eSoundEntryType_Gui);
 	}
 	else
 	{
-		if(abUseEffects) gpBase->mpHelpFuncs->PlayGuiSoundData(msTurnOffSound, eSoundEntryType_Gui);
+		if(abUseEffects) gpBase->mpHelpFuncs->PlayGuiSoundData(pLantern->GetOffSound(), eSoundEntryType_Gui);
 	}
 
 	/////////////////
 	// Hand
 	if(mbActive)
-		mpPlayer->GetHands()->SetActiveHandObject("lantern");
+		mpPlayer->GetHands()->SetActiveHandObject(msCurrentLantern);
 	else
 		mpPlayer->GetHands()->SetActiveHandObject("");
 

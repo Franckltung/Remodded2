@@ -316,6 +316,8 @@ namespace hpl {
 		cVector3f GetCameraPosAdd();
 		void SetCameraSmoothPosNum(int alNum){ mlCameraSmoothPosNum = alNum;}
 		int GetCameraSmoothPosNum(){ return mlCameraSmoothPosNum;}
+		void SetCameraAttached(bool abX) { mbCameraAttached = abX; }
+		bool GetCameraAttached() { return mbCameraAttached; }
 
 		void SetEntity(iEntity3D *apEntity);
 		iEntity3D* GetEntity();
@@ -459,6 +461,7 @@ namespace hpl {
 		cVector3f mvCameraPosAdd;
 		int mlCameraSmoothPosNum;
 		tVector3fList mlstCameraPos;
+		bool mbCameraAttached;
 
 		iEntity3D *mpEntity;
 		cMatrixf m_mtxEntityOffset;

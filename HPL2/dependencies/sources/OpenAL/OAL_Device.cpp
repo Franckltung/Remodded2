@@ -21,7 +21,6 @@
 #include "system/LowLevelSystem.h"
 #include <algorithm>
 #include <cstring>
-#include <vector>
 
 //-------------------------------------------------------------------------
 

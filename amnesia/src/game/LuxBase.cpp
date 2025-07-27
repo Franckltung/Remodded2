@@ -190,6 +190,7 @@ cLuxCustomStorySettings::cLuxCustomStorySettings(cLuxCustomStorySettings* apStor
 	msMapsFolder = apStory->msMapsFolder;
 	msStartMap = apStory->msStartMap;
 	msStartPos = apStory->msStartPos;
+	msInitCfgFile = apStory->msInitCfgFile;
 }
 
 cLuxCustomStorySettings::~cLuxCustomStorySettings()
@@ -230,13 +231,15 @@ bool cLuxCustomStorySettings::CreateFromPath(const tWString& asPath)
 
 		msStartMap = pCustomStoryCfg->GetString("Main", "StartMap", "");
 		msStartPos = pCustomStoryCfg->GetString("Main", "StartPos", "");
+		msInitCfgFile = pCustomStoryCfg->GetString("Main", "InitCfgFile", "");
 
 		tWString sStartMapPath = cString::To16Char(msMapsFolder) + cString::To16Char(msStartMap);
+		tWString sInitCfgFile = msStoryRootFolder + cString::To16Char(msInitCfgFile);
 
-		if(msStartMap=="" || 
-			cPlatform::FileExists(sStartMapPath)==false)
+		if ((msInitCfgFile == "" || cPlatform::FileExists(sInitCfgFile) == false) &&
+			(msStartMap == "" || cPlatform::FileExists(sStartMapPath) == false))
 		{
-			sErrorMsg = "could not find start map";
+			sErrorMsg = "could not find start map or init config file.";
 			bValid = false;
 		}
 
@@ -278,6 +281,21 @@ void cLuxCustomStorySettings::SetActive()
 bool cLuxCustomStorySettings::StartGame()
 {
 	gpBase->mpMainMenu->SetWindowActive(eLuxMainMenuWindow_LastEnum);
+	
+	if (msInitCfgFile != "")
+	{
+		tWString sInitCfgFile = msStoryRootFolder + cString::To16Char(msInitCfgFile);
+		tWString sExeFile = cPlatform::GetExecutableName();
+
+		if(!cPlatform::RunProgram(sExeFile, sInitCfgFile))
+		{
+			Error("Could not launch Full Conversion: %s\n", cString::To8Char(cPlatform::GetLastSystemError()).c_str());
+			return false;
+		}
+
+		gpBase->mpEngine->Exit();
+		return false;
+	}
 
 	gpBase->mpInputHandler->ChangeState(eLuxInputState_Game);
 

@@ -266,6 +266,9 @@ public:
 
 	static eLuxFocusIconStyle StringToFocusIconStyle(const tString& asX);
 	static tString FocusIconStyleToString(eLuxFocusIconStyle aX);
+
+	void SetCameraAttachedTo(const tString& asEntity);
+	const tString& GetCameraAttachedTo() { return msCamAttachedObject; }
 	
 	////////////////////
 	// Free cam
@@ -298,6 +301,8 @@ private:
 
 	void UpdateHeadPosAdd(float afTimeStep);
 	void UpdateCamera(float afTimeStep);
+	void UpdateCameraBody(float afTimeStep);
+	void UpdateCameraAttached(float afTimeStep);
 	void UpdateTerror(float afTimeStep);
 	void UpdateLean(float afTimeStep);
 	void UpdateFocusText(float afTimeStep);
@@ -405,6 +410,9 @@ private:
 	std::list<float> mlstPrevSpeeds;
 	int mlMaxPrevSpeeds;
 	float mfAvgSpeed;
+
+	bool mbCamAttached;
+	tString msCamAttachedObject;
 
 	///////////////////////////////
 	// Data

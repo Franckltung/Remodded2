@@ -34,6 +34,7 @@
 cLuxHandObject_Melee::cLuxHandObject_Melee(const tString& asName, cLuxPlayerHands *apHands) : iLuxHandObject(asName, apHands)
 {
 	mpCollideShape = NULL;
+	mType = eLuxHandObjectType_Melee;
 }
 
 cLuxHandObject_Melee::~cLuxHandObject_Melee()

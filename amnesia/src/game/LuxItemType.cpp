@@ -270,6 +270,12 @@ bool cLuxItemType_Lantern::BeforeAddItem(cLuxInventory_Item *apItem)
 void cLuxItemType_Lantern::OnUse(cLuxInventory_Item *apItem, int alSlotIndex)
 {
 	cLuxPlayerLantern *pLantern = gpBase->mpPlayer->GetHelperLantern();
+
+	if (apItem->GetStringVal() == "true")
+	{
+		pLantern->SetCurrentLantern(apItem->GetExtraStringVal());
+	}
+
 	pLantern->SetActive(!pLantern->IsActive(), true);
 }
 

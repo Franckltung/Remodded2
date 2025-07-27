@@ -50,6 +50,8 @@ cLuxPlayerHands::cLuxPlayerHands(cLuxPlayer *apPlayer) : iLuxPlayerHelper(apPlay
 
 	mpHandsMesh = NULL;
 
+	msCurrentHands = "hands";
+	msNextHands = msCurrentHands;
 }
 
 cLuxPlayerHands::~cLuxPlayerHands()
@@ -192,6 +194,9 @@ void cLuxPlayerHands::Update(float afTimeStep)
 				HideAllHandObjects();
 				mpHandsEntity->SetVisible(false);
 				mHandState = eLuxHandsState_Disabled;
+
+				if (msNextHands != msCurrentHands)
+					SetCurrentHands(msNextHands);
 			}
 		}
 	}	
@@ -430,6 +435,23 @@ void cLuxPlayerHands::SetState(eLuxHandsState aState)
 	mHandState = aState; 
 }
 
+//-----------------------------------------------------------------------
+
+void cLuxPlayerHands::SetCurrentHands(const tString& asHands)
+{
+	if (asHands == msCurrentHands) return;
+	msNextHands = asHands;
+
+	if (mHandState != eLuxHandsState_Disabled)
+	{
+		SetCurrentHandObject(NULL);
+		return;
+	}
+
+	msCurrentHands = asHands;
+	DestroyWorldEntities(gpBase->mpMapHandler->GetCurrentMap());
+	if (mpCurrentHandObject == NULL) { CreateWorldEntities(gpBase->mpMapHandler->GetCurrentMap()); }
+}
 
 //-----------------------------------------------------------------------
 
@@ -455,7 +477,7 @@ void cLuxPlayerHands::CreateHandEntity(cLuxMap *apMap)
 {
 	if(mpHandsEntity) return;
 
-	apMap->GetWorld()->CreateEntity("PlayerHands", cMatrixf::Identity, "models/player/hands/hands.ent");
+	apMap->GetWorld()->CreateEntity("PlayerHands", cMatrixf::Identity, "models/player/hands/"+msCurrentHands+".ent");
 	mpHandsEntity->SetVisible(false);
 	mpHandsEntity->Stop();
 	mpHandsEntity->SetRenderFlagBit(eRenderableFlag_ShadowCaster,false);
@@ -631,7 +653,6 @@ iLuxHandObject* cLuxPlayerHands::LoadHandObject(const tString& asName)
 
 	//Load the settings
 	pObject->LoadSettings(pSettingsElem);
-
 
 	/////////////////////
 	// Add object

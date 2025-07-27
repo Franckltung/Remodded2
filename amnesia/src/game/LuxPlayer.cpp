@@ -1064,6 +1064,16 @@ tString cLuxPlayer::FocusIconStyleToString(eLuxFocusIconStyle aX)
 
 //-----------------------------------------------------------------------
 
+void cLuxPlayer::SetCameraAttachedTo(const tString& asEntity)
+{
+	msCamAttachedObject = asEntity;
+	if (asEntity == "") mbCamAttached = false;
+	else mbCamAttached = true;
+	mpCharBody->SetCameraAttached(!mbCamAttached);
+}
+
+//-----------------------------------------------------------------------
+
 //////////////////////////////////////////////////////////////////////////
 // Free cam
 //////////////////////////////////////////////////////////////////////////
@@ -1238,7 +1248,6 @@ void cLuxPlayer::UpdateCamera(float afTimeStep)
 {
 	if (mbFreeCameraActive) return;
 
-
 	////////////////
 	// FOV
 	if(mfFOVMul != mfFOVMulGoal)
@@ -1264,52 +1273,77 @@ void cLuxPlayer::UpdateCamera(float afTimeStep)
 		mpCamera->SetAspect(mfAspect*mfAspectMul);
 	}
 
+	if (mbCamAttached) UpdateCameraAttached(afTimeStep);
+	else UpdateCameraBody(afTimeStep);
+}
+
+void cLuxPlayer::UpdateCameraBody(float afTimeStep)
+{
 	bool bUpdatedRoll = false;
 	////////////////
 	// Roll
-	if(mfRoll != mfRollGoal)
+	if (mfRoll != mfRollGoal)
 	{
 		float fSpeed = (mfRollGoal - mfRoll) * mfRollSpeedMul;
-		if(fSpeed > mfRollMaxSpeed) fSpeed = mfRollMaxSpeed;
-		if(fSpeed < -mfRollMaxSpeed) fSpeed = -mfRollMaxSpeed;
-		
+		if (fSpeed > mfRollMaxSpeed) fSpeed = mfRollMaxSpeed;
+		if (fSpeed < -mfRollMaxSpeed) fSpeed = -mfRollMaxSpeed;
+
 		mfRoll += afTimeStep * fSpeed;
 
-		if(cMath::Abs(mfRollGoal - mfRoll) < 0.004f) mfRoll = mfRollGoal;
+		if (cMath::Abs(mfRollGoal - mfRoll) < 0.004f) mfRoll = mfRollGoal;
 
 		bUpdatedRoll = true;
 	}
 
 	////////////////
 	// Lean Roll
-	if(mfLeanRoll != mfLeanRollGoal)
+	if (mfLeanRoll != mfLeanRollGoal)
 	{
 		float fSpeed = (mfLeanRollGoal - mfLeanRoll) * mfLeanRollSpeedMul;
-		if(fSpeed > mfLeanRollMaxSpeed) fSpeed = mfLeanRollMaxSpeed;
-		if(fSpeed < -mfLeanRollMaxSpeed) fSpeed = -mfLeanRollMaxSpeed;
+		if (fSpeed > mfLeanRollMaxSpeed) fSpeed = mfLeanRollMaxSpeed;
+		if (fSpeed < -mfLeanRollMaxSpeed) fSpeed = -mfLeanRollMaxSpeed;
 
 		mfLeanRoll += afTimeStep * fSpeed;
 
-		if(cMath::Abs(mfLeanRollGoal - mfLeanRoll) < 0.004f) mfLeanRoll = mfLeanRollGoal;
+		if (cMath::Abs(mfLeanRollGoal - mfLeanRoll) < 0.004f) mfLeanRoll = mfLeanRollGoal;
 
 		bUpdatedRoll = true;
 	}
 
-	if(bUpdatedRoll)
+	if (bUpdatedRoll)
 		mpCamera->SetRoll(mfRoll + mfLeanRoll);
 
 	////////////////
 	// Cam pos
-	if(mvCamAnimPos != mvCamAnimPosGoal)
+	if (mvCamAnimPos != mvCamAnimPosGoal)
 	{
 		cVector3f vDir = mvCamAnimPosGoal - mvCamAnimPos;
 		float fSpeed = vDir.Length() * mfCamAnimPosSpeedMul;
-		if(fSpeed > mfCamAnimPosMaxSpeed) fSpeed = mfCamAnimPosMaxSpeed;
+		if (fSpeed > mfCamAnimPosMaxSpeed) fSpeed = mfCamAnimPosMaxSpeed;
 		vDir.Normalize();
 
-        mvCamAnimPos += vDir * fSpeed;
+		mvCamAnimPos += vDir * fSpeed;
+	}
+}
+
+void cLuxPlayer::UpdateCameraAttached(float afTimeStep)
+{
+	//THIS IS BASICALLY TO ATTACH THE CAMERA TO ANY ENTITY (DOES NOT STOP PLAYER MOVEMENT AND MESSES WITH THE PLAYER DIRECTION WHEN DONE)
+	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+	if (pMap == NULL)
+	{
+		Error("GetEntity(..) failed! No map was set!\n");
+		return;
 	}
 
+	iLuxEntity* pEntity = pMap->GetEntityByName(msCamAttachedObject);
+	if (pEntity == NULL)
+	{
+		Warning("Entity '%s' does not exist!\n", msCamAttachedObject.c_str());
+		return;
+	}
+
+	mpCamera->SetMatrix(pEntity->GetBody(0)->GetLocalMatrix());
 }
 
 //-----------------------------------------------------------------------

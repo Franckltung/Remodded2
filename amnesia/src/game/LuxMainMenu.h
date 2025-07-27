@@ -249,6 +249,9 @@ private:
 	tString msMusic;
 	tString msZoomSound;
 
+	cColor mpTopMenuFontColor;
+	cColor mpTopMenuFontHighlightColor;
+
 	cVector2f mvLogoSize;
 	cVector3f mvLogoPos;
 
