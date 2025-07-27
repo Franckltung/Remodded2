@@ -25,7 +25,16 @@
 + DeleteEntity(string &in asName) [Supports wildcards * ]
 
 + SetCurrentLantern(string &in asLantern)
-+ string& GetCurrentLantern()
++ const string& GetCurrentLantern()
++ SetCurrentHands(string &in asHands)
++ const string& GetCurrentHands()
+
++ float GetEntityRotationX(string &in asName, int body)
++ float GetEntityRotationY(string &in asName, int body)
++ float GetEntityRotationZ(string &in asName, int body)
+
++ SetEntityRotation(string &in asName, float afrX, float afrY, float afrZ, int body)
++ SetEntityRotationAndPosition(string &in asName, float afrX, float afrY, float afrZ, float afpX, float afpY, float afpZ, int body)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,6 +48,7 @@
 + Lamp->Light connections now support "Multiply" connection type
 
 + Multiple lanterns support.
++ Multiple hands support.
 
 + New Lantern item type variables
 ᒪ "LanternUseHandObject" type bool

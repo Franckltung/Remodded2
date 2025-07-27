@@ -302,6 +302,8 @@ public:
 	void FromPlayerHands(cLuxPlayerHands *apPlayerHands);
 	void ToPlayerHands(cLuxMap *apMap, cLuxPlayerHands *apPlayerHands);
 	
+	tString msCurrentHands;
+
 	int mlState;
 	tString msCurrentHandObject;
 	tString msCurrentAnim;
@@ -391,6 +393,7 @@ public:
 
 	bool mbNoFallDamage;
 
+	tString msCurrentLantern;
 	bool mbLanternOn;
 	bool mbLanternDisabled;
 
