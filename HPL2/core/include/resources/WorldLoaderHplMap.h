@@ -49,7 +49,8 @@ namespace hpl {
 #endif
 
 	// buzer: set it to some arbitrary large number so it won't interfere with other source mods
-	#define MAP_CACHE_FORMAT_VERSION			219676930
+	// nutboi: nvm i found out why. setting it to 11 i guess.
+	#define MAP_CACHE_FORMAT_VERSION			11
 	
 	//----------------------------------------
 	

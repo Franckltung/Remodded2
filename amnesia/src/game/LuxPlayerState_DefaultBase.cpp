@@ -108,6 +108,8 @@ void iLuxPlayerState_DefaultBase::Update(float afTimeStep)
 	gpBase->mpMapHelper->GetClosestEntity(	pCam->GetPosition(), pCam->GetForward(), 20.0f, 
 											&mfFocusDistance,&mpBodyInFocus,&mpEntityInFocus);
 	mvFocusPos = pCam->GetPosition() + pCam->GetForward()*mfFocusDistance;
+	//For some reason, the game cannot set the focus entity to AreaPlaceJar inside the cellar lab.
+	//I cannot find another similar bug, and i cannot pinpoint the cause, so just note it down in case it becomes relevant later.
 
 	AddOutlineObjects(mpBodyInFocus,mpEntityInFocus, mvFocusPos);
 

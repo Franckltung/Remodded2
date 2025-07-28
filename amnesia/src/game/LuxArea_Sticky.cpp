@@ -213,7 +213,8 @@ void cLuxArea_Sticky::DetachBody()
 	{
 		if (mpMap->RunFunc(msDetachFunction))
 		{
-			mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &mpAttachedBody->GetName());
+			mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &msName);
+			mpMap->GetScript()->SetPreparedFuncArg(1, (void*) &mpAttachedBody->GetName());
 			mpMap->GetScript()->RunPreparedFunc();
 		}
 	}
@@ -408,10 +409,10 @@ void cLuxArea_Sticky::UpdateCollision(float afTimeStep)
 			
 			if (mpMap->RunFunc(msAttachFunction))
 			{
-				mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &pBody->GetName());
+				mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &msName);
+				mpMap->GetScript()->SetPreparedFuncArg(1, (void*) &pBody->GetName());
 				mpMap->GetScript()->RunPreparedFunc();
 			}
-				
 
 			if(mbAllowAttachment==false) continue;
 		}

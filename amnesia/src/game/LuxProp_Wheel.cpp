@@ -601,7 +601,7 @@ void cLuxProp_Wheel::ChangeState(int alState, bool abEffects)
 	//Min
 	else if(mlCurrentState == -1)
 	{
-		sSound = msMinLimitSound;
+		sSound = this->msMinLimitSound;
 		ConnectionStateChange(-1);
 	}
 

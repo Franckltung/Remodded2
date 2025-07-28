@@ -365,7 +365,7 @@ void cLuxMap::OnLeave(bool abRunScript)
 {
 	if(abRunScript)
 	{
-		if(mpScript) mpScript->Run("OnLeave()");
+		if (mpScript && RunFunc("OnLeave")) mpScript->RunPreparedFunc();
 	}
 }
 

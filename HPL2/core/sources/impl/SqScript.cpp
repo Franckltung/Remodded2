@@ -55,8 +55,7 @@ namespace hpl {
 		mpScriptOutput = apScriptOutput;
 		mlHandle = alHandle;
 
-		mpContext = mpScriptEngine->CreateContext();
-		mpContext->SetExceptionCallback(asMETHOD(cSqScript, HandleException), this, asCALL_THISCALL);
+		mpMainContext = CreateScriptContext();
 
 		//Create a unique module name
 		msModuleName = "Module_"+cString::ToString(cMath::RandRectl(0,1000000))+
@@ -67,7 +66,14 @@ namespace hpl {
 	cSqScript::~cSqScript()
 	{
 		mpScriptEngine->DiscardModule(msModuleName.c_str());
-		mpContext->Release();
+		mpMainContext->Release();
+
+		while (!mvContextPool.empty())
+		{
+			asIScriptContext* pContext = mvContextPool.front();
+			STLFindAndRemove(mvContextPool, pContext);
+			pContext->Release();
+		}
 	}
 
 	//-----------------------------------------------------------------------
@@ -80,7 +86,6 @@ namespace hpl {
 
 	bool cSqScript::CreateFromFile(const tWString& asFileName, tString *apCompileMessages)
 	{
-		mbPreparedFunction = false;
 		SetFullPath(asFileName);
 
 		tWString sExt = cString::ToLowerCaseW(cString::GetFileExtW(asFileName));
@@ -213,11 +218,11 @@ namespace hpl {
 
 	bool cSqScript::Run(int alHandle)
 	{
-		mpContext->Prepare(alHandle);
+		mpMainContext->Prepare(alHandle);
 
 		/* Set all the args here */
 
-		mpContext->Execute();
+		mpMainContext->Execute();
 
 		return true;
 	}
@@ -226,74 +231,95 @@ namespace hpl {
 
 	bool cSqScript::PrepareRunFunc(const tString& asFuncName)
 	{
-		if (mbPreparedFunction) return false;
-
 		int alHandle = mpModule->GetFunctionIdByName(asFuncName.c_str());
 		if (alHandle == asNO_FUNCTION) {
 			return false;
 		}
 
-		int alResult = mpContext->Prepare(alHandle);
+		asIScriptContext* pContext = GetAvailableContext();
+
+		int alResult = pContext->Prepare(alHandle);
 		if (alResult == asCONTEXT_ACTIVE)
 		{
-			Error("Context active???");
+			Error("Context active???\n");
 			return false;
 		}
-		mbPreparedFunction = true;
 
 		return true;
 	}
 
 	//-----------------------------------------------------------------------
 
+	void cSqScript::CancelPreparedFunc()
+	{
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == NULL) return;
+
+		pContext->Unprepare();
+
+		ReleaseActiveContext();
+	}
+
+	//-----------------------------------------------------------------------
+
 	void cSqScript::SetPreparedFuncArg(int alArgID, void* aObj)
 	{
-		if(!mbPreparedFunction) return;
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == NULL) return;
 
-		mpContext->SetArgObject(alArgID, aObj);
+		pContext->SetArgObject(alArgID, aObj);
 	}
 
 	void cSqScript::SetPreparedFuncArg(int alArgID, tString asString)
 	{
-		if (!mbPreparedFunction) return;
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == NULL) return;
 
-		mpContext->SetArgObject(alArgID, &asString);
+		pContext->SetArgObject(alArgID, &asString);
 	}
 
 	void cSqScript::SetPreparedFuncArg(int alArgID, float afValue)
 	{
-		if (!mbPreparedFunction) return;
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == NULL) return;
 
-		mpContext->SetArgFloat(alArgID, afValue);
+		pContext->SetArgFloat(alArgID, afValue);
 	}
 
 	void cSqScript::SetPreparedFuncArg(int alArgID, bool abX)
 	{
-		if (!mbPreparedFunction) return;
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == NULL) return;
 
-		mpContext->SetArgByte(alArgID, abX);
+		pContext->SetArgByte(alArgID, abX);
 	}
 
 	void cSqScript::SetPreparedFuncArg(int alArgID, int alValue)
 	{
-		if (!mbPreparedFunction) return;
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == NULL) return;
 
-		mpContext->SetArgDWord(alArgID, alValue);
+		pContext->SetArgDWord(alArgID, alValue);
 	}
 
 	void cSqScript::SetPreparedFuncArg(int alArgID, double alValue)
 	{
-		if (!mbPreparedFunction) return;
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == NULL) return;
 
-		mpContext->SetArgDouble(alArgID, alValue);
+		pContext->SetArgDouble(alArgID, alValue);
 	}
 
 	//-----------------------------------------------------------------------
 
 	bool cSqScript::RunPreparedFunc()
 	{
-		mpContext->Execute();
-		mbPreparedFunction = false;
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == NULL) return false;
+
+		pContext->Execute();
+
+		ReleaseActiveContext();
 
 		return true;
 	}
@@ -312,12 +338,57 @@ namespace hpl {
 
 		Error("Script Exception: %s\n", ctx->GetExceptionString());
 		int function = ctx->GetExceptionFunction();
-		Log("Function: %s\n", mpModule->GetFunctionDescriptorById(function));
+		Log("Function: %s\n", mpModule->GetFunctionDescriptorById(function)->GetName());
 		Log("Module: %s\n", mpModule->GetName());
-		Log("Line: %s\n", ctx->GetExceptionLineNumber());
+		Log("Line: %s\n", cString::ToString(ctx->GetExceptionLineNumber()).c_str());
 	}
 
 	//-----------------------------------------------------------------------
+
+	//I fucking hate this but idk if we can upgrade angelscript without breaking everything
+
+	asIScriptContext* cSqScript::GetActiveContext()
+	{
+		if (mvContextPool.empty()) return mpMainContext;
+		else return mvContextPool.back();
+	}
+
+	//-----------------------------------------------------------------------
+
+	asIScriptContext* cSqScript::GetAvailableContext()
+	{
+		asIScriptContext* pContext = mpMainContext;
+		asEContextState aStatus = pContext->GetState();
+		size_t i = 0;
+		while (aStatus == asEXECUTION_ACTIVE || aStatus == asEXECUTION_SUSPENDED)
+		{
+			
+			if (mvContextPool.size() == i)
+				mvContextPool.push_back(CreateScriptContext());
+
+			pContext = mvContextPool.at(i);
+			aStatus = pContext->GetState();
+			i++;
+		}
+		return pContext;
+	}
+
+	void cSqScript::ReleaseActiveContext()
+	{
+		asIScriptContext* pContext = GetActiveContext();
+		if (pContext == mpMainContext) return;
+		STLFindAndRemove(mvContextPool, pContext);
+		pContext->Release();
+	}
+
+	//-----------------------------------------------------------------------
+
+	asIScriptContext* cSqScript::CreateScriptContext()
+	{
+		asIScriptContext* pContext = mpScriptEngine->CreateContext();
+		pContext->SetExceptionCallback(asMETHOD(cSqScript, HandleException), this, asCALL_THISCALL);
+		return pContext;
+	}
 
 	//-----------------------------------------------------------------------
 

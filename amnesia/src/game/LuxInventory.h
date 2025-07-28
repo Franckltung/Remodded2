@@ -221,7 +221,8 @@ public:
 	void RemoveCombineCallback(const tString& asName);
 	cLuxCombineItemsCallback* GetCombineCallback(const tString& asItemA, const tString& asItemB);
 
-	void RunScript(const tString& asCommand);
+	bool RunFunc(const tString& asFuncName);
+	iScript* GetScript() { return mpScript; }
 	bool RecompileScript(tString *apOutput);
 
 	void SetDescTextFromItem(cLuxInventory_Item *apItem);

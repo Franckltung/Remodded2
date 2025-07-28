@@ -354,9 +354,9 @@ void iLuxEntity::ConnectionStateChange(int alState)
 		{
 			if (mpMap->RunFunc(pConn->GetCallbackFunc()))
 			{
-				mpMap->GetScript()->SetPreparedFuncArg(0, (void*) &pConn->GetName());
-				mpMap->GetScript()->SetPreparedFuncArg(1, (void*) &msName);
-				mpMap->GetScript()->SetPreparedFuncArg(2, (void*) &pConn->GetEntity()->GetName());
+				mpMap->GetScript()->SetPreparedFuncArg(0, (void*)&pConn->GetName());
+				mpMap->GetScript()->SetPreparedFuncArg(1, (void*)&msName);
+				mpMap->GetScript()->SetPreparedFuncArg(2, (void*)&pConn->GetEntity()->GetName());
 				mpMap->GetScript()->SetPreparedFuncArg(3, lState);
 				mpMap->GetScript()->RunPreparedFunc();
 			}

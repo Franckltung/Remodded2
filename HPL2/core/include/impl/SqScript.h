@@ -41,6 +41,7 @@ namespace hpl {
 		bool Run(int alHandle);
 
 		bool PrepareRunFunc(const tString& asFuncName);
+		void CancelPreparedFunc();
 		bool RunPreparedFunc();
 
 		void SetPreparedFuncArg(int alArgID, void* aObj);
@@ -55,14 +56,18 @@ namespace hpl {
 		CScriptBuilder *mpScriptBuilder;
 		cScriptOutput *mpScriptOutput;
         
-		asIScriptContext *mpContext;
+		asIScriptContext *mpMainContext;
+		std::vector<asIScriptContext*> mvContextPool;
 		asIScriptModule *mpModule;
 		
 		int mlHandle;
 		tString msModuleName;
-		bool mbPreparedFunction;
 
 		void HandleException(asIScriptContext* ctx);
+		asIScriptContext* GetActiveContext();
+		asIScriptContext* GetAvailableContext();
+		void ReleaseActiveContext();
+		asIScriptContext* CreateScriptContext();
 	};
 };
 #endif // HPL_SCRIPT_H
