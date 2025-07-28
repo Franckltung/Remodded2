@@ -45,7 +45,8 @@ public:
 	void LoadScript();
 	bool RecompileScript(tString *apOutput);
 
-	void RunScript(const tString& asCommand);
+	bool RunFunc(const tString& asFuncName);
+	iScript* GetScript() { return mpScript; }
 
 	cLuxScriptVar* GetVar(const tString &asName);
 

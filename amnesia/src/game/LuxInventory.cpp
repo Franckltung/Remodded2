@@ -325,7 +325,12 @@ bool cLuxInventory_Slot::OnMouseUp(iWidget* apWidget, const cGuiMessageData& aDa
 			{
 				bool bAutoDestroy = pComb->mbAutoDestroy;
 				tString sCombName = pComb->msName;
-				mpInventory->RunScript(pComb->msFunction+ "(\"" + pComb->msItemA + "\", \"" + pComb->msItemB + "\")" );
+				if (mpInventory->RunFunc(pComb->msFunction))
+				{
+					mpInventory->GetScript()->SetPreparedFuncArg(0, (void*) &pComb->msItemA);
+					mpInventory->GetScript()->SetPreparedFuncArg(1, (void*) &pComb->msItemB);
+					mpInventory->GetScript()->RunPreparedFunc();
+				}
 				
 				if(bAutoDestroy) 
 				{
@@ -648,7 +653,7 @@ void cLuxInventory::OnGameStart()
 {
 	LoadScript();
 	
-	RunScript("OnGameStart()");
+	if (RunFunc("OnGameStart")) mpScript->RunPreparedFunc();
 }
 
 //-----------------------------------------------------------------------
@@ -1317,11 +1322,10 @@ cLuxCombineItemsCallback*  cLuxInventory::GetCombineCallback(const tString& asIt
 
 //-----------------------------------------------------------------------
 
-void cLuxInventory::RunScript(const tString& asCommand)
+bool cLuxInventory::RunFunc(const tString& asFuncName)
 {
-	if(mpScript==NULL) return;
-
-    mpScript->Run(asCommand);
+	if (mpScript == NULL) return false;
+	return mpScript->PrepareRunFunc(asFuncName);
 }
 
 bool cLuxInventory::RecompileScript(tString *apOutput)

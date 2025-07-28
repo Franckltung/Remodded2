@@ -61,7 +61,7 @@ void cLuxGlobalDataHandler::LoadAndInitGlobalScript()
 {
 	LoadScript();
 
-	RunScript("OnGameStart()");
+	if (RunFunc("OnGameStart")) mpScript->RunPreparedFunc();
 }
 
 //-----------------------------------------------------------------------
@@ -148,11 +148,10 @@ bool cLuxGlobalDataHandler::RecompileScript(tString *apOutput)
 
 //-----------------------------------------------------------------------
 
-void cLuxGlobalDataHandler::RunScript(const tString& asCommand)
+bool cLuxGlobalDataHandler::RunFunc(const tString& asFuncName)
 {
-	if(mpScript==NULL) return;
-
-	mpScript->Run(asCommand);
+	if (mpScript == NULL) return false;
+	return mpScript->PrepareRunFunc(asFuncName);
 }
 
 //-----------------------------------------------------------------------
