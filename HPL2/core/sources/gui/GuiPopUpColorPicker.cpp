@@ -1326,7 +1326,7 @@ namespace hpl {
 		mpFCurrentColor = mpSet->CreateWidgetFrame(vPos,50,true,mpWindow);
 		mpFCurrentColor->AddCallback(eGuiMessage_OnDraw, this, kGuiCallback(ColorFrame_OnDraw));
 		mpFCurrentColor->SetDrawBackground(true);
-		mpFPreviousColor->ChangeBackgroundForColorPicking();
+		mpFCurrentColor->ChangeBackgroundForColorPicking();
 		mpFCurrentColor->SetBackgroundZ(0.1f);
 		
 		vPos.x += 25;
