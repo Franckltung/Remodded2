@@ -248,6 +248,7 @@ namespace hpl {
 		eGuiSkinGfx_FrameCornerLD,
 
 		eGuiSkinGfx_FrameBackground,
+		eGuiSkinGfx_FrameBackgroundColorPicking,
 
 		///////////////////////////////////
 		// Check Box

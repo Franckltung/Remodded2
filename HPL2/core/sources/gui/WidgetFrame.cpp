@@ -98,6 +98,13 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	void cWidgetFrame::ChangeBackgroundForColorPicking()
+	{
+		mpGfxBackground = mpSkin->GetGfx(eGuiSkinGfx_FrameBackgroundColorPicking);
+	}
+
+	//-----------------------------------------------------------------------
+
 	void cWidgetFrame::OnAttachChild(iWidget* apChild)
 	{
 		mbScrollBarsNeedUpdate = true;

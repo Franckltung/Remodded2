@@ -117,6 +117,8 @@ iWidget* iEditorWindowLowerToolbar::AddGridControls()
 	mpBSnap->SetImage(pImg);
 	mpBSnap->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(InputCallback));
 	mpBSnap->SetToolTip(_W("Toggle grid snapping"));
+	mpBSnap->AddShortcut(eKeyModifier_None, eKey_X); //Hpl3
+	mpBSnap->AddShortcut(eKeyModifier_None, eKey_R); //Legacy
 	mpBSnap->SetToolTipEnabled(true);
 
 	// Height and sep.
@@ -395,8 +397,12 @@ bool iEditorWindowLowerToolbar::InputCallback(iWidget* apWidget, const cGuiMessa
 	}
 	///////////////////////////
 	// Grid snap button
-	else if(apWidget==mpBSnap)
-		pGrid->SetSnapToGrid(mpBSnap->IsPressed());
+	else if (apWidget == mpBSnap)
+	{
+		bool bSnap = pGrid->GetSnapToGrid();
+		pGrid->SetSnapToGrid(!bSnap);
+		mpBSnap->SetPressed(!bSnap, false);
+	}
 	///////////////////////////
 	// Ambient light button
 	else if(apWidget==mpBGlobalAmbientLight)

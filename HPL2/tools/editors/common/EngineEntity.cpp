@@ -398,11 +398,22 @@ void cEngineEntityLoadedMeshAggregate::Update()
 	iEditorWorld* pWorld = mpParent->GetEditorWorld();
 	bool bLightsVisible = pWorld->GetTypeVisibility(eEditorEntityType_Light);
 	bool bPSVisible = pWorld->GetTypeVisibility(eEditorEntityType_ParticleSystem);
+	bool bBillboardsVisible = pWorld->GetTypeVisibility(eEditorEntityType_Billboard);
 
-	for(int i=0;i<(int)mvLights.size();++i)
+	for (int i = 0;i < (int)mvLights.size();++i)
+	{
 		mvLights[i]->SetVisible(mbLightsActive && bLightsVisible && bActive && bVisible);
-	for(int i=0;i<(int)mvParticleSystems.size();++i)
+	}
+
+	for (int i = 0;i < (int)mvParticleSystems.size();++i)
+	{
 		mvParticleSystems[i]->SetVisible(mbParticleSystemsActive && bPSVisible && bActive && bVisible);
+	}
+
+	for (int i = 0;i < (int)mvBillboards.size();++i)
+	{
+		mvBillboards[i]->SetVisible(mbBillboardsActive && bBillboardsVisible && bActive && bVisible);
+	}
 }
 
 //-----------------------------------------------------------------------

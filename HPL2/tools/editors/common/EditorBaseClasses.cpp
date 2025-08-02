@@ -738,7 +738,9 @@ cEngine* iEditorBase::Init(cEngine* apEngine, const char* asName, const char* as
 #ifdef USERDIR_RESOURCES
 		mpEngine->GetResources()->LoadResourceDirsFile("resources.cfg", mpDirHandler->GetUserResourceDir());
 #else
-		mpEngine->GetResources()->LoadResourceDirsFile("resources.cfg");
+		tString customResources = mpMainConfig->GetString("Directories", "ResourcesOverride", "");
+		if (customResources != "") mpEngine->GetResources()->LoadResourceDirsFile(customResources);
+		else mpEngine->GetResources()->LoadResourceDirsFile("resources.cfg");
 #endif
 	}
 
