@@ -111,6 +111,7 @@ private:
 
 	// Saving
 	static void __stdcall AutoSave();
+	static void __stdcall ForceSave(string& asFile);
 	/**
 	 * Callback syntax: MyFunc(string &in asName, int alCount), Count is 0 on first checkpoint load!
 	 */
@@ -218,6 +219,8 @@ private:
 	static void __stdcall MovePlayerForward(float afAmount);
 
 	static void __stdcall SetPlayerPermaDeathSound(string& asSound);
+
+	static bool __stdcall GetHardmodeEnabled();
 
 	static void __stdcall SetSanityDrainDisabled(bool abX);
 	static void __stdcall GiveSanityBoost();

@@ -68,6 +68,7 @@ public:
 	void LoadGameFromFile(const tWString& asFile);
 
 	bool AutoSave();
+	bool ForceSave(const tWString& asFile);
 	bool AutoLoad(bool abResetProgressLogger);
 
 	bool SaveFileExists();

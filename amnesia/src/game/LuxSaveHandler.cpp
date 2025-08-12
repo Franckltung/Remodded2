@@ -269,6 +269,14 @@ bool cLuxSaveHandler::AutoSave()
 	return true;
 }
 
+//-----------------------------------------------------------------------
+
+bool cLuxSaveHandler::ForceSave(const tWString& asFile)
+{
+	SaveGameToFile(gpBase->msProfileSavePath + GetSaveName(asFile));
+
+	return true;
+}
 
 //-----------------------------------------------------------------------
 

@@ -418,6 +418,7 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void StartDemoEnd()",(void *)StartDemoEnd);
 
 	AddFunc("void AutoSave()", (void *)AutoSave);
+	AddFunc("void ForceSave(string &in asFile)", (void*)ForceSave);
 	AddFunc("void CheckPoint(string &in asName,string &in asStartPos ,string &in asCallback, string &in asDeathHintCat, string &in asDeathHintEntry)", (void *)CheckPoint);
 
 	AddFunc("void ChangeMap(string &in asMapName, string &in asStartPos, string &in asStartSound, string &in asEndSound)",(void *)ChangeMap);
@@ -496,6 +497,8 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("float GetPlayerYSpeed()",(void *)GetPlayerYSpeed);
 	AddFunc("void MovePlayerForward(float afAmount)",(void *)MovePlayerForward);
 	AddFunc("void SetPlayerPermaDeathSound(string &in asSound)",(void *)SetPlayerPermaDeathSound);
+
+	AddFunc("bool GetHardmodeEnabled()",(void *)GetHardmodeEnabled);
 
 	AddFunc("void SetSanityDrainDisabled(bool abX)",(void *)SetSanityDrainDisabled);
 	AddFunc("void GiveSanityBoost()",(void *)GiveSanityBoost);
@@ -1047,6 +1050,13 @@ void __stdcall cLuxScriptHandler::AutoSave()
 
 //-----------------------------------------------------------------------
 
+void __stdcall cLuxScriptHandler::ForceSave(string& asFile)
+{
+	gpBase->mpSaveHandler->ForceSave(cString::To16Char(asFile));
+}
+
+//-----------------------------------------------------------------------
+
 void __stdcall cLuxScriptHandler::CheckPoint(string& asName,string& asStartPos ,string& asCallback, string &asDeathHintCat, string &asDeathHintEntry)
 {
 	gpBase->mpMapHandler->GetCurrentMap()->SetCheckPoint(asName, asStartPos, asCallback);
@@ -1541,6 +1551,13 @@ void __stdcall cLuxScriptHandler::MovePlayerForward(float afAmount)
 void __stdcall cLuxScriptHandler::SetPlayerPermaDeathSound(string& asSound)
 {
 	gpBase->mpPlayer->SetCurrentPermaDeathSound(asSound);
+}
+
+//-----------------------------------------------------------------------
+
+bool __stdcall cLuxScriptHandler::GetHardmodeEnabled()
+{
+	return gpBase->mbHardMode;
 }
 
 //-----------------------------------------------------------------------
