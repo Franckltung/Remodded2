@@ -449,6 +449,8 @@ void cLuxPlayerHands::SetCurrentHands(const tString& asHands)
 	}
 
 	msCurrentHands = asHands;
+	if (!gpBase->mpMapHandler->MapIsLoaded()) return;
+
 	DestroyWorldEntities(gpBase->mpMapHandler->GetCurrentMap());
 	if (mpCurrentHandObject == NULL) { CreateWorldEntities(gpBase->mpMapHandler->GetCurrentMap()); }
 }
