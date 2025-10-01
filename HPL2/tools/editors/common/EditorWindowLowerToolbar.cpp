@@ -137,12 +137,23 @@ iWidget* iEditorWindowLowerToolbar::AddLightingControls()
 	mpBGlobalAmbientLight->SetToolTipEnabled(true);
 	mpBGlobalAmbientLight->SetToggleable(true);
 	mpBGlobalAmbientLight->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(InputCallback));
+	mpBGlobalAmbientLight->AddShortcut(eKeyModifier_None, eKey_A);
 
 	mpBGlobalPointLight = mpSet->CreateWidgetButton(cVector3f(0,21,0.1f), 19, _W("P"), mpHandleLighting);
 	mpBGlobalPointLight->SetToolTip(_W("Toggle global point light"));
 	mpBGlobalPointLight->SetToolTipEnabled(true);
 	mpBGlobalPointLight->SetToggleable(true);
 	mpBGlobalPointLight->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(InputCallback));
+	mpBGlobalPointLight->AddShortcut(eKeyModifier_None, eKey_P);
+
+	mpBIconsEnabled = mpSet->CreateWidgetButton(cVector3f(21, 0, 0.1f), 19, _W("I"), mpHandleLighting);
+	mpBIconsEnabled->SetToggleable(true);
+	mpBIconsEnabled->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(InputCallback));
+	mpBIconsEnabled->SetToolTip(_W("Toggle icon rendering"));
+	mpBIconsEnabled->AddShortcut(eKeyModifier_None, eKey_I);
+	mpBIconsEnabled->SetToolTipEnabled(true);
+	mpBIconsEnabled->SetPressed(true, false);
+	mpEditor->SetIconRenderingEnabled(true);
 
 	return mpHandleLighting;
 }
@@ -405,12 +416,28 @@ bool iEditorWindowLowerToolbar::InputCallback(iWidget* apWidget, const cGuiMessa
 	}
 	///////////////////////////
 	// Ambient light button
-	else if(apWidget==mpBGlobalAmbientLight)
-		mpEditor->GetEditorWorld()->SetGlobalAmbientLightEnabled(mpBGlobalAmbientLight->IsPressed());
+	else if (apWidget == mpBGlobalAmbientLight)
+	{
+		bool bLightEnabled = mpEditor->GetEditorWorld()->GetGlobalAmbientLightEnabled();
+		mpEditor->GetEditorWorld()->SetGlobalAmbientLightEnabled(!bLightEnabled);
+		mpBGlobalAmbientLight->SetPressed(!bLightEnabled, false);
+	}	
 	///////////////////////////
 	// Point light button
-	else if(apWidget==mpBGlobalPointLight)
-		mpEditor->GetEditorWorld()->SetGlobalPointLightEnabled(mpBGlobalPointLight->IsPressed());
+	else if (apWidget == mpBGlobalPointLight)
+	{
+		bool bLightEnabled = mpEditor->GetEditorWorld()->GetGlobalPointLightEnabled();
+		mpEditor->GetEditorWorld()->SetGlobalPointLightEnabled(!bLightEnabled);
+		mpBGlobalPointLight->SetPressed(!bLightEnabled, false);
+	}
+	///////////////////////////
+	// Icon toggle button
+	else if(apWidget==mpBIconsEnabled)
+	{
+		bool bIconsEnabled = mpEditor->GetIconRenderingEnabled();
+		mpEditor->SetIconRenderingEnabled(!bIconsEnabled);
+		mpBIconsEnabled->SetPressed(!bIconsEnabled, false);
+	}
 	///////////////////////////
 	// Camera lock to grid button
 	else if(apWidget==mpBCameraLockToGrid)

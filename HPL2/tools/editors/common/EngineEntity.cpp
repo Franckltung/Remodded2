@@ -400,9 +400,17 @@ void cEngineEntityLoadedMeshAggregate::Update()
 	bool bPSVisible = pWorld->GetTypeVisibility(eEditorEntityType_ParticleSystem);
 	bool bBillboardsVisible = pWorld->GetTypeVisibility(eEditorEntityType_Billboard);
 
+	bool bLit = mbLightsActive && bLightsVisible && bActive && bVisible;
 	for (int i = 0;i < (int)mvLights.size();++i)
 	{
-		mvLights[i]->SetVisible(mbLightsActive && bLightsVisible && bActive && bVisible);
+		mvLights[i]->SetVisible(bLit);
+	}
+
+	cMeshEntity* pMeshEntity = GetMeshEntity();
+	for (int i = 0; i < pMeshEntity->GetSubMeshEntityNum(); ++i)
+	{
+		cSubMeshEntity* pSubMeshEntity = pMeshEntity->GetSubMeshEntity(i);
+		pSubMeshEntity->SetIlluminationAmount(bLit ? 1 : 0);
 	}
 
 	for (int i = 0;i < (int)mvParticleSystems.size();++i)

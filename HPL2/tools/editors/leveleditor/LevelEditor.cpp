@@ -823,14 +823,15 @@ cWidgetMainMenu* cLevelEditor::CreateMainMenu()
 	// New
 	mpMainMenuNew = pItem->AddMenuItem(_W("New"));
 	mpMainMenuNew->AddCallback(eGuiMessage_ButtonPressed,this,kGuiCallback(MainMenu_ItemClick));
+	mpMainMenuNew->AddShortcut(eKeyModifier_Ctrl, eKey_N);
 
 	pItem->AddSeparator();
 
 	// Open
 	mpMainMenuLoad = pItem->AddMenuItem(_W("Open"));
 	mpMainMenuLoad->AddCallback(eGuiMessage_ButtonPressed,this,kGuiCallback(MainMenu_ItemClick));
+	mpMainMenuLoad->AddShortcut(eKeyModifier_Ctrl, eKey_O);
 
-	pItem->AddSeparator();
 	// Save
 	mpMainMenuSave = pItem->AddMenuItem(_W("Save"));
 	mpMainMenuSave->AddCallback(eGuiMessage_ButtonPressed,this,kGuiCallback(MainMenu_ItemClick));

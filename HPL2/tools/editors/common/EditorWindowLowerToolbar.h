@@ -77,6 +77,7 @@ protected:
 	cWidgetDummy* mpHandleLighting;
 	cWidgetButton* mpBGlobalAmbientLight;
 	cWidgetButton* mpBGlobalPointLight;
+	cWidgetButton* mpBIconsEnabled;
 
 	// Camera controls
 	cWidgetDummy* mpHandleCamera;

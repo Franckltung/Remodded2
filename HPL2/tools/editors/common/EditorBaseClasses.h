@@ -171,6 +171,9 @@ public:
 	void SetSelectionChanged() { mbSelectionChanged = true; }
 	cEditorSelection* GetSelection() { return mpSelection; }
 
+	void SetIconRenderingEnabled(bool abX) { mbIconRenderingEnabled = abX; }
+	bool GetIconRenderingEnabled() { return mbIconRenderingEnabled; }
+
 	///////////////////////////////////////////////
 	// Editor Windows Management
 	void AddWindow(iEditorWindow* apWindow);
@@ -477,6 +480,7 @@ protected:
 	bool mbDestroyingEditor;
 	bool mbWorldModified;
 	bool mbSelectionChanged;
+	bool mbIconRenderingEnabled;
 
 	iEditorEditMode* mpCurrentEditMode;
 	iEditorWorld* mpEditorWorld;
