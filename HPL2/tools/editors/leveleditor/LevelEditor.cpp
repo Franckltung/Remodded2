@@ -702,7 +702,7 @@ void cLevelEditor::OnLoadConfig()
 	}
 
 	// Window caption
-	msCaption = "HPL Level Editor";
+	msCaption = "HPL[R] Level Editor";
 	
 	SetLogFile(GetHomeDir() + _W("LevelEditor.log"));
 

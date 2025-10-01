@@ -64,7 +64,10 @@ void cIconEntityBB::Update()
 		if(pParent->mbColorUpdated)
 		{
 			pParent->mbColorUpdated=false;
-			pBB->SetColor(pParent->GetBillboardColor());
+			if (pParent->mpConnectedLight)
+				((iLight*)pParent->mpConnectedLight->GetEngineEntity()->GetEntity())->UpdateBillboard(pBB, pParent->GetBillboardColor());
+			else
+				pBB->SetColor(pParent->GetBillboardColor());
 		}
 		
 		if(pParent->mbMatUpdated)
@@ -558,6 +561,7 @@ void cEntityWrapperBillboard::SetConnectedLightName(const tString& asLightName)
 	else
 		mbColorUpdated=true;
 
+	mpConnectedLight = pLight;
 	mbBBUpdated=true;
 	mbConnectLightUpdated=true;
 }
