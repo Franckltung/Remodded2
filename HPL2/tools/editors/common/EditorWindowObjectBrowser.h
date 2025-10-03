@@ -130,16 +130,23 @@ protected:
 	tWStringVec mvDirectories;
 
 	// Layout stuff
-	cWidgetGroup* mpSelectionGroup;
-	cWidgetComboBox* mpObjectSets;
-	cWidgetListBox* mpObjectList;
-	cWidgetButton* mpButtonRefresh;
+	//cWidgetGroup* mpSelectionGroup;
+	//cWidgetComboBox* mpObjectSets;
+	//cWidgetListBox* mpObjectList;
+	//cWidgetButton* mpButtonRefresh;
 
-	cWidgetGroup* mpInfoGroup;
-	cWidgetLabel* mvLabelBVSize[2];
-	cWidgetLabel* mvLabelPolyCount[2];
-	cWidgetLabel* mpLabelThumbnail;
-	cWidgetImage* mpThumbnail;
+	//cWidgetGroup* mpInfoGroup;
+	//cWidgetLabel* mvLabelBVSize[2];
+	//cWidgetLabel* mvLabelPolyCount[2];
+	//cWidgetLabel* mpLabelThumbnail;
+	//cWidgetImage* mpThumbnail;
+
+	cWidgetDummy* mpSurface;
+
+	cWidgetFrame* mpDirectoryList;
+	cWidgetTextBox* mpObjectFilter;
+	cWidgetFrame* mpObjectSelectGroup;
+
 
 	tWStringVec mvCategoryStrings;
 

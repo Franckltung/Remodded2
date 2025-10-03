@@ -165,7 +165,6 @@ cEditorWindowObjectBrowser::cEditorWindowObjectBrowser(iEditorEditMode* apEditMo
 
 cEditorWindowObjectBrowser::~cEditorWindowObjectBrowser()
 {
-	mpObjectList->ClearItems();
 	mvCurrentListedEntries.clear();
 
 	if(mpPreviewEntity)
@@ -184,7 +183,7 @@ cEditorWindowObjectBrowser::~cEditorWindowObjectBrowser()
 
 iEditorObjectIndexEntryMeshObject* cEditorWindowObjectBrowser::GetSelectedObject()
 {
-	int lIndex = mpObjectList->GetSelectedItem();
+	int lIndex = -1;
 
 	if(lIndex==-1 || lIndex >(int)mvCurrentListedEntries.size())
 		return NULL;
@@ -198,7 +197,6 @@ iEditorObjectIndexEntryMeshObject* cEditorWindowObjectBrowser::GetSelectedObject
 
 void cEditorWindowObjectBrowser::Reset()
 {
-	mpObjectList->SetSelectedItem(-1);
 	UpdateObjectInfo();
 }
 
@@ -260,52 +258,21 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 
 	///////////////////////////////////////////////////
 	// Object Selection (sets, list..)
-	mpSelectionGroup = mpSet->CreateWidgetGroup(cVector3f(5,8,0.1f), cVector2f(190,205) , _W(""), mpBGFrame);
+	//mpObjectList = mpSet->CreateWidgetListBox(cVector3f(10,45,0.1f), cVector2f(170,120),mpSelectionGroup);
+	//mpObjectList->SetDefaultFontSize(11);
+	//mpObjectList->SetBackgroundZ(0.001f);
+	//mpObjectList->AddCallback(eGuiMessage_SelectionChange, this, kGuiCallback(ObjectList_OnChangeSelection));
 
-	mpObjectSets = mpSet->CreateWidgetComboBox(cVector3f(10,10,0.1f), cVector2f(170,25),_W(""), mpSelectionGroup);
-	mpObjectSets->AddCallback(eGuiMessage_SelectionChange,this, kGuiCallback(ObjectSets_OnChange));
-	mpObjectSets->SetCanEdit(false);
-
-	mpObjectList = mpSet->CreateWidgetListBox(cVector3f(10,45,0.1f), cVector2f(170,120),mpSelectionGroup);
-	mpObjectList->SetDefaultFontSize(11);
-	mpObjectList->SetBackgroundZ(0.001f);
-	mpObjectList->AddCallback(eGuiMessage_SelectionChange, this, kGuiCallback(ObjectList_OnChangeSelection));
-
-	mpButtonRefresh = mpSet->CreateWidgetButton(cVector3f(10, 170, 0.1f), cVector2f(170, 25), _W("Refresh"), mpSelectionGroup);
-	mpButtonRefresh->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(Refresh_OnPressed));
+	mpDirectoryList = mpSet->CreateWidgetFrame(cVector3f(5, 8, 0.1f), cVector2f(190, 205), true, mpBGFrame, false, true);
+	mpSet->CreateWidgetButton(cVector3f(2, 2, 0.1f), cVector2f(82, 82), _W("Test1"), mpDirectoryList);
+	mpSet->CreateWidgetButton(cVector3f(88, 2, 0.1f), cVector2f(82, 82), _W("Test2"), mpDirectoryList);
+	mpSet->CreateWidgetButton(cVector3f(2, 88, 0.1f), cVector2f(82, 82), _W("Test3"), mpDirectoryList);
+	mpSet->CreateWidgetButton(cVector3f(88, 88, 0.1f), cVector2f(82, 82), _W("Test4"), mpDirectoryList);
+	mpSet->CreateWidgetButton(cVector3f(2, 174, 0.1f), cVector2f(82, 82), _W("Test5"), mpDirectoryList);
+	
 
     ///////////////////////////////////////////////
 	// Object info: BV Size, poly count, thumbnail
-	mpInfoGroup = mpSet->CreateWidgetGroup(cVector3f(5,220,0.1f), cVector2f(190,280),_W("Object info"), mpBGFrame);
-
-	vPos = cVector3f(5,170,0.1f);
-	vSize = cVector2f(50,25);
-
-	for(int i=0;i<2;++i)
-	{
-		mvLabelBVSize[i] = mpSet->CreateWidgetLabel(vPos,vSize,_W(""), mpInfoGroup);
-		mvLabelBVSize[i]->SetDefaultFontSize(12.5f);
-
-		mvLabelPolyCount[i] = mpSet->CreateWidgetLabel(vPos + cVector3f(0,40,0),vSize,_W(""), mpInfoGroup);		
-		mvLabelPolyCount[i]->SetDefaultFontSize(12.5f);
-
-		vPos.y += 20;
-		
-		
-	}
-
-	mvLabelBVSize[0]->SetText(_W("BB Size:"));
-	mvLabelPolyCount[0]->SetText(_W("Polygon Count:"));
-
-	mpLabelThumbnail = mpSet->CreateWidgetLabel(cVector3f(30,15,0.1f), cVector2f(50,25), _W("Thumbnail"), mpInfoGroup);
-	mpLabelThumbnail->SetDefaultFontSize(12.5f);
-
-	cWidgetFrame* pThumbFrame = mpSet->CreateWidgetFrame(cVector3f(30,35,0.5f),128,true,mpInfoGroup);
-	pThumbFrame->SetBackGroundColor(cColor(0.4f,1));
-	pThumbFrame->SetBackgroundZ(0);
-	pThumbFrame->SetDrawBackground(true);
-
-	mpThumbnail = mpSet->CreateWidgetImage("",cVector3f(0,0,1.1f),128,eGuiMaterial_Diffuse, false, pThumbFrame);
 
 	BuildObjectSetList();
 }
@@ -315,7 +282,6 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 void cEditorWindowObjectBrowser::BuildObjectSetList()
 {
 	mvDirectories.clear();
-	mpObjectSets->ClearItems();
 
 	for(int i=0;i<(int)mvBaseDirs.size();++i)
         BuildObjectSetListHelper(mvBaseDirs[i],0);	
@@ -340,7 +306,7 @@ void cEditorWindowObjectBrowser::BuildObjectSetListHelper(const tWString& asFold
 		sItem += *it;
 
 		mvDirectories.push_back(sDir);
-		mpObjectSets->AddItem(sItem);
+		//mpObjectSets->AddItem(sItem);
 	}
 }
 
@@ -374,7 +340,7 @@ void cEditorWindowObjectBrowser::WriteInvalidFileListToFile(tWString& asFolder, 
 
 void cEditorWindowObjectBrowser::BuildObjectList()
 {
-	mpCurrentIndex = CreateIndex(mpObjectSets->GetText());
+	//mpCurrentIndex = CreateIndex(mpObjectSets->GetText());
 
 	UpdateObjectList();
 }
@@ -384,7 +350,7 @@ void cEditorWindowObjectBrowser::BuildObjectList()
 void cEditorWindowObjectBrowser::ClearObjectList()
 {
 	mvCurrentListedEntries.clear();
-	mpObjectList->ClearItems();
+	//mpObjectList->ClearItems();
 	UpdateObjectInfo();
 }
 
@@ -406,9 +372,11 @@ void cEditorWindowObjectBrowser::UpdateObjectInfo()
 	tWString sBVSize;
 	tWString sTriCount;
 
+	/*
 	cGuiGfxElement* pImg = mpThumbnail->GetImage();
 	if(pImg!=NULL)
 		pGui->DestroyGfx(pImg);
+	*/
 
 	cWorld* pWorld = mpEditor->GetEditorWorld()->GetWorld();
 
@@ -421,7 +389,7 @@ void cEditorWindowObjectBrowser::UpdateObjectInfo()
 		sBVSize = _W("");
 		sTriCount = _W("");
 
-		pImg = NULL;
+		//pImg = NULL;
 	}
 	else
 	{
@@ -437,13 +405,13 @@ void cEditorWindowObjectBrowser::UpdateObjectInfo()
 
 		sTriCount = cString::ToStringW(pObj->GetTriangleCount());
 		tString sThumbFile = cString::To8Char(pObj->GetThumbnailFilename());
-		pImg = pGui->CreateGfxImage(sThumbFile,eGuiMaterial_Diffuse);
+		//pImg = pGui->CreateGfxImage(sThumbFile,eGuiMaterial_Diffuse);
 	}
 
-	mvLabelBVSize[1]->SetText(sBVSize);
-	mvLabelPolyCount[1]->SetText(sTriCount);
+	//mvLabelBVSize[1]->SetText(sBVSize);
+	//mvLabelPolyCount[1]->SetText(sTriCount);
 
-	mpThumbnail->SetImage(pImg);
+	//mpThumbnail->SetImage(pImg);
 }
 
 //-------------------------------------------------------------------
@@ -494,7 +462,7 @@ void cEditorWindowObjectBrowser::AddEntriesInDirToList(iEditorObjectIndexDir* ap
 	{
 		iEditorObjectIndexEntry* pEntry = itEntries->second;
 
-		mpObjectList->AddItem(pEntry->GetEntryName());
+		//mpObjectList->AddItem(pEntry->GetEntryName());
 		avEntries.push_back((iEditorObjectIndexEntryMeshObject*)pEntry);
 	}
 
@@ -504,12 +472,14 @@ void cEditorWindowObjectBrowser::AddEntriesInDirToList(iEditorObjectIndexDir* ap
 	{
 		iEditorObjectIndexDir* pSubDir = itSubDirs->second;
 
+		/*
 		if(mbAddCategoryHeaders && apDir->GetParentDir()==NULL)
 		{
 			cWidgetItem* pDirHeader = mpObjectList->AddItem((pSubDir->IsExpanded()?_W("- "):_W("+ ")) + pSubDir->GetDirName());
 			pDirHeader->SetSelectable(false);
 			avEntries.push_back(NULL);
 		}
+		*/
 
 		AddEntriesInDirToList(pSubDir, avEntries);
 	}
