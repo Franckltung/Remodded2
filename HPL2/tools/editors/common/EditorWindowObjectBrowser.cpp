@@ -264,11 +264,20 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 	//mpObjectList->AddCallback(eGuiMessage_SelectionChange, this, kGuiCallback(ObjectList_OnChangeSelection));
 
 	mpDirectoryList = mpSet->CreateWidgetFrame(cVector3f(5, 8, 0.1f), cVector2f(190, 205), true, mpBGFrame, false, true);
-	mpSet->CreateWidgetButton(cVector3f(2, 2, 0.1f), cVector2f(82, 82), _W("Test1"), mpDirectoryList);
-	mpSet->CreateWidgetButton(cVector3f(88, 2, 0.1f), cVector2f(82, 82), _W("Test2"), mpDirectoryList);
-	mpSet->CreateWidgetButton(cVector3f(2, 88, 0.1f), cVector2f(82, 82), _W("Test3"), mpDirectoryList);
-	mpSet->CreateWidgetButton(cVector3f(88, 88, 0.1f), cVector2f(82, 82), _W("Test4"), mpDirectoryList);
-	mpSet->CreateWidgetButton(cVector3f(2, 174, 0.1f), cVector2f(82, 82), _W("Test5"), mpDirectoryList);
+
+	mpObjectFilter = mpSet->CreateWidgetTextBox(cVector3f(3, 217, 0.1f), cVector2f(194, 0), _W("Test"), mpBGFrame);
+
+	mpObjectSelectGroup = mpSet->CreateWidgetFrame(cVector3f(5, 243, 0.1f), cVector2f(190, 260), true, mpBGFrame, false, true);
+	mpObjectSelectGroup->SetBackGroundColor(cColor(0.35, 0.35, 0.35, 1));
+	mpObjectSelectGroup->SetDrawBackground(true);
+
+	mpSet->CreateWidgetButton(cVector3f(2, 2, 0.1f), cVector2f(82, 82), _W("Test1"), mpObjectSelectGroup);
+	mpSet->CreateWidgetButton(cVector3f(88, 2, 0.1f), cVector2f(82, 82), _W("Test2"), mpObjectSelectGroup);
+	mpSet->CreateWidgetButton(cVector3f(2, 88, 0.1f), cVector2f(82, 82), _W("Test3"), mpObjectSelectGroup);
+	mpSet->CreateWidgetButton(cVector3f(88, 88, 0.1f), cVector2f(82, 82), _W("Test4"), mpObjectSelectGroup);
+	mpSet->CreateWidgetButton(cVector3f(2, 174, 0.1f), cVector2f(82, 82), _W("Test5"), mpObjectSelectGroup);
+	mpSet->CreateWidgetButton(cVector3f(88, 174, 0.1f), cVector2f(82, 82), _W("Test6"), mpObjectSelectGroup);
+	mpSet->CreateWidgetButton(cVector3f(2, 260, 0.1f), cVector2f(82, 82), _W("Test7"), mpObjectSelectGroup);
 	
 
     ///////////////////////////////////////////////
