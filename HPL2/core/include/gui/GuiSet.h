@@ -49,6 +49,7 @@ namespace hpl {
 	class cWidgetLabel;
 	class cWidgetSlider;
 	class cWidgetTextBox;
+	class cWidgetTreeNode;
 	class cWidgetCheckBox;
 	class cWidgetImage;
 	class cWidgetListBox;
@@ -263,6 +264,11 @@ namespace hpl {
 											float afNumericAdd=1.0f,
 											bool abShowButtons=true,
 											const tString& asName = "" );
+
+		cWidgetTreeNode* CreateWidgetTreeNode(float afContainerSize=0,
+											  const tWString &asText=_W(""),
+											  iWidget *apParent=NULL,
+											  const tString& asName = "");
 
 		cWidgetCheckBox* CreateWidgetCheckBox(const cVector3f &avLocalPos=0,
 											const cVector2f &avSize=0,

@@ -22,6 +22,7 @@
 #include "EditorGrid.h"
 
 #include "EditorWorld.h"
+#include "gui/WidgetTreeNode.h"
 
 #include <algorithm>
 
@@ -264,6 +265,16 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 	//mpObjectList->AddCallback(eGuiMessage_SelectionChange, this, kGuiCallback(ObjectList_OnChangeSelection));
 
 	mpDirectoryList = mpSet->CreateWidgetFrame(cVector3f(5, 8, 0.1f), cVector2f(190, 205), true, mpBGFrame, false, true);
+	cWidgetTreeNode* testRoot = mpSet->CreateWidgetTreeNode(190, _W("TestRoot"), mpDirectoryList);
+	testRoot->AddChildNode(mpSet->CreateWidgetTreeNode(190, _W("Test1"), mpDirectoryList));
+	cWidgetTreeNode* testNode1 = mpSet->CreateWidgetTreeNode(190, _W("Test2"), mpDirectoryList);
+	testRoot->AddChildNode(testNode1);
+	testRoot->AddChildNode(mpSet->CreateWidgetTreeNode(190, _W("Test3"), mpDirectoryList));
+	testNode1->AddChildNode(mpSet->CreateWidgetTreeNode(190, _W("SubTest1"), mpDirectoryList));
+
+	testRoot->SetExtended(true);
+	testNode1->SetExtended(true);
+	testNode1->SetSelected(true);
 
 	mpObjectFilter = mpSet->CreateWidgetTextBox(cVector3f(3, 217, 0.1f), cVector2f(194, 0), _W("Test"), mpBGFrame);
 
