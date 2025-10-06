@@ -78,6 +78,11 @@ namespace hpl {
 		mpNodeTree->SelectNode(this, abDoCallbacks);
 	}
 
+	bool cWidgetTreeNode::IsSelected()
+	{
+		return mpNodeTree->GetSelectedNode() == this;
+	}
+
 	//-----------------------------------------------------------------------
 
 	void cWidgetNodeTree::AddChildNode(cWidgetTreeNode* apChildNode)
@@ -151,63 +156,7 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	void cWidgetNodeTree::DrawTreeNode(cWidgetTreeNode* apNode, const cVector3f avPos)
-	{
-		cVector3f vPos = cVector3f(avPos.x, avPos.y, avPos.z + 1);
-		cVector2f vSize = cVector2f(mvSize.x, 16);
-
-		if (apNode->GetParentNode())
-		{
-			apNode->SetNodeIndentation(apNode->GetParentNode()->GetNodeIndentation() + 11);
-		}
-
-		float fIndentation = apNode->GetNodeIndentation();
-
-		/////////////////////////
-		// Highlight stuff
-		if(apNode->IsSelected())
-		{
-			mpSet->DrawGfx(mpGfxBackground, vPos,
-				vSize, cColor(0.6, 0.6, 0.6, 0.5));
-		}
-		if(mpSelectedNode && mpSelectedNode == apNode)
-		{
-			mpSet->DrawGfx(mpGfxBackground, vPos + cVector3f(fIndentation + 12, 0, 0),
-				vSize - cVector2f(fIndentation + 12, 0), cColor(0.438f, 0.598f, 1, 1));
-		}
-
-		tWidgetTreeNodeVec& vpChildren = apNode->GetChildNodes();
-
-		/////////////////////////
-		// Extend button
-		if(vpChildren.empty()==false)
-		{
-			DrawBordersAndCorners(mpGfxButtonBackground, mvGfxButtonBorders, mvGfxButtonCorners,
-				vPos + cVector3f(fIndentation, 3, 0.1f),
-				cVector2f(10, 10));
-
-			DrawDefaultText(apNode->IsExtended() ? _W("-") : _W("+"), vPos + cVector3f(fIndentation + 5, 0, 0.2f), eFontAlign_Center);
-		}
-
-		mpSet->DrawFont(apNode->GetName(), mpDefaultFontType, vPos + cVector3f(fIndentation + 17, 1.25f, 0.1f), mvDefaultFontSize * 0.875f, mDefaultFontColor * mColorMul, eFontAlign_Left);
-		apNode->SetNodeHeight(16);
-
-		if(apNode->IsExtended() == false) return;
-
-		float fNodeHeight = 16;
-
-		for (int i = 0; i < (int)vpChildren.size(); ++i)
-		{
-			cWidgetTreeNode* pItem = vpChildren[i];
-			if (pItem == NULL)
-				continue;
-
-			DrawTreeNode(pItem, cVector3f(vPos.x, vPos.y + fNodeHeight, vPos.z));
-			fNodeHeight += pItem->GetNodeHeight();
-		}
-
-		apNode->SetNodeHeight(fNodeHeight);
-	}
+	//-----------------------------------------------------------------------
 
 	void cWidgetNodeTree::OnDraw(float afTimeStep, cGuiClipRegion* apClipRegion)
 	{
@@ -227,6 +176,8 @@ namespace hpl {
 			SetSize(cVector2f(mvSize.x, vPos.y + 16));
 	}
 
+	//-----------------------------------------------------------------------
+
 	void cWidgetNodeTree::OnLoadGraphics()
 	{
 		mpGfxBackground = mpSkin->GetGfx(eGuiSkinGfx_FrameBackground);
@@ -241,5 +192,143 @@ namespace hpl {
 		mvGfxButtonCorners[1] = mpSkin->GetGfx(eGuiSkinGfx_ButtonUpCornerRU);
 		mvGfxButtonCorners[2] = mpSkin->GetGfx(eGuiSkinGfx_ButtonUpCornerRD);
 		mvGfxButtonCorners[3] = mpSkin->GetGfx(eGuiSkinGfx_ButtonUpCornerLD);
+	}
+
+	//-----------------------------------------------------------------------
+
+	bool cWidgetNodeTree::OnMouseDown(const cGuiMessageData& aData)
+	{
+		if (IsEnabled() && aData.mlVal == eGuiMouseButton_Left)
+		{
+			float fHeight = GetGlobalPosition().y;
+
+			for (int i = 0; i < (int)mvNodes.size(); ++i)
+			{
+				cWidgetTreeNode* pItem = mvNodes[i];
+				if (pItem == NULL)
+					continue;
+
+				ProcessNodeClick(pItem, fHeight, aData.mvPos);
+				fHeight += pItem->GetNodeHeight();
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	//-----------------------------------------------------------------------
+
+	//////////////////////////////////////////////////////////////////////////
+	// OWN METHODS
+	//////////////////////////////////////////////////////////////////////////
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetNodeTree::DrawTreeNode(cWidgetTreeNode* apNode, const cVector3f avPos)
+	{
+		cVector3f vPos = cVector3f(avPos.x, avPos.y, avPos.z + 1);
+		cVector2f vSize = cVector2f(mvSize.x, 16);
+
+		if (apNode->GetParentNode())
+		{
+			apNode->SetNodeIndentation(apNode->GetParentNode()->GetNodeIndentation() + 11);
+		}
+
+		float fIndentation = apNode->GetNodeIndentation();
+
+		/////////////////////////
+		// Highlight stuff
+		if (apNode->IsSelected())
+		{
+			mpSet->DrawGfx(mpGfxBackground, vPos,
+				vSize, cColor(0.6, 0.6, 0.6, 0.5));
+		}
+		if (mpSelectedNode && mpSelectedNode == apNode)
+		{
+			mpSet->DrawGfx(mpGfxBackground, vPos + cVector3f(fIndentation + 12, 0, 0),
+				vSize - cVector2f(fIndentation + 12, 0), cColor(0.438f, 0.598f, 1, 1));
+		}
+
+		tWidgetTreeNodeVec& vpChildren = apNode->GetChildNodes();
+
+		/////////////////////////
+		// Extend button
+		if (vpChildren.empty() == false)
+		{
+			DrawBordersAndCorners(mpGfxButtonBackground, mvGfxButtonBorders, mvGfxButtonCorners,
+				vPos + cVector3f(fIndentation, 3, 0.1f),
+				cVector2f(10, 10));
+
+			DrawDefaultText(apNode->IsExtended() ? _W("-") : _W("+"), vPos + cVector3f(fIndentation + 5, 0, 0.2f), eFontAlign_Center);
+		}
+
+		mpSet->DrawFont(apNode->GetName(), mpDefaultFontType, vPos + cVector3f(fIndentation + 17, 1.25f, 0.1f), mvDefaultFontSize * 0.875f, mDefaultFontColor * mColorMul, eFontAlign_Left);
+		apNode->SetNodeHeight(16);
+
+		if (apNode->IsExtended() == false) return;
+
+		float fNodeHeight = 16;
+
+		for (int i = 0; i < (int)vpChildren.size(); ++i)
+		{
+			cWidgetTreeNode* pItem = vpChildren[i];
+			if (pItem == NULL)
+				continue;
+
+			DrawTreeNode(pItem, cVector3f(vPos.x, vPos.y + fNodeHeight, vPos.z));
+			fNodeHeight += pItem->GetNodeHeight();
+		}
+
+		apNode->SetNodeHeight(fNodeHeight);
+	}
+
+	void cWidgetNodeTree::ProcessNodeClick(cWidgetTreeNode* apNode, float afHeight, const cVector2f avMouse)
+	{
+		if (avMouse.y < afHeight) return;
+
+		tWidgetTreeNodeVec& vpChildren = apNode->GetChildNodes();
+		bool bHasChildren = (vpChildren.empty() == false);
+
+		if (avMouse.y <= afHeight + 16)
+		{
+			float fIndentation = apNode->GetNodeIndentation();
+
+			if (bHasChildren)
+			{
+				//calc for extend/retract button
+				float fButtonX = (mvGlobalPosition.x + fIndentation);
+				float fButtonY = (afHeight + 3);
+
+				if (avMouse.x >= fButtonX		&&
+					avMouse.x < (fButtonX + 10) &&
+					avMouse.y >= fButtonY		&&
+					avMouse.y < (fButtonY + 10)	)
+				{
+					apNode->SetExtended(!apNode->IsExtended());
+					return;
+				}
+			}
+
+			if (avMouse.y >= afHeight && avMouse.y < afHeight + 16)
+			{
+				if (avMouse.x >= mvGlobalPosition.x + fIndentation + 12)
+					apNode->SetSelected(true, true);
+			}
+		}
+
+		if (!bHasChildren) return;
+
+		float fNextHeight = afHeight + 16;
+
+		for (int i = 0; i < (int)vpChildren.size(); ++i)
+		{
+			cWidgetTreeNode* pItem = vpChildren[i];
+			if (pItem == NULL)
+				continue;
+
+			ProcessNodeClick(pItem, fNextHeight, avMouse);
+			fNextHeight += pItem->GetNodeHeight();
+		}
 	}
 }

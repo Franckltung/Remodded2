@@ -36,6 +36,7 @@ namespace hpl {
 		virtual ~cWidgetNodeTree();
 
 		void SelectNode(cWidgetTreeNode* apNode, bool abDoCallbacks = false);
+		cWidgetTreeNode* GetSelectedNode() { return mpSelectedNode; }
 
 		void AddChildNode(cWidgetTreeNode* apChildNode);
 		void RemoveChildNode(cWidgetTreeNode* apNode, bool abDelete = false);
@@ -46,12 +47,19 @@ namespace hpl {
 		/////////////////////////
 		// Own Funcs
 		void DrawTreeNode(cWidgetTreeNode* apNode, const cVector3f avPos);
+		void ProcessNodeClick(cWidgetTreeNode* apNode, float afHeight, const cVector2f avMouse);
 
 		/////////////////////////
 		// Implemented functions
 		void OnDraw(float afTimeStep, cGuiClipRegion* apClipRegion);
 
 		void OnLoadGraphics();
+
+		//bool OnMouseMove(const cGuiMessageData& aData);
+		bool OnMouseDown(const cGuiMessageData& aData);
+		//bool OnMouseUp(const cGuiMessageData& aData);
+		//bool OnMouseEnter(const cGuiMessageData& aData);
+		//bool OnMouseLeave(const cGuiMessageData& aData);
 
 		/////////////////////////
 		// Data
@@ -73,11 +81,11 @@ namespace hpl {
 		void SetName(const tWString& asName) { msName = asName; }
 		const tWString& GetName() { return msName; }
 
-		void SetExtended(bool abX) { mbExtended = true; }
+		void SetExtended(bool abX) { mbExtended = abX; }
 		bool IsExtended() { return mbExtended; }
 
 		void SetSelected(bool abX, bool abDoCallbacks = false);
-		bool IsSelected() { return mbSelected; }
+		bool IsSelected();
 
 		void SetParentNode(cWidgetTreeNode* apNode) { mpParentNode = apNode; }
 		cWidgetTreeNode* GetParentNode() { return mpParentNode; }
