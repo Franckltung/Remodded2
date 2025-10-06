@@ -145,6 +145,7 @@ protected:
 
 	cWidgetFrame* mpDirectoryFrame;
 	cWidgetNodeTree* mpDirectoryTree;
+	cWidgetTreeNode* mpRootDirectory;
 	cWidgetTextBox* mpObjectFilter;
 	cWidgetFrame* mpObjectSelectGroup;
 

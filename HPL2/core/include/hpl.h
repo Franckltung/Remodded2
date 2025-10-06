@@ -204,6 +204,7 @@
 #include "gui/GuiPopUpMessageBox.h"
 #include "gui/GuiPopUpColorPicker.h"
 #include "gui/WidgetDummy.h"
+#include "gui/WidgetNodeTree.h"
 
 #include "generate/Generate.h"
 #include "generate/GenerateTypes.h"

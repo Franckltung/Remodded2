@@ -36,6 +36,7 @@ namespace hpl {
 	cWidgetNodeTree::cWidgetNodeTree(cGuiSet *apSet, cGuiSkin *apSkin) : iWidget(eWidgetType_NodeTree,apSet, apSkin)
 	{
 		mpSelectedNode = NULL;
+		mpFocusedNode = NULL;
 	}
 
 	cWidgetTreeNode::cWidgetTreeNode(cWidgetNodeTree* apNodeTree)
@@ -58,6 +59,7 @@ namespace hpl {
 	cWidgetTreeNode::~cWidgetTreeNode()
 	{
 		STLDeleteAll(mvChildNodes);
+		mpNodeTree = NULL;
 	}
 
 	//-----------------------------------------------------------------------
@@ -68,19 +70,19 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	void cWidgetNodeTree::SelectNode(cWidgetTreeNode* apNode, bool abDoCallbacks)
+	void cWidgetNodeTree::SelectNode(cWidgetTreeNode* apNode, bool abGenCallback)
 	{
 		mpSelectedNode = apNode;
+		mpFocusedNode = apNode;
+
+		cGuiMessageData data;
+		if (abGenCallback)
+			ProcessMessage(eGuiMessage_SelectionChange, data);
 	}
 
-	void cWidgetTreeNode::SetSelected(bool abX, bool abDoCallbacks)
+	void cWidgetTreeNode::SetSelected(bool abX, bool abGenCallback)
 	{
-		mpNodeTree->SelectNode(this, abDoCallbacks);
-	}
-
-	bool cWidgetTreeNode::IsSelected()
-	{
-		return mpNodeTree->GetSelectedNode() == this;
+		mpNodeTree->SelectNode(abX ? this : NULL, abGenCallback);
 	}
 
 	//-----------------------------------------------------------------------
@@ -150,11 +152,21 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	void cWidgetNodeTree::ClearTreeNodes()
+	{
+		STLDeleteAll(mvNodes);
+	}
+
+	void cWidgetTreeNode::ClearTreeNodes()
+	{
+		STLDeleteAll(mvChildNodes);
+	}
+
+	//-----------------------------------------------------------------------
+
 	//////////////////////////////////////////////////////////////////////////
 	// PROTECTED METHODS
 	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
 
 	//-----------------------------------------------------------------------
 
@@ -172,8 +184,7 @@ namespace hpl {
 			vPos.y += pItem->GetNodeHeight();
 		}
 
-		if(mvSize.y != vPos.y + 16)
-			SetSize(cVector2f(mvSize.x, vPos.y + 16));
+		SetSize(cVector2f(mvSize.x, vPos.y + 16));
 	}
 
 	//-----------------------------------------------------------------------
@@ -227,7 +238,7 @@ namespace hpl {
 
 	void cWidgetNodeTree::DrawTreeNode(cWidgetTreeNode* apNode, const cVector3f avPos)
 	{
-		cVector3f vPos = cVector3f(avPos.x, avPos.y, avPos.z + 1);
+		cVector3f vPos = cVector3f(avPos.x, avPos.y, avPos.z + 0.1f);
 		cVector2f vSize = cVector2f(mvSize.x, 16);
 
 		if (apNode->GetParentNode())
@@ -239,7 +250,7 @@ namespace hpl {
 
 		/////////////////////////
 		// Highlight stuff
-		if (apNode->IsSelected())
+		if (mpFocusedNode == apNode)
 		{
 			mpSet->DrawGfx(mpGfxBackground, vPos,
 				vSize, cColor(0.6, 0.6, 0.6, 0.5));
@@ -305,6 +316,7 @@ namespace hpl {
 					avMouse.y >= fButtonY		&&
 					avMouse.y < (fButtonY + 10)	)
 				{
+					mpFocusedNode = apNode;
 					apNode->SetExtended(!apNode->IsExtended());
 					return;
 				}
@@ -312,8 +324,12 @@ namespace hpl {
 
 			if (avMouse.y >= afHeight && avMouse.y < afHeight + 16)
 			{
+				mpFocusedNode = apNode;
+
 				if (avMouse.x >= mvGlobalPosition.x + fIndentation + 12)
-					apNode->SetSelected(true, true);
+					SelectNode(apNode, true);
+				
+				return;
 			}
 		}
 

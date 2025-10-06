@@ -35,13 +35,17 @@ namespace hpl {
 		cWidgetNodeTree(cGuiSet *apSet, cGuiSkin *apSkin);
 		virtual ~cWidgetNodeTree();
 
-		void SelectNode(cWidgetTreeNode* apNode, bool abDoCallbacks = false);
+		void SelectNode(cWidgetTreeNode* apNode, bool abGenCallback = false);
 		cWidgetTreeNode* GetSelectedNode() { return mpSelectedNode; }
+
+		void FocusNode(cWidgetTreeNode* apNode) { mpFocusedNode = apNode; }
+		cWidgetTreeNode* GetFocusedNode() { return mpFocusedNode; }
 
 		void AddChildNode(cWidgetTreeNode* apChildNode);
 		void RemoveChildNode(cWidgetTreeNode* apNode, bool abDelete = false);
 
 		cWidgetTreeNode* AddTreeNode(const tWString& asNode);
+		void ClearTreeNodes();
 
 	protected:
 		/////////////////////////
@@ -65,6 +69,7 @@ namespace hpl {
 		// Data
 		tWidgetTreeNodeVec mvNodes;
 		cWidgetTreeNode* mpSelectedNode;
+		cWidgetTreeNode* mpFocusedNode;
 
 		cGuiGfxElement* mpGfxBackground;
 		cGuiGfxElement* mpGfxButtonBackground;
@@ -84,8 +89,7 @@ namespace hpl {
 		void SetExtended(bool abX) { mbExtended = abX; }
 		bool IsExtended() { return mbExtended; }
 
-		void SetSelected(bool abX, bool abDoCallbacks = false);
-		bool IsSelected();
+		void SetSelected(bool abX, bool abGenCallback = false);
 
 		void SetParentNode(cWidgetTreeNode* apNode) { mpParentNode = apNode; }
 		cWidgetTreeNode* GetParentNode() { return mpParentNode; }
@@ -100,6 +104,7 @@ namespace hpl {
 		tWidgetTreeNodeVec& GetChildNodes() { return mvChildNodes; }
 
 		cWidgetTreeNode* AddTreeNode(const tWString& asNode);
+		void ClearTreeNodes();
 
 	protected:
 		/////////////////////////
@@ -110,7 +115,6 @@ namespace hpl {
 		tWidgetTreeNodeVec mvChildNodes;
 
 		bool mbExtended;
-		bool mbSelected;
 
 		float mfNodeHeight;
 		float mfNodeIndentation;

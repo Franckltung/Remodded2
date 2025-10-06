@@ -22,7 +22,6 @@
 #include "EditorGrid.h"
 
 #include "EditorWorld.h"
-#include "gui/WidgetNodeTree.h"
 
 #include <algorithm>
 
@@ -266,15 +265,9 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 
 	mpDirectoryFrame = mpSet->CreateWidgetFrame(cVector3f(5, 8, 0.1f), cVector2f(190, 205), true, mpBGFrame, false, true);
 	mpDirectoryTree = mpSet->CreateWidgetNodeTree(190, mpDirectoryFrame);
-	cWidgetTreeNode* testRoot = mpDirectoryTree->AddTreeNode(_W("TestRoot"));
-	testRoot->AddTreeNode(_W("Test1"));
-	cWidgetTreeNode* testNode1 = testRoot->AddTreeNode(_W("Test2"));
-	testRoot->AddTreeNode(_W("Test3"));
-	testNode1->AddTreeNode(_W("SubTest1"));
+	mpRootDirectory = mpDirectoryTree->AddTreeNode(_W("All"));
 
-	testRoot->SetExtended(true);
-	testNode1->SetExtended(true);
-	testNode1->SetSelected(true);
+	mpRootDirectory->SetExtended(true);
 
 	mpObjectFilter = mpSet->CreateWidgetTextBox(cVector3f(3, 217, 0.1f), cVector2f(194, 0), _W("Test"), mpBGFrame);
 
@@ -326,7 +319,7 @@ void cEditorWindowObjectBrowser::BuildObjectSetListHelper(const tWString& asFold
 		sItem += *it;
 
 		mvDirectories.push_back(sDir);
-		//mpObjectSets->AddItem(sItem);
+		mpRootDirectory->AddTreeNode(sItem);
 	}
 }
 
