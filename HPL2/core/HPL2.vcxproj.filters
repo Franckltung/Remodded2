@@ -1063,7 +1063,7 @@
     <ClInclude Include="include\impl\GamepadSDL2.h">
       <Filter>Impl\Input</Filter>
     </ClInclude>
-    <ClInclude Include="include\gui\WidgetTreeNode.h">
+    <ClInclude Include="include\gui\WidgetNodeTree.h">
       <Filter>Gui</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1941,7 +1941,7 @@
     <ClCompile Include="sources\impl\GamepadSDL2.cpp">
       <Filter>Impl\Input</Filter>
     </ClCompile>
-    <ClCompile Include="sources\gui\WidgetTreeNode.cpp">
+    <ClCompile Include="sources\gui\WidgetNodeTree.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
   </ItemGroup>

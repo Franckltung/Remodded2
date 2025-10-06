@@ -17,46 +17,36 @@
  * along with Amnesia: The Dark Descent.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef HPL_WIDGET_TREE_NODE_H
-#define HPL_WIDGET_TREE_NODE_H
+#ifndef HPL_WIDGET_NODE_TREE_H
+#define HPL_WIDGET_NODE_TREE_H
 
 #include "gui/Widget.h"
 
 namespace hpl {
 
 	class cWidgetTreeNode;
-	class cWidgetButton;
 
 	typedef std::vector<cWidgetTreeNode*> tWidgetTreeNodeVec;
 	typedef tWidgetTreeNodeVec::iterator tWidgetTreeNodeVecIt;
 
-	class cWidgetTreeNode : public iWidget
+	class cWidgetNodeTree : public iWidget
 	{
 	public:
-		cWidgetTreeNode(cGuiSet *apSet, cGuiSkin *apSkin);
-		virtual ~cWidgetTreeNode();
+		cWidgetNodeTree(cGuiSet *apSet, cGuiSkin *apSkin);
+		virtual ~cWidgetNodeTree();
 
-		void SetExtended(bool abX);
-		bool IsExtended() { return mbExtended; }
-
-		void SetSelected(bool abX, bool abDoCallbacks = false);
-		bool IsSelected() { return mbSelected; }
-
-		void SetParentNode(cWidgetTreeNode* apNode) { mpParentNode = apNode; }
-		cWidgetTreeNode* GetParentNode() { return mpParentNode; }
-
-		float GetNodeHeight() { return mfNodeHeight; }
-		float GetNodeIndentation() { return mfNodeIndentation; }
-
-		void SetNodeWidth(float afNodeWitdth);
-		float GetNodeWidth();
+		void SelectNode(cWidgetTreeNode* apNode, bool abDoCallbacks = false);
 
 		void AddChildNode(cWidgetTreeNode* apChildNode);
 		void RemoveChildNode(cWidgetTreeNode* apNode, bool abDelete = false);
 
-		void DrawNode();
+		cWidgetTreeNode* AddTreeNode(const tWString& asNode);
 
 	protected:
+		/////////////////////////
+		// Own Funcs
+		void DrawTreeNode(cWidgetTreeNode* apNode, const cVector3f avPos);
+
 		/////////////////////////
 		// Implemented functions
 		void OnDraw(float afTimeStep, cGuiClipRegion* apClipRegion);
@@ -65,22 +55,60 @@ namespace hpl {
 
 		/////////////////////////
 		// Data
-		cWidgetTreeNode* mpParentNode;
-		tWidgetTreeNodeVec mvChildNodes;
+		tWidgetTreeNodeVec mvNodes;
+		cWidgetTreeNode* mpSelectedNode;
 
 		cGuiGfxElement* mpGfxBackground;
 		cGuiGfxElement* mpGfxButtonBackground;
 		cGuiGfxElement* mvGfxButtonBorders[4];
 		cGuiGfxElement* mvGfxButtonCorners[4];
+	};
+
+	class cWidgetTreeNode
+	{
+	public:
+		cWidgetTreeNode(cWidgetNodeTree* apNodeTree);
+		virtual ~cWidgetTreeNode();
+
+		void SetName(const tWString& asName) { msName = asName; }
+		const tWString& GetName() { return msName; }
+
+		void SetExtended(bool abX) { mbExtended = true; }
+		bool IsExtended() { return mbExtended; }
+
+		void SetSelected(bool abX, bool abDoCallbacks = false);
+		bool IsSelected() { return mbSelected; }
+
+		void SetParentNode(cWidgetTreeNode* apNode) { mpParentNode = apNode; }
+		cWidgetTreeNode* GetParentNode() { return mpParentNode; }
+
+		void SetNodeHeight(float afX) { mfNodeHeight = afX; }
+		float GetNodeHeight() { return mfNodeHeight; }
+		void SetNodeIndentation(float afX) { mfNodeIndentation = afX; }
+		float GetNodeIndentation() { return mfNodeIndentation; }
+
+		void AddChildNode(cWidgetTreeNode* apChildNode);
+		void RemoveChildNode(cWidgetTreeNode* apNode, bool abDelete = false);
+		tWidgetTreeNodeVec& GetChildNodes() { return mvChildNodes; }
+
+		cWidgetTreeNode* AddTreeNode(const tWString& asNode);
+
+	protected:
+		/////////////////////////
+		// Data
+		cWidgetNodeTree* mpNodeTree;
+
+		cWidgetTreeNode* mpParentNode;
+		tWidgetTreeNodeVec mvChildNodes;
 
 		bool mbExtended;
 		bool mbSelected;
-		bool mbHighlighted;
-		bool mbHasChildren;
 
 		float mfNodeHeight;
 		float mfNodeIndentation;
+
+		tWString msName;
 	};
 
 };
-#endif // HPL_WIDGET_TREE_NODE_H
+#endif // HPL_WIDGET_NODE_TREE_H

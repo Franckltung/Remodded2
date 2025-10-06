@@ -49,7 +49,7 @@ namespace hpl {
 	class cWidgetLabel;
 	class cWidgetSlider;
 	class cWidgetTextBox;
-	class cWidgetTreeNode;
+	class cWidgetNodeTree;
 	class cWidgetCheckBox;
 	class cWidgetImage;
 	class cWidgetListBox;
@@ -265,8 +265,7 @@ namespace hpl {
 											bool abShowButtons=true,
 											const tString& asName = "" );
 
-		cWidgetTreeNode* CreateWidgetTreeNode(float afContainerSize=0,
-											  const tWString &asText=_W(""),
+		cWidgetNodeTree* CreateWidgetNodeTree(float afContainerSize=0,
 											  iWidget *apParent=NULL,
 											  const tString& asName = "");
 

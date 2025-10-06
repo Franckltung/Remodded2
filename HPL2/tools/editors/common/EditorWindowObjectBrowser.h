@@ -143,7 +143,8 @@ protected:
 
 	cWidgetDummy* mpSurface;
 
-	cWidgetFrame* mpDirectoryList;
+	cWidgetFrame* mpDirectoryFrame;
+	cWidgetNodeTree* mpDirectoryTree;
 	cWidgetTextBox* mpObjectFilter;
 	cWidgetFrame* mpObjectSelectGroup;
 

@@ -22,7 +22,7 @@
 #include "EditorGrid.h"
 
 #include "EditorWorld.h"
-#include "gui/WidgetTreeNode.h"
+#include "gui/WidgetNodeTree.h"
 
 #include <algorithm>
 
@@ -264,13 +264,13 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 	//mpObjectList->SetBackgroundZ(0.001f);
 	//mpObjectList->AddCallback(eGuiMessage_SelectionChange, this, kGuiCallback(ObjectList_OnChangeSelection));
 
-	mpDirectoryList = mpSet->CreateWidgetFrame(cVector3f(5, 8, 0.1f), cVector2f(190, 205), true, mpBGFrame, false, true);
-	cWidgetTreeNode* testRoot = mpSet->CreateWidgetTreeNode(190, _W("TestRoot"), mpDirectoryList);
-	testRoot->AddChildNode(mpSet->CreateWidgetTreeNode(190, _W("Test1"), mpDirectoryList));
-	cWidgetTreeNode* testNode1 = mpSet->CreateWidgetTreeNode(190, _W("Test2"), mpDirectoryList);
-	testRoot->AddChildNode(testNode1);
-	testRoot->AddChildNode(mpSet->CreateWidgetTreeNode(190, _W("Test3"), mpDirectoryList));
-	testNode1->AddChildNode(mpSet->CreateWidgetTreeNode(190, _W("SubTest1"), mpDirectoryList));
+	mpDirectoryFrame = mpSet->CreateWidgetFrame(cVector3f(5, 8, 0.1f), cVector2f(190, 205), true, mpBGFrame, false, true);
+	mpDirectoryTree = mpSet->CreateWidgetNodeTree(190, mpDirectoryFrame);
+	cWidgetTreeNode* testRoot = mpDirectoryTree->AddTreeNode(_W("TestRoot"));
+	testRoot->AddTreeNode(_W("Test1"));
+	cWidgetTreeNode* testNode1 = testRoot->AddTreeNode(_W("Test2"));
+	testRoot->AddTreeNode(_W("Test3"));
+	testNode1->AddTreeNode(_W("SubTest1"));
 
 	testRoot->SetExtended(true);
 	testNode1->SetExtended(true);

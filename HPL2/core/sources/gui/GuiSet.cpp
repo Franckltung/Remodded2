@@ -58,7 +58,7 @@
 #include "gui/WidgetLabel.h"
 #include "gui/WidgetSlider.h"
 #include "gui/WidgetTextBox.h"
-#include "gui/WidgetTreeNode.h"
+#include "gui/WidgetNodeTree.h"
 #include "gui/WidgetCheckBox.h"
 #include "gui/WidgetImage.h"
 #include "gui/WidgetListBox.h"
@@ -805,17 +805,15 @@ namespace hpl {
 		return pTextBox;
 	}
 
-	cWidgetTreeNode* cGuiSet::CreateWidgetTreeNode( float afContainerWidth,
-													const tWString &asText,
+	cWidgetNodeTree* cGuiSet::CreateWidgetNodeTree( float afContainerWidth,
 													iWidget *apParent,
 													const tString &asName)
 	{
-		cWidgetTreeNode* pTreeNode = hplNew(cWidgetTreeNode, (this, mpSkin));
-		pTreeNode->SetText(asText);
-		pTreeNode->SetNodeWidth(afContainerWidth);
-		pTreeNode->SetName(asName);
-		AddWidget(pTreeNode, apParent);
-		return pTreeNode;
+		cWidgetNodeTree* pNodeTree = hplNew(cWidgetNodeTree, (this, mpSkin));
+		pNodeTree->SetSize(cVector2f(afContainerWidth, 16));
+		pNodeTree->SetName(asName);
+		AddWidget(pNodeTree, apParent);
+		return pNodeTree;
 	}
 
 	cWidgetCheckBox* cGuiSet::CreateWidgetCheckBox(	const cVector3f &avLocalPos,
