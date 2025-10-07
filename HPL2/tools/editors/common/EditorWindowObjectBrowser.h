@@ -69,7 +69,6 @@ protected:
 	tWString msMeshFileName;
 };
 
-
 //----------------------------------------------------------
 
 ////////////////////////////////////////////////////////////
@@ -99,14 +98,14 @@ protected:
 	bool ObjectList_OnChangeSelection(iWidget* apWidget, const cGuiMessageData& aData);
 	kGuiCallbackDeclarationEnd(ObjectList_OnChangeSelection);
 
-	bool Input_OnTextBoxEnter(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(Input_OnTextBoxEnter);
+	bool Input_OnFilterTextChanged(iWidget* apWidget, const cGuiMessageData& aData);
+	kGuiCallbackDeclarationEnd(Input_OnFilterTextChanged);
 
 	bool Refresh_OnPressed(iWidget* apWidget, const cGuiMessageData& aData);
 	kGuiCallbackDeclarationEnd(Refresh_OnPressed);
 
 	void BuildObjectSetList();
-	void BuildObjectSetListHelper(const tWString& asFolder, int alLevel);
+	void BuildObjectSetListHelper(const tWString& asFolder, int alLevel, cWidgetTreeNode* apNode);
 
 	void BuildObjectList();
 	void BuildObjectListHelper(const tWString& asBaseFolder, const tWString& asCurrentFolder, tWStringList& alstInvalidFiles);
@@ -126,8 +125,6 @@ protected:
 	////////////////////////////////////////////////////
 	// Data
 	tWStringVec mvBaseDirs;
-	
-	tWStringVec mvDirectories;
 
 	// Layout stuff
 	//cWidgetGroup* mpSelectionGroup;
@@ -146,7 +143,10 @@ protected:
 	cWidgetFrame* mpDirectoryFrame;
 	cWidgetNodeTree* mpDirectoryTree;
 	cWidgetTreeNode* mpRootDirectory;
+
 	cWidgetTextBox* mpObjectFilter;
+	cWidgetLabel* mpObjectFilterTempText;
+
 	cWidgetFrame* mpObjectSelectGroup;
 
 

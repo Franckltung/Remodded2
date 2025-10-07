@@ -114,6 +114,7 @@ namespace hpl {
 		eWidgetType_CheckBox,
 		eWidgetType_Image,
 		eWidgetType_ListBox,
+		eWidgetType_MeshObjectList,
 		eWidgetType_ComboBox,
 		eWidgetType_NodeTree,
 		eWidgetType_ContextMenu,

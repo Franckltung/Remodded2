@@ -47,6 +47,8 @@ namespace hpl {
 		cWidgetTreeNode* AddTreeNode(const tWString& asNode);
 		void ClearTreeNodes();
 
+		void UpdateTreeHeight();
+
 	protected:
 		/////////////////////////
 		// Own Funcs
@@ -83,10 +85,15 @@ namespace hpl {
 		cWidgetTreeNode(cWidgetNodeTree* apNodeTree);
 		virtual ~cWidgetTreeNode();
 
+		void UpdateNodeHeight();
+
+		void SetText(const tWString& asText) { msText = asText; }
+		const tWString& GetText() { return msText; }
+
 		void SetName(const tWString& asName) { msName = asName; }
 		const tWString& GetName() { return msName; }
 
-		void SetExtended(bool abX) { mbExtended = abX; }
+		void SetExtended(bool abX);
 		bool IsExtended() { return mbExtended; }
 
 		void SetSelected(bool abX, bool abGenCallback = false);
@@ -120,6 +127,7 @@ namespace hpl {
 		float mfNodeIndentation;
 
 		tWString msName;
+		tWString msText;
 	};
 
 };

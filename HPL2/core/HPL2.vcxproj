@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\gui\WidgetMeshObjectList.h" />
     <ClInclude Include="include\gui\WidgetNodeTree.h" />
     <ClInclude Include="include\impl\GamepadSDL2.h" />
     <ClInclude Include="include\impl\MeshLoaderFBX.h" />
@@ -488,6 +489,7 @@
     <ClInclude Include="include\HPL.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="sources\gui\WidgetMeshObjectList.cpp" />
     <ClCompile Include="sources\gui\WidgetNodeTree.cpp" />
     <ClCompile Include="sources\impl\GamepadSDL2.cpp" />
     <ClCompile Include="sources\impl\MeshLoaderFBX.cpp" />

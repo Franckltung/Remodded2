@@ -43,7 +43,7 @@ namespace hpl {
 	{
 		mpNodeTree = apNodeTree;
 
-		mfNodeHeight = 0;
+		mfNodeHeight = 16;
 		mfNodeIndentation = 0;
 
 		mpParentNode = NULL;
@@ -70,6 +70,43 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	void cWidgetTreeNode::UpdateNodeHeight()
+	{
+		if (mbExtended)
+		{
+			float fNodeHeight = 16;
+
+			for (int i = 0; i < (int)mvChildNodes.size(); ++i)
+			{
+				cWidgetTreeNode* pItem = mvChildNodes[i];
+				if (pItem == NULL)
+					continue;
+
+				fNodeHeight += pItem->GetNodeHeight();
+			}
+
+			SetNodeHeight(fNodeHeight);
+		}
+		else
+		{
+			SetNodeHeight(16);
+		}
+
+		if (mpParentNode) mpParentNode->UpdateNodeHeight();
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetTreeNode::SetExtended(bool abX)
+	{
+		mbExtended = abX;
+
+		UpdateNodeHeight();
+		mpNodeTree->UpdateTreeHeight();
+	}
+
+	//-----------------------------------------------------------------------
+
 	void cWidgetNodeTree::SelectNode(cWidgetTreeNode* apNode, bool abGenCallback)
 	{
 		mpSelectedNode = apNode;
@@ -90,12 +127,17 @@ namespace hpl {
 	void cWidgetNodeTree::AddChildNode(cWidgetTreeNode* apChildNode)
 	{
 		mvNodes.push_back(apChildNode);
+
+		UpdateTreeHeight();
 	}
 
 	void cWidgetTreeNode::AddChildNode(cWidgetTreeNode* apChildNode)
 	{
 		mvChildNodes.push_back(apChildNode);
 		apChildNode->SetParentNode(this);
+
+		UpdateNodeHeight();
+		mpNodeTree->UpdateTreeHeight();
 	}
 
 	//-----------------------------------------------------------------------
@@ -135,7 +177,7 @@ namespace hpl {
 	cWidgetTreeNode* cWidgetNodeTree::AddTreeNode(const tWString& asNode)
 	{
 		cWidgetTreeNode* pNode = hplNew(cWidgetTreeNode,(this));
-		pNode->SetName(asNode);
+		pNode->SetText(asNode);
 		AddChildNode(pNode);
 
 		return pNode;
@@ -144,7 +186,7 @@ namespace hpl {
 	cWidgetTreeNode* cWidgetTreeNode::AddTreeNode(const tWString& asNode)
 	{
 		cWidgetTreeNode* pNode = hplNew(cWidgetTreeNode, (mpNodeTree));
-		pNode->SetName(asNode);
+		pNode->SetText(asNode);
 		AddChildNode(pNode);
 
 		return pNode;
@@ -160,6 +202,23 @@ namespace hpl {
 	void cWidgetTreeNode::ClearTreeNodes()
 	{
 		STLDeleteAll(mvChildNodes);
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetNodeTree::UpdateTreeHeight()
+	{
+		float fTotalHeight = 0;
+		for (int i = 0; i < (int)mvNodes.size(); ++i)
+		{
+			cWidgetTreeNode* pItem = mvNodes[i];
+			if (pItem == NULL)
+				continue;
+
+			fTotalHeight += pItem->GetNodeHeight();
+		}
+
+		SetSize(cVector2f(mvSize.x, fTotalHeight));
 	}
 
 	//-----------------------------------------------------------------------
@@ -183,8 +242,6 @@ namespace hpl {
 			DrawTreeNode(pItem, vPos);
 			vPos.y += pItem->GetNodeHeight();
 		}
-
-		SetSize(cVector2f(mvSize.x, vPos.y + 16));
 	}
 
 	//-----------------------------------------------------------------------
@@ -253,7 +310,7 @@ namespace hpl {
 		if (mpFocusedNode == apNode)
 		{
 			mpSet->DrawGfx(mpGfxBackground, vPos,
-				vSize, cColor(0.6, 0.6, 0.6, 0.5));
+				vSize, cColor(0.6f, 0.6f, 0.6f, 0.5f));
 		}
 		if (mpSelectedNode && mpSelectedNode == apNode)
 		{
@@ -274,8 +331,7 @@ namespace hpl {
 			DrawDefaultText(apNode->IsExtended() ? _W("-") : _W("+"), vPos + cVector3f(fIndentation + 5, 0, 0.2f), eFontAlign_Center);
 		}
 
-		mpSet->DrawFont(apNode->GetName(), mpDefaultFontType, vPos + cVector3f(fIndentation + 17, 1.25f, 0.1f), mvDefaultFontSize * 0.875f, mDefaultFontColor * mColorMul, eFontAlign_Left);
-		apNode->SetNodeHeight(16);
+		mpSet->DrawFont(apNode->GetText(), mpDefaultFontType, vPos + cVector3f(fIndentation + 17, 1.25f, 0.1f), mvDefaultFontSize * 0.875f, mDefaultFontColor * mColorMul, eFontAlign_Left);
 
 		if (apNode->IsExtended() == false) return;
 
@@ -290,8 +346,6 @@ namespace hpl {
 			DrawTreeNode(pItem, cVector3f(vPos.x, vPos.y + fNodeHeight, vPos.z));
 			fNodeHeight += pItem->GetNodeHeight();
 		}
-
-		apNode->SetNodeHeight(fNodeHeight);
 	}
 
 	void cWidgetNodeTree::ProcessNodeClick(cWidgetTreeNode* apNode, float afHeight, const cVector2f avMouse)

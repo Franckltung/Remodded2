@@ -98,9 +98,9 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	void cWidgetFrame::ChangeBackgroundForColorPicking()
+	void cWidgetFrame::SetBackgroundBgfx(eGuiSkinGfx aType)
 	{
-		mpGfxBackground = mpSkin->GetGfx(eGuiSkinGfx_FrameBackgroundColorPicking);
+		mpGfxBackground = mpSkin->GetGfx(aType);
 	}
 
 	//-----------------------------------------------------------------------

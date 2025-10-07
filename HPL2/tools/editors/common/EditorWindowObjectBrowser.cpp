@@ -228,11 +228,12 @@ kGuiCallbackDeclaredFuncEnd(cEditorWindowObjectBrowser, ObjectList_OnChangeSelec
 
 //-------------------------------------------------------------------
 
-bool cEditorWindowObjectBrowser::Input_OnTextBoxEnter(iWidget* apWidget, const cGuiMessageData& aData)
+bool cEditorWindowObjectBrowser::Input_OnFilterTextChanged(iWidget* apWidget, const cGuiMessageData& aData)
 {
+	mpObjectFilterTempText->SetVisible(mpObjectFilter->GetText().empty());
 	return true;
 }
-kGuiCallbackDeclaredFuncEnd(cEditorWindowObjectBrowser, Input_OnTextBoxEnter);
+kGuiCallbackDeclaredFuncEnd(cEditorWindowObjectBrowser, Input_OnFilterTextChanged);
 
 //-------------------------------------------------------------------
 
@@ -258,18 +259,20 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 
 	///////////////////////////////////////////////////
 	// Object Selection (sets, list..)
-	//mpObjectList = mpSet->CreateWidgetListBox(cVector3f(10,45,0.1f), cVector2f(170,120),mpSelectionGroup);
-	//mpObjectList->SetDefaultFontSize(11);
-	//mpObjectList->SetBackgroundZ(0.001f);
-	//mpObjectList->AddCallback(eGuiMessage_SelectionChange, this, kGuiCallback(ObjectList_OnChangeSelection));
-
 	mpDirectoryFrame = mpSet->CreateWidgetFrame(cVector3f(5, 8, 0.1f), cVector2f(190, 205), true, mpBGFrame, false, true);
+	mpDirectoryFrame->SetBackgroundBgfx(eGuiSkinGfx_ListBoxBackground);
+	mpDirectoryFrame->SetDrawBackground(true);
+
 	mpDirectoryTree = mpSet->CreateWidgetNodeTree(190, mpDirectoryFrame);
 	mpRootDirectory = mpDirectoryTree->AddTreeNode(_W("All"));
 
 	mpRootDirectory->SetExtended(true);
 
-	mpObjectFilter = mpSet->CreateWidgetTextBox(cVector3f(3, 217, 0.1f), cVector2f(194, 0), _W("Test"), mpBGFrame);
+	mpObjectFilter = mpSet->CreateWidgetTextBox(cVector3f(3, 217, 0.1f), cVector2f(194, 0), _W(""), mpBGFrame);
+	mpObjectFilter->AddCallback(eGuiMessage_TextChange, this, kGuiCallback(Input_OnFilterTextChanged));
+
+	mpObjectFilterTempText = mpSet->CreateWidgetLabel(cVector3f(8, 220, 0.2f), cVector2f(194, 0), _W("Type a filter string here..."), mpBGFrame);
+	mpObjectFilterTempText->SetColorMul(cColor(1, 1, 1, 0.3f));
 
 	mpObjectSelectGroup = mpSet->CreateWidgetFrame(cVector3f(5, 243, 0.1f), cVector2f(190, 260), true, mpBGFrame, false, true);
 	mpObjectSelectGroup->SetBackGroundColor(cColor(0.35, 0.35, 0.35, 1));
@@ -294,19 +297,21 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 
 void cEditorWindowObjectBrowser::BuildObjectSetList()
 {
-	mvDirectories.clear();
+	mpRootDirectory->ClearTreeNodes();
 
 	for(int i=0;i<(int)mvBaseDirs.size();++i)
-        BuildObjectSetListHelper(mvBaseDirs[i],0);	
+        BuildObjectSetListHelper(mvBaseDirs[i],0,mpRootDirectory);
 }
 
 //-------------------------------------------------------------------
 
-void cEditorWindowObjectBrowser::BuildObjectSetListHelper(const tWString& asFolder, int alLevel)
+void cEditorWindowObjectBrowser::BuildObjectSetListHelper(const tWString& asFolder, int alLevel, cWidgetTreeNode* apNode)
 {
 	tWStringList lstObjectDirs;
 
 	cPlatform::FindFoldersInDir(lstObjectDirs, asFolder, false);
+	//Log("BuildHelper - Level %i - ", alLevel);
+	//Log("%s\n", cString::To8Char(asFolder).c_str());
 
 	tWStringListIt it = lstObjectDirs.begin();
 
@@ -314,12 +319,9 @@ void cEditorWindowObjectBrowser::BuildObjectSetListHelper(const tWString& asFold
 	{
 		tWString sDir = cString::AddSlashAtEndW(asFolder) + *it;
 
-		tWString sItem;
-		sItem.append(alLevel,_W('-'));
-		sItem += *it;
-
-		mvDirectories.push_back(sDir);
-		mpRootDirectory->AddTreeNode(sItem);
+		cWidgetTreeNode* pNode = apNode->AddTreeNode(*it);
+		pNode->SetName(sDir);
+		BuildObjectSetListHelper(sDir, alLevel+1, pNode);
 	}
 }
 
@@ -353,7 +355,9 @@ void cEditorWindowObjectBrowser::WriteInvalidFileListToFile(tWString& asFolder, 
 
 void cEditorWindowObjectBrowser::BuildObjectList()
 {
-	//mpCurrentIndex = CreateIndex(mpObjectSets->GetText());
+	cWidgetTreeNode* pNode = mpDirectoryTree->GetSelectedNode();
+	if(pNode) mpCurrentIndex = CreateIndex(pNode->GetName());
+	mpCurrentIndex = NULL;
 
 	UpdateObjectList();
 }

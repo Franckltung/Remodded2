@@ -1066,6 +1066,9 @@
     <ClInclude Include="include\gui\WidgetNodeTree.h">
       <Filter>Gui</Filter>
     </ClInclude>
+    <ClInclude Include="include\gui\WidgetMeshObjectList.h">
+      <Filter>Gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sources\system\Container.cpp">
@@ -1942,6 +1945,9 @@
       <Filter>Impl\Input</Filter>
     </ClCompile>
     <ClCompile Include="sources\gui\WidgetNodeTree.cpp">
+      <Filter>Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\gui\WidgetMeshObjectList.cpp">
       <Filter>Gui</Filter>
     </ClCompile>
   </ItemGroup>
