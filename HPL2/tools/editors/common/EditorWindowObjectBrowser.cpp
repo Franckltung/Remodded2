@@ -145,6 +145,49 @@ cMeshEntity* iEditorObjectIndexEntryMeshObject::CreateTempEntity(cWorld* apWorld
 
 //-------------------------------------------------------------------
 
+cWidgetMeshObjectBrowserItem::cWidgetMeshObjectBrowserItem(const tWString& asName, iEditorObjectIndexEntry* apObject, iEditorBase* apEditor) : iWidgetMeshObjectItem(asName)
+{
+	mpObject = apObject;
+	mpEditor = apEditor;
+}
+
+//-------------------------------------------------------------------
+
+cWidgetMeshObjectBrowserItem::~cWidgetMeshObjectBrowserItem()
+{
+	mpObject = NULL;
+	mpEditor = NULL;
+}
+
+//-------------------------------------------------------------------
+
+void cWidgetMeshObjectBrowserItem::LoadThumbnail()
+{
+	if (mpObject == NULL) return;
+	if (mpObject->IsRemoved()) return;
+	
+	mpObject->BuildThumbnail();
+	mpEditor->GetEngine()->GetResources()->AddResourceDir(mpEditor->GetThumbnailDir(), false);
+	//mpObject->GetDir()->GetIndex()->Refresh();
+	cGui* pGui = mpEditor->GetEngine()->GetGui();
+
+	tWString sThumbPath = mpObject->GetThumbnailFilename();
+	tString sThumbFile = cString::To8Char(sThumbPath);
+	mpThumbnail = pGui->CreateGfxImage(sThumbFile,eGuiMaterial_Diffuse);
+}
+
+//-------------------------------------------------------------------
+
+void cWidgetMeshObjectBrowserItem::DisposeThumbnail()
+{
+	cGui* pGui = mpEditor->GetEngine()->GetGui();
+	pGui->DestroyGfx(mpThumbnail);
+
+	mpThumbnail = NULL;
+}
+
+//-------------------------------------------------------------------
+
 ////////////////////////////////////////////////////////////////////
 // CONSTRUCTORS
 ////////////////////////////////////////////////////////////////////
@@ -264,7 +307,9 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 	mpDirectoryFrame->SetDrawBackground(true);
 
 	mpDirectoryTree = mpSet->CreateWidgetNodeTree(190, mpDirectoryFrame);
+	mpDirectoryTree->AddCallback(eGuiMessage_SelectionChange, this, kGuiCallback(ObjectSets_OnChange));
 	mpRootDirectory = mpDirectoryTree->AddTreeNode(_W("All"));
+	mpRootDirectory->SetName(_W("_ALL_"));
 
 	mpRootDirectory->SetExtended(true);
 
@@ -275,17 +320,10 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 	mpObjectFilterTempText->SetColorMul(cColor(1, 1, 1, 0.3f));
 
 	mpObjectSelectGroup = mpSet->CreateWidgetFrame(cVector3f(5, 243, 0.1f), cVector2f(190, 260), true, mpBGFrame, false, true);
-	mpObjectSelectGroup->SetBackGroundColor(cColor(0.35, 0.35, 0.35, 1));
+	mpObjectSelectGroup->SetBackGroundColor(cColor(0.35f, 0.35f, 0.35f, 1));
 	mpObjectSelectGroup->SetDrawBackground(true);
 
-	mpSet->CreateWidgetButton(cVector3f(2, 2, 0.1f), cVector2f(82, 82), _W("Test1"), mpObjectSelectGroup);
-	mpSet->CreateWidgetButton(cVector3f(88, 2, 0.1f), cVector2f(82, 82), _W("Test2"), mpObjectSelectGroup);
-	mpSet->CreateWidgetButton(cVector3f(2, 88, 0.1f), cVector2f(82, 82), _W("Test3"), mpObjectSelectGroup);
-	mpSet->CreateWidgetButton(cVector3f(88, 88, 0.1f), cVector2f(82, 82), _W("Test4"), mpObjectSelectGroup);
-	mpSet->CreateWidgetButton(cVector3f(2, 174, 0.1f), cVector2f(82, 82), _W("Test5"), mpObjectSelectGroup);
-	mpSet->CreateWidgetButton(cVector3f(88, 174, 0.1f), cVector2f(82, 82), _W("Test6"), mpObjectSelectGroup);
-	mpSet->CreateWidgetButton(cVector3f(2, 260, 0.1f), cVector2f(82, 82), _W("Test7"), mpObjectSelectGroup);
-	
+	mpObjectList = mpSet->CreateWidgetMeshObjectList(0, cVector2f(172, 172), mpObjectSelectGroup);
 
     ///////////////////////////////////////////////
 	// Object info: BV Size, poly count, thumbnail
@@ -356,8 +394,9 @@ void cEditorWindowObjectBrowser::WriteInvalidFileListToFile(tWString& asFolder, 
 void cEditorWindowObjectBrowser::BuildObjectList()
 {
 	cWidgetTreeNode* pNode = mpDirectoryTree->GetSelectedNode();
-	if(pNode) mpCurrentIndex = CreateIndex(pNode->GetName());
-	mpCurrentIndex = NULL;
+	
+	if(pNode && pNode != mpRootDirectory) mpCurrentIndex = CreateIndex(pNode);
+	else mpCurrentIndex = NULL;
 
 	UpdateObjectList();
 }
@@ -367,7 +406,7 @@ void cEditorWindowObjectBrowser::BuildObjectList()
 void cEditorWindowObjectBrowser::ClearObjectList()
 {
 	mvCurrentListedEntries.clear();
-	//mpObjectList->ClearItems();
+	mpObjectList->ClearItems();
 	UpdateObjectInfo();
 }
 
@@ -376,7 +415,23 @@ void cEditorWindowObjectBrowser::ClearObjectList()
 void cEditorWindowObjectBrowser::UpdateObjectList()
 {
 	ClearObjectList();
-	AddEntriesInDirToList(mpCurrentIndex->GetRootDir(), mvCurrentListedEntries); 
+	if (mpCurrentIndex == NULL)
+	{
+		tWidgetTreeNodeVec& vChildNodes = mpRootDirectory->GetChildNodes();
+
+		for (int i = 0; i < (int)vChildNodes.size(); ++i)
+		{
+			cWidgetTreeNode* pNode = vChildNodes[i];
+			if (pNode == NULL)
+				continue;
+
+			iEditorObjectIndex* pIndex = CreateIndex(pNode);
+			AddEntriesInDirToList(pIndex->GetRootDir(), mvCurrentListedEntries);
+		}
+	}
+	else AddEntriesInDirToList(mpCurrentIndex->GetRootDir(), mvCurrentListedEntries); 
+
+	mpObjectList->UpdateProperties();
 }
 
 //-------------------------------------------------------------------
@@ -384,16 +439,9 @@ void cEditorWindowObjectBrowser::UpdateObjectList()
 void cEditorWindowObjectBrowser::UpdateObjectInfo()
 {
 	iEditorObjectIndexEntryMeshObject* pObj = GetSelectedObject();
-	cGui* pGui = mpEditor->GetEngine()->GetGui();
 
 	tWString sBVSize;
 	tWString sTriCount;
-
-	/*
-	cGuiGfxElement* pImg = mpThumbnail->GetImage();
-	if(pImg!=NULL)
-		pGui->DestroyGfx(pImg);
-	*/
 
 	cWorld* pWorld = mpEditor->GetEditorWorld()->GetWorld();
 
@@ -405,8 +453,6 @@ void cEditorWindowObjectBrowser::UpdateObjectInfo()
 	{
 		sBVSize = _W("");
 		sTriCount = _W("");
-
-		//pImg = NULL;
 	}
 	else
 	{
@@ -421,23 +467,27 @@ void cEditorWindowObjectBrowser::UpdateObjectInfo()
 		sBVSize+=_W(")");
 
 		sTriCount = cString::ToStringW(pObj->GetTriangleCount());
-		tString sThumbFile = cString::To8Char(pObj->GetThumbnailFilename());
-		//pImg = pGui->CreateGfxImage(sThumbFile,eGuiMaterial_Diffuse);
 	}
-
-	//mvLabelBVSize[1]->SetText(sBVSize);
-	//mvLabelPolyCount[1]->SetText(sTriCount);
-
-	//mpThumbnail->SetImage(pImg);
 }
 
 //-------------------------------------------------------------------
 
-iEditorObjectIndex* cEditorWindowObjectBrowser::CreateIndex(const tWString& asFolder)
+iEditorObjectIndex* cEditorWindowObjectBrowser::CreateIndex(cWidgetTreeNode* apNode)
 {
+	if (apNode == mpRootDirectory) return NULL;
+
+	tWString sFullFolder = apNode->GetText();
+	cWidgetTreeNode* pParentNode = apNode->GetParentNode();
+	while (pParentNode)
+	{
+		if (pParentNode == mpRootDirectory) break;
+		sFullFolder = cString::AddSlashAtEndW(pParentNode->GetText()) + sFullFolder;
+		pParentNode = pParentNode->GetParentNode();
+	}
+
 	///////////////////////////////////////////////////////////
 	// First try to return an already created index
-	std::map<tWString, iEditorObjectIndex*>::iterator it = mmapObjectIndices.find(asFolder);
+	std::map<tWString, iEditorObjectIndex*>::iterator it = mmapObjectIndices.find(sFullFolder);
     if(it!=mmapObjectIndices.end())
 	{
 		iEditorObjectIndex* pIndex = it->second;
@@ -451,14 +501,14 @@ iEditorObjectIndex* cEditorWindowObjectBrowser::CreateIndex(const tWString& asFo
 	iEditorObjectIndex* pIndex = NULL;
 	for(int i=0;i<(int)mvBaseDirs.size();++i)
 	{
-		tWString sFolder = cString::AddSlashAtEndW(mvBaseDirs[i]) + asFolder;
+		tWString sFolder = cString::AddSlashAtEndW(mvBaseDirs[i]) + sFullFolder;
 		if(cPlatform::FolderExists(sFolder)==false)
 			continue;
 
 		pIndex = CreateSpecificIndex(mpEditor, sFolder);
 		if(pIndex)
 		{
-			mmapObjectIndices[asFolder] = pIndex;
+			mmapObjectIndices[sFullFolder] = pIndex;
 			pIndex->Create();
 
 			break;
@@ -479,7 +529,13 @@ void cEditorWindowObjectBrowser::AddEntriesInDirToList(iEditorObjectIndexDir* ap
 	{
 		iEditorObjectIndexEntry* pEntry = itEntries->second;
 
-		//mpObjectList->AddItem(pEntry->GetEntryName());
+		cWidgetMeshObjectBrowserItem* pItem = 
+			hplNew(cWidgetMeshObjectBrowserItem, 
+				(cString::To16Char(pEntry->GetEntryName()), 
+				pEntry,
+				mpEditor));
+
+		mpObjectList->AddItem(pItem);
 		avEntries.push_back((iEditorObjectIndexEntryMeshObject*)pEntry);
 	}
 

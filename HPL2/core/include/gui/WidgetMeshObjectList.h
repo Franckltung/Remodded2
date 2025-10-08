@@ -24,13 +24,71 @@
 
 namespace hpl {
 
+	class iWidgetMeshObjectItem;
+
+	typedef std::vector<iWidgetMeshObjectItem*> tWidgetMeshObjectItemVec;
+	typedef tWidgetMeshObjectItemVec::iterator tWidgetMeshObjectItemVecIt;
+
 	class cWidgetMeshObjectList : public iWidget
 	{
 	public:
 		cWidgetMeshObjectList(cGuiSet *apSet, cGuiSkin *apSkin);
-		virtual ~cWidgetMeshObjectList();
+		~cWidgetMeshObjectList();
+
+		void AddItem(iWidgetMeshObjectItem* apItem);
+
+		void ClearItems();
+
+		void UpdateProperties();
 
 	protected:
+		/////////////////////////
+		// Own functions
+		
+
+		/////////////////////////
+		// Implemented functions
+		void OnChangeSize();
+		void OnLoadGraphics();
+
+		void OnDraw(float afTimeStep, cGuiClipRegion* apClipRegion);
+
+		/////////////////////////
+		// Data
+		cGuiGfxElement* mpGfxSelection;
+		cGuiGfxElement* mpGfxBlank;
+
+		tWidgetMeshObjectItemVec mvItems;
+	};
+
+	class iWidgetMeshObjectItem
+	{
+	public:
+		iWidgetMeshObjectItem(const tWString& asName);
+		~iWidgetMeshObjectItem();
+
+		void SetList(cWidgetMeshObjectList* apList) { mpList = apList; }
+
+		void SetName(const tWString& asName) { msName = asName; }
+		const tWString& GetName() { return msName; }
+
+		void SetFullPath(const tWString& asFullPath) { msFullPath = asFullPath; }
+		const tWString& GetFullPath() { return msFullPath; }
+
+		virtual void LoadThumbnail(){}
+		virtual void DisposeThumbnail(){}
+
+		cGuiGfxElement* GetThumbnail();
+
+	protected:
+
+		/////////////////////////
+		// Data
+		tWString msName;
+		tWString msFullPath;
+
+		cWidgetMeshObjectList* mpList;
+		cGuiGfxElement* mpThumbnail;
 	};
 
 };

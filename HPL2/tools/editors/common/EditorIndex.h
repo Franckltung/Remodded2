@@ -190,12 +190,14 @@ public:
 	const tWString& GetThumbnailFilename();
 
 	bool IsUpdated() { return mbUpdated; }
+	bool IsRemoved() { return mbRemoved; }
 
 	iEditorObjectIndexDir* GetDir() { return mpParentDir; }
 
+	virtual void BuildThumbnail() = 0;
+
 protected:
 	virtual void BuildEntryName(tString& asEntryName);
-	virtual void BuildThumbnail()=0;
 
 	iEditorObjectIndexDir* mpParentDir;
 	tString msEntryName;

@@ -19,68 +19,14 @@
 
 #include "gui/WidgetMeshObjectList.h"
 
+#include "math/Math.h"
+
+#include "gui/Gui.h"
+#include "gui/GuiSet.h"
+#include "gui/GuiSkin.h"
+#include "gui/GuiGfxElement.h"
 
 namespace hpl {
-
-	/*
-	
-	cEditorObjectList::cEditorObjectList(cEditorWindowObjectBrowser* apBrowser, cGuiSet* apSet, cGuiSkin* apSkin) : iWidget(eWidgetType_ListBox, apSet, apSkin)
-	{
-		mpBrowser = apBrowser;
-	}
-
-	cEditorObjectList::~cEditorObjectList()
-	{
-	}
-
-	void cEditorObjectList::UpdateProperties()
-	{
-		float fItemHeight = (mvSize.x * 0.5);
-
-		float fTotalContentHeight = fItemHeight * floorf(((int)mvItems.size()-1) * 0.5f);
-
-		SetSize(cVector2f(mvSize.x, fTotalContentHeight));
-	}
-
-	void cEditorObjectList::OnLoadGraphics()
-	{
-		mpGfxSelection = mpSkin->GetGfx(eGuiSkinGfx_TextBoxSelectedTextBack);
-	}
-
-	void cEditorObjectList::OnDraw(float afTimeStep, cGuiClipRegion* apClipRegion)
-	{
-		cVector3f vPosition = GetGlobalPosition() + cVector3f(0, 0, 0.4f);
-		cVector2f vItemSize = cVector2f((mvSize.x * 0.5),(mvSize.x * 0.5));
-
-		for (int i = 0; i < (int)mvItems.size(); ++i)
-		{
-			cWidgetItem* pItem = mvItems[i];
-			if (pItem == NULL)
-				continue;
-
-			float fX = (bool)(i % 1) ? vItemSize.x : 0;
-			float fY = vItemSize.y * floorf(i * 0.5f);
-
-			cVector3f vItemPosition = vPosition + cVector3f(fX, fY, 0.1f);
-
-			if (!cMath::CheckRectIntersection(apClipRegion->mRect, cRect2f(cVector2f(vItemPosition.x, vItemPosition.y), vItemSize)))
-				return;
-
-			cGuiClipRegion* pRegion = apClipRegion->CreateChild(vItemPosition, vItemSize);
-			mpSet->SetCurrentClipRegion(pRegion);
-
-			mpSet->DrawGfx(mpGfxSelection, vItemPosition, vItemSize, cColor(1, 0, 0, 1));
-
-			if (pItem->IsSelected())
-			{
-				mpSet->DrawGfx(mpGfxSelection, vItemPosition - cVector3f(0, 0, 0.01f), vItemSize);
-			}
-
-			mpSet->SetCurrentClipRegion(apClipRegion);
-		}
-	}
-
-	*/
 
 	//////////////////////////////////////////////////////////////////////////
 	// CONSTRUCTORS
@@ -100,9 +46,141 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	iWidgetMeshObjectItem::iWidgetMeshObjectItem(const tWString& asName)
+	{
+		msName = asName;
+
+		mpList = NULL;
+		mpThumbnail = NULL;
+	}
+
+	//-----------------------------------------------------------------------
+
+	iWidgetMeshObjectItem::~iWidgetMeshObjectItem()
+	{
+		DisposeThumbnail();
+
+		mpList = NULL;
+		mpThumbnail = NULL;
+	}
+
+	//-----------------------------------------------------------------------
+
 	//////////////////////////////////////////////////////////////////////////
 	// PUBLIC METHODS
 	//////////////////////////////////////////////////////////////////////////
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetMeshObjectList::AddItem(iWidgetMeshObjectItem* apItem)
+	{
+		mvItems.push_back(apItem);
+		apItem->SetList(this);
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetMeshObjectList::ClearItems()
+	{
+		STLDeleteAll(mvItems);
+
+		UpdateProperties();
+	}
+
+	//-----------------------------------------------------------------------
+
+	cGuiGfxElement* iWidgetMeshObjectItem::GetThumbnail()
+	{
+		if (mpThumbnail) return mpThumbnail;
+		LoadThumbnail();
+		return mpThumbnail;
+	}
+
+	//-----------------------------------------------------------------------
+
+	//////////////////////////////////////////////////////////////////////////
+	// PROTECTED METHODS
+	//////////////////////////////////////////////////////////////////////////
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetMeshObjectList::UpdateProperties()
+	{
+		float fItemBottomPadding = GetDefaultFontSize().y + 2;
+		float fItemHeight = (mvSize.x / 2) + fItemBottomPadding;
+
+		float fRows = floorf(((int)mvItems.size() - 1) / 2);
+		float fTotalContentHeight = fItemHeight * (fRows + 1);
+
+		SetSize(cVector2f(mvSize.x, fTotalContentHeight));
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetMeshObjectList::OnChangeSize()
+	{
+		//UpdateProperties();
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetMeshObjectList::OnLoadGraphics()
+	{
+		mpGfxSelection = mpSkin->GetGfx(eGuiSkinGfx_TextBoxSelectedTextBack);
+		mpGfxBlank = mpSkin->GetGfx(eGuiSkinGfx_FrameBackgroundColorPicking);
+
+		SetDefaultFontSize(11);
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetMeshObjectList::OnDraw(float afTimeStep, cGuiClipRegion* apClipRegion)
+	{
+		cVector3f vPosition = GetGlobalPosition() + cVector3f(0, 0, 0.4f);
+		float fItemBottomPadding = GetDefaultFontSize().y + 2;
+		cVector2f vItemSize = cVector2f((mvSize.x / 2), (mvSize.x / 2) + fItemBottomPadding);
+
+		//Log("%f\n", vPosition.y);
+
+		for (int i = 0; i < (int)mvItems.size(); ++i)
+		{
+			iWidgetMeshObjectItem* pItem = mvItems[i];
+			if (pItem == NULL)
+				continue;
+
+			float fX = (bool)(i % 2) ? vItemSize.x : 0;
+			float fY = vItemSize.y * floorf((float)i / 2);
+			if (fY + vPosition.y > apClipRegion->mRect.y + apClipRegion->mRect.h) break;
+
+			cVector3f vItemPosition = vPosition + cVector3f(fX, fY, 0.1f);
+
+			if (!cMath::CheckRectIntersection(apClipRegion->mRect, cRect2f(cVector2f(vItemPosition.x, vItemPosition.y), vItemSize)))
+				continue;
+
+			cGuiClipRegion* pRegion = apClipRegion->CreateChild(vItemPosition, vItemSize);
+			mpSet->SetCurrentClipRegion(pRegion);
+
+			cGuiGfxElement* pThumbnail = pItem->GetThumbnail();
+			if (pThumbnail)
+			{
+				mpSet->DrawGfx(pThumbnail,
+					vItemPosition + cVector3f(3, 3, 0.1f),
+					vItemSize - cVector2f(6, 6 + fItemBottomPadding));
+			}
+			else
+			{
+				mpSet->DrawGfx(mpGfxBlank, 
+					vItemPosition + cVector3f(3,3,0.1f), 
+					vItemSize - cVector2f(6, 6 + fItemBottomPadding),
+					cColor(0.7f,0.7f,0.7f));
+			}
+
+			//mpSet->DrawGfx(mpGfxSelection, vItemPosition, vItemSize);
+			DrawDefaultText(pItem->GetName(), vItemPosition + cVector3f(vItemSize.x * 0.5f, vItemSize.y - fItemBottomPadding, 0.15f), eFontAlign_Center);
+
+			mpSet->SetCurrentClipRegion(apClipRegion);
+		}
+	}
 
 	//-----------------------------------------------------------------------
 }

@@ -63,6 +63,7 @@ namespace hpl {
 	class cWidgetTabFrame;
 	class cWidgetGroup;
 	class cWidgetDummy;
+	class cWidgetMeshObjectList;
 
 	class cGuiPopUpMessageBox;
 	class cGuiPopUpFilePicker;
@@ -344,6 +345,10 @@ namespace hpl {
 												iWidget *apParent=NULL,
 												const tString& asName = "");
 
+		cWidgetMeshObjectList* CreateWidgetMeshObjectList(const cVector3f& avLocalPos = 0,
+															const cVector2f& avSize = 0,
+															iWidget* apParent = NULL,
+															const tString& asName = "");
 
 		iWidget *GetWidgetFromName(const tString& asName);
 

@@ -57,8 +57,10 @@ public:
 	void Save(cXmlElement* apElement);
 
 	virtual cMeshEntity* CreateTempEntity(cWorld* apWorld);
-protected:
+
 	void BuildThumbnail();
+
+protected:
 
 	cVector3f mvBVMin;
 	cVector3f mvBVMax;
@@ -67,6 +69,30 @@ protected:
 	tString msTempFileName;
 
 	tWString msMeshFileName;
+};
+
+//----------------------------------------------------------
+
+////////////////////////////////////////////////////////////
+// MESH LIST ITEM
+////////////////////////////////////////////////////////////
+
+//----------------------------------------------------------
+
+class cWidgetMeshObjectBrowserItem : public iWidgetMeshObjectItem
+{
+public:
+	cWidgetMeshObjectBrowserItem(const tWString& asName, iEditorObjectIndexEntry* apObject, iEditorBase* apEditor);
+	~cWidgetMeshObjectBrowserItem();
+
+	void LoadThumbnail();
+	void DisposeThumbnail();
+
+protected:
+
+	iEditorObjectIndexEntry* mpObject;
+	iEditorBase* mpEditor;
+
 };
 
 //----------------------------------------------------------
@@ -117,7 +143,7 @@ protected:
 	void UpdateObjectInfo();
 	void AddEntriesInDirToList(iEditorObjectIndexDir* apDir,std::vector<iEditorObjectIndexEntryMeshObject*>& avEntries);
 
-	iEditorObjectIndex* CreateIndex(const tWString& asFolder);
+	iEditorObjectIndex* CreateIndex(cWidgetTreeNode* apNode);
 	virtual iEditorObjectIndex* CreateSpecificIndex(iEditorBase* apEditorBase, const tWString& asFolder)=0;
 
 	virtual cMeshEntity* CreatePreviewEntity(iEditorObjectIndexEntryMeshObject* apEntry)=0;
@@ -148,6 +174,7 @@ protected:
 	cWidgetLabel* mpObjectFilterTempText;
 
 	cWidgetFrame* mpObjectSelectGroup;
+	cWidgetMeshObjectList* mpObjectList;
 
 
 	tWStringVec mvCategoryStrings;

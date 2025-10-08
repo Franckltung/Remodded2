@@ -70,6 +70,7 @@
 #include "gui/WidgetTabFrame.h"
 #include "gui/WidgetGroup.h"
 #include "gui/WidgetDummy.h"
+#include "gui/WidgetMeshObjectList.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -1025,6 +1026,19 @@ namespace hpl {
 		pDummy->SetName(asName);
 		AddWidget(pDummy,apParent);
 		return pDummy;	
+	}
+
+	cWidgetMeshObjectList* cGuiSet::CreateWidgetMeshObjectList(const cVector3f& avLocalPos,
+														const cVector2f& avSize,
+														iWidget* apParent,
+														const tString& asName)
+	{
+		cWidgetMeshObjectList* pMeshObjectList = hplNew(cWidgetMeshObjectList, (this, mpSkin));
+		pMeshObjectList->SetPosition(avLocalPos);
+		pMeshObjectList->SetSize(avSize);
+		pMeshObjectList->SetName(asName);
+		AddWidget(pMeshObjectList, apParent);
+		return pMeshObjectList;
 	}
 
 	//-----------------------------------------------------------------------
