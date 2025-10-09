@@ -41,6 +41,11 @@ namespace hpl {
 
 		void UpdateProperties();
 
+		void SetFilter(const tWString& asFilter);
+		const tWString& GetFilter() { return msFilter; }
+
+		int GetSelectedItemIdx() { return mlSelectedItem; }
+
 	protected:
 		/////////////////////////
 		// Own functions
@@ -53,12 +58,27 @@ namespace hpl {
 
 		void OnDraw(float afTimeStep, cGuiClipRegion* apClipRegion);
 
+		bool OnMouseMove(const cGuiMessageData& aData);
+		bool OnMouseDown(const cGuiMessageData& aData);
+		bool OnMouseEnter(const cGuiMessageData& aData);
+		bool OnMouseLeave(const cGuiMessageData& aData);
+
 		/////////////////////////
 		// Data
+		tWString msFilter;
+
+		float mfItemWidth;
+		float mfItemHeight;
+		float mfItemLabelPadding;
+
+		int mlHoveredItem;
+		int mlSelectedItem;
+
 		cGuiGfxElement* mpGfxSelection;
 		cGuiGfxElement* mpGfxBlank;
 
 		tWidgetMeshObjectItemVec mvItems;
+		tIntVec mvVisualItems;
 	};
 
 	class iWidgetMeshObjectItem

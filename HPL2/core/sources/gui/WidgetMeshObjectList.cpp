@@ -20,6 +20,7 @@
 #include "gui/WidgetMeshObjectList.h"
 
 #include "math/Math.h"
+#include "system/String.h"
 
 #include "gui/Gui.h"
 #include "gui/GuiSet.h"
@@ -36,6 +37,8 @@ namespace hpl {
 
 	cWidgetMeshObjectList::cWidgetMeshObjectList(cGuiSet *apSet, cGuiSkin *apSkin) : iWidget(eWidgetType_MeshObjectList,apSet, apSkin)
 	{
+		mlHoveredItem = -1;
+		mlSelectedItem = -1;
 	}
 
 	//-----------------------------------------------------------------------
@@ -74,8 +77,12 @@ namespace hpl {
 
 	void cWidgetMeshObjectList::AddItem(iWidgetMeshObjectItem* apItem)
 	{
+		int lIdx = mvItems.size();
 		mvItems.push_back(apItem);
 		apItem->SetList(this);
+
+		if (msFilter.empty()) mvVisualItems.push_back(lIdx);
+		else if(cString::GetFirstStringPosW(apItem->GetName(), msFilter) != -1) mvVisualItems.push_back(lIdx);
 	}
 
 	//-----------------------------------------------------------------------
@@ -83,6 +90,9 @@ namespace hpl {
 	void cWidgetMeshObjectList::ClearItems()
 	{
 		STLDeleteAll(mvItems);
+		mvVisualItems.clear();
+
+		mlSelectedItem = -1;
 
 		UpdateProperties();
 	}
@@ -98,22 +108,54 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PROTECTED METHODS
-	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
-
 	void cWidgetMeshObjectList::UpdateProperties()
 	{
-		float fItemBottomPadding = GetDefaultFontSize().y + 2;
-		float fItemHeight = (mvSize.x / 2) + fItemBottomPadding;
+		mfItemLabelPadding = GetDefaultFontSize().y + 2;
+		mfItemWidth = (mvSize.x / 2);
+		mfItemHeight = mfItemWidth + mfItemLabelPadding;
 
-		float fRows = floorf(((int)mvItems.size() - 1) / 2);
-		float fTotalContentHeight = fItemHeight * (fRows + 1);
+		int lVisItems = (int)mvVisualItems.size();
+
+		float fRows = floorf((lVisItems - 1) / 2);
+		float fTotalContentHeight = mfItemHeight * (fRows + 1);
 
 		SetSize(cVector2f(mvSize.x, fTotalContentHeight));
 	}
+
+	//-----------------------------------------------------------------------
+
+	void cWidgetMeshObjectList::SetFilter(const tWString& asFilter)
+	{
+		msFilter = asFilter;
+
+		mvVisualItems.clear();
+		int lItemsNum = (int)mvItems.size();
+
+		if (msFilter.empty())
+		{
+			for (int i = 0; i < lItemsNum; ++i)
+			{
+				mvVisualItems.push_back(i);
+			}
+
+			return;
+		}
+
+		for (int i = 0; i < lItemsNum; ++i)
+		{
+			iWidgetMeshObjectItem* pItem = mvItems[i];
+			if (pItem == NULL)
+				continue;
+
+			if (cString::GetFirstStringPosW(pItem->GetName(), msFilter) != -1) mvVisualItems.push_back(i);
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	//////////////////////////////////////////////////////////////////////////
+	// PROTECTED METHODS
+	//////////////////////////////////////////////////////////////////////////
 
 	//-----------------------------------------------------------------------
 
@@ -137,14 +179,16 @@ namespace hpl {
 	void cWidgetMeshObjectList::OnDraw(float afTimeStep, cGuiClipRegion* apClipRegion)
 	{
 		cVector3f vPosition = GetGlobalPosition() + cVector3f(0, 0, 0.4f);
-		float fItemBottomPadding = GetDefaultFontSize().y + 2;
-		cVector2f vItemSize = cVector2f((mvSize.x / 2), (mvSize.x / 2) + fItemBottomPadding);
+		cVector2f vItemSize = cVector2f(mfItemWidth, mfItemHeight);
 
-		//Log("%f\n", vPosition.y);
+		//Log("%f\n", vPosition.y)
 
-		for (int i = 0; i < (int)mvItems.size(); ++i)
+		int lNumVisItems = (int)mvVisualItems.size();
+
+		for (int i = 0; i < lNumVisItems; ++i)
 		{
-			iWidgetMeshObjectItem* pItem = mvItems[i];
+			int lItemIndex = mvVisualItems[i];
+			iWidgetMeshObjectItem* pItem = mvItems[lItemIndex];
 			if (pItem == NULL)
 				continue;
 
@@ -165,22 +209,63 @@ namespace hpl {
 			{
 				mpSet->DrawGfx(pThumbnail,
 					vItemPosition + cVector3f(3, 3, 0.1f),
-					vItemSize - cVector2f(6, 6 + fItemBottomPadding));
+					vItemSize - cVector2f(6, 6 + mfItemLabelPadding));
 			}
 			else
 			{
 				mpSet->DrawGfx(mpGfxBlank, 
 					vItemPosition + cVector3f(3,3,0.1f), 
-					vItemSize - cVector2f(6, 6 + fItemBottomPadding),
+					vItemSize - cVector2f(6, 6 + mfItemLabelPadding),
 					cColor(0.7f,0.7f,0.7f));
 			}
 
-			//mpSet->DrawGfx(mpGfxSelection, vItemPosition, vItemSize);
-			DrawDefaultText(pItem->GetName(), vItemPosition + cVector3f(vItemSize.x * 0.5f, vItemSize.y - fItemBottomPadding, 0.15f), eFontAlign_Center);
+			if(mlSelectedItem == lItemIndex)
+				mpSet->DrawGfx(mpGfxBlank, vItemPosition, vItemSize, cColor(1,1,1, 0.6));
+
+			DrawDefaultText(pItem->GetName(), vItemPosition + cVector3f(vItemSize.x * 0.5f, vItemSize.y - mfItemLabelPadding, 0.15f), eFontAlign_Center);
 
 			mpSet->SetCurrentClipRegion(apClipRegion);
 		}
 	}
 
 	//-----------------------------------------------------------------------
+
+	bool cWidgetMeshObjectList::OnMouseMove(const cGuiMessageData& aData)
+	{
+		cVector3f vLocalPos = WorldToLocalPosition(aData.mvPos);
+
+		int lRow = floorf(vLocalPos.y / mfItemHeight);
+		int lColumn = floorf(vLocalPos.x / mfItemWidth);
+
+		mlHoveredItem = (2 * lRow) + lColumn;
+
+		if (mlHoveredItem < 0 || mlHoveredItem >= (int)mvVisualItems.size()) mlHoveredItem = -1;
+		else mlHoveredItem = mvVisualItems[mlHoveredItem];
+
+		ProcessMessage(eGuiMessage_SelectionChange, aData);
+
+		return true;
+	}
+
+	bool cWidgetMeshObjectList::OnMouseDown(const cGuiMessageData& aData)
+	{
+		if (IsEnabled() && aData.mlVal == eGuiMouseButton_Left)
+		{
+			mlSelectedItem = mlHoveredItem;
+
+			return true;
+		}
+		return false;
+	}
+
+	bool cWidgetMeshObjectList::OnMouseEnter(const cGuiMessageData& aData)
+	{
+		return false;
+	}
+
+	bool cWidgetMeshObjectList::OnMouseLeave(const cGuiMessageData& aData)
+	{
+		mlHoveredItem = -1;
+		return false;
+	}
 }

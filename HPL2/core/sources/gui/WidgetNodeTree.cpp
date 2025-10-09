@@ -387,7 +387,7 @@ namespace hpl {
 			}
 		}
 
-		if (!bHasChildren) return;
+		if (!bHasChildren || !apNode->IsExtended()) return;
 
 		float fNextHeight = afHeight + 16;
 

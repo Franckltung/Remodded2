@@ -226,7 +226,7 @@ cEditorWindowObjectBrowser::~cEditorWindowObjectBrowser()
 
 iEditorObjectIndexEntryMeshObject* cEditorWindowObjectBrowser::GetSelectedObject()
 {
-	int lIndex = -1;
+	int lIndex = mpObjectList->GetSelectedItemIdx();
 
 	if(lIndex==-1 || lIndex >(int)mvCurrentListedEntries.size())
 		return NULL;
@@ -273,7 +273,10 @@ kGuiCallbackDeclaredFuncEnd(cEditorWindowObjectBrowser, ObjectList_OnChangeSelec
 
 bool cEditorWindowObjectBrowser::Input_OnFilterTextChanged(iWidget* apWidget, const cGuiMessageData& aData)
 {
-	mpObjectFilterTempText->SetVisible(mpObjectFilter->GetText().empty());
+	const tWString& sText = mpObjectFilter->GetText();
+	mpObjectFilterTempText->SetVisible(sText.empty());
+	mpObjectList->SetFilter(sText);
+	mpObjectList->UpdateProperties();
 	return true;
 }
 kGuiCallbackDeclaredFuncEnd(cEditorWindowObjectBrowser, Input_OnFilterTextChanged);
@@ -324,6 +327,7 @@ void cEditorWindowObjectBrowser::OnInitLayout()
 	mpObjectSelectGroup->SetDrawBackground(true);
 
 	mpObjectList = mpSet->CreateWidgetMeshObjectList(0, cVector2f(172, 172), mpObjectSelectGroup);
+	mpObjectList->AddCallback(eGuiMessage_SelectionChange, this, kGuiCallback(ObjectList_OnChangeSelection));
 
     ///////////////////////////////////////////////
 	// Object info: BV Size, poly count, thumbnail
