@@ -77,7 +77,7 @@ namespace hpl {
 
 	void cWidgetMeshObjectList::AddItem(iWidgetMeshObjectItem* apItem)
 	{
-		int lIdx = mvItems.size();
+		int lIdx = (int)mvItems.size();
 		mvItems.push_back(apItem);
 		apItem->SetList(this);
 
@@ -116,7 +116,7 @@ namespace hpl {
 
 		int lVisItems = (int)mvVisualItems.size();
 
-		float fRows = floorf((lVisItems - 1) / 2);
+		float fRows = floorf(((float)lVisItems - 1) / 2);
 		float fTotalContentHeight = mfItemHeight * (fRows + 1);
 
 		SetSize(cVector2f(mvSize.x, fTotalContentHeight));
@@ -220,7 +220,7 @@ namespace hpl {
 			}
 
 			if(mlSelectedItem == lItemIndex)
-				mpSet->DrawGfx(mpGfxBlank, vItemPosition, vItemSize, cColor(1,1,1, 0.6));
+				mpSet->DrawGfx(mpGfxBlank, vItemPosition, vItemSize, cColor(1,1,1, 0.6f));
 
 			DrawDefaultText(pItem->GetName(), vItemPosition + cVector3f(vItemSize.x * 0.5f, vItemSize.y - mfItemLabelPadding, 0.15f), eFontAlign_Center);
 
@@ -234,15 +234,19 @@ namespace hpl {
 	{
 		cVector3f vLocalPos = WorldToLocalPosition(aData.mvPos);
 
-		int lRow = floorf(vLocalPos.y / mfItemHeight);
-		int lColumn = floorf(vLocalPos.x / mfItemWidth);
+		int lPrevItem = mlHoveredItem;
+		int lRow = (int)floorf(vLocalPos.y / mfItemHeight);
+		int lColumn = (int)floorf(vLocalPos.x / mfItemWidth);
 
 		mlHoveredItem = (2 * lRow) + lColumn;
 
 		if (mlHoveredItem < 0 || mlHoveredItem >= (int)mvVisualItems.size()) mlHoveredItem = -1;
 		else mlHoveredItem = mvVisualItems[mlHoveredItem];
 
-		ProcessMessage(eGuiMessage_SelectionChange, aData);
+		if (mlHoveredItem != lPrevItem) mpSet->DisableFrameToolTip();
+
+		if (mlHoveredItem > -1) SetToolTip(mvItems[mlHoveredItem]->GetFullPath());
+		else SetToolTip(_W(""));
 
 		return true;
 	}
@@ -253,6 +257,8 @@ namespace hpl {
 		{
 			mlSelectedItem = mlHoveredItem;
 
+			ProcessMessage(eGuiMessage_SelectionChange, aData);
+
 			return true;
 		}
 		return false;
@@ -260,12 +266,14 @@ namespace hpl {
 
 	bool cWidgetMeshObjectList::OnMouseEnter(const cGuiMessageData& aData)
 	{
-		return false;
+		SetToolTipEnabled(true);
+		return true;
 	}
 
 	bool cWidgetMeshObjectList::OnMouseLeave(const cGuiMessageData& aData)
 	{
 		mlHoveredItem = -1;
-		return false;
+		SetToolTipEnabled(false);
+		return true;
 	}
 }

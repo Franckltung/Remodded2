@@ -486,6 +486,8 @@ namespace hpl {
 		
 		bool GetDrawFocus() { return mbDrawFocus; }
 
+		void DisableFrameToolTip();
+
 	private:
 		void DrawTextFromCharArry(	const wchar_t* apString, iFontData *apFont,
 									const cVector2f& avSize, const cVector3f& avPosition,

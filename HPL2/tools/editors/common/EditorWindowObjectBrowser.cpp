@@ -444,8 +444,8 @@ void cEditorWindowObjectBrowser::UpdateObjectInfo()
 {
 	iEditorObjectIndexEntryMeshObject* pObj = GetSelectedObject();
 
-	tWString sBVSize;
-	tWString sTriCount;
+	//tWString sBVSize;
+	//tWString sTriCount;
 
 	cWorld* pWorld = mpEditor->GetEditorWorld()->GetWorld();
 
@@ -453,6 +453,7 @@ void cEditorWindowObjectBrowser::UpdateObjectInfo()
 		pWorld->DestroyMeshEntity(mpPreviewEntity);
 	mpPreviewEntity = pObj?pObj->CreateTempEntity(pWorld):NULL;
 
+	/*
 	if(pObj==NULL)
 	{
 		sBVSize = _W("");
@@ -472,6 +473,7 @@ void cEditorWindowObjectBrowser::UpdateObjectInfo()
 
 		sTriCount = cString::ToStringW(pObj->GetTriangleCount());
 	}
+	*/
 }
 
 //-------------------------------------------------------------------
@@ -538,6 +540,8 @@ void cEditorWindowObjectBrowser::AddEntriesInDirToList(iEditorObjectIndexDir* ap
 				(cString::To16Char(pEntry->GetEntryName()), 
 				pEntry,
 				mpEditor));
+
+		pItem->SetFullPath(pEntry->GetFileNameFullPath());
 
 		mpObjectList->AddItem(pItem);
 		avEntries.push_back((iEditorObjectIndexEntryMeshObject*)pEntry);

@@ -1770,9 +1770,9 @@ const string& __stdcall cLuxScriptHandler::GetCurrentLantern()
 
 //-----------------------------------------------------------------------
 
-void __stdcall cLuxScriptHandler::SetCurrentHands(string& asLantern)
+void __stdcall cLuxScriptHandler::SetCurrentHands(string& asHands)
 {
-	gpBase->mpPlayer->GetHands()->SetCurrentHands(asLantern);
+	gpBase->mpPlayer->GetHands()->SetCurrentHands(asHands);
 }
 
 //-----------------------------------------------------------------------

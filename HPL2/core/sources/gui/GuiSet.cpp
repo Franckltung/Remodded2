@@ -2666,4 +2666,14 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	void cGuiSet::DisableFrameToolTip()
+	{
+		if (mpFrameToolTip)
+		{
+			mpFrameToolTip->SetVisible(false);
+			mfToolTipTimer = 0;
+		}
+	}
+
+	//-----------------------------------------------------------------------
 }

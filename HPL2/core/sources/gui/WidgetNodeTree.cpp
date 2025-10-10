@@ -109,8 +109,9 @@ namespace hpl {
 
 	void cWidgetNodeTree::SelectNode(cWidgetTreeNode* apNode, bool abGenCallback)
 	{
-		mpSelectedNode = apNode;
 		mpFocusedNode = apNode;
+		if (mpSelectedNode == apNode) return;
+		mpSelectedNode = apNode;
 
 		cGuiMessageData data;
 		if (abGenCallback)

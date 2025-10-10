@@ -174,6 +174,7 @@ namespace hpl {
 		tGuiSkinMap m_mapSkins;
 
 		iGuiMaterial *mvMaterials[eGuiMaterial_LastEnum];
+		cGuiGfxElement *mpBlankRect;
 
 		tGuiGfxElementList mlstGfxElements;
 		tGuiGfxElementList mlstToBeDestroyedGfxElements;
