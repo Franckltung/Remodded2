@@ -169,7 +169,7 @@ namespace hpl {
 	void cWidgetMeshObjectList::OnLoadGraphics()
 	{
 		mpGfxSelection = mpSkin->GetGfx(eGuiSkinGfx_TextBoxSelectedTextBack);
-		mpGfxBlank = mpSkin->GetGfx(eGuiSkinGfx_FrameBackgroundColorPicking);
+		mpGfxBlank = mpGui->GetBlankRect();
 
 		SetDefaultFontSize(11);
 	}
@@ -205,7 +205,7 @@ namespace hpl {
 			mpSet->SetCurrentClipRegion(pRegion);
 
 			cGuiGfxElement* pThumbnail = pItem->GetThumbnail();
-			if (pThumbnail)
+			if (pThumbnail && pThumbnail->GetTextureNum() > 0)
 			{
 				mpSet->DrawGfx(pThumbnail,
 					vItemPosition + cVector3f(3, 3, 0.1f),
@@ -220,7 +220,7 @@ namespace hpl {
 			}
 
 			if(mlSelectedItem == lItemIndex)
-				mpSet->DrawGfx(mpGfxBlank, vItemPosition, vItemSize, cColor(1,1,1, 0.6f));
+				mpSet->DrawGfx(mpGfxBlank, vItemPosition, vItemSize, cColor(0.5f,0.5f,0.5f, 0.5f));
 
 			DrawDefaultText(pItem->GetName(), vItemPosition + cVector3f(vItemSize.x * 0.5f, vItemSize.y - mfItemLabelPadding, 0.15f), eFontAlign_Center);
 

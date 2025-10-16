@@ -339,6 +339,7 @@ cEngineEntityLoadedMeshAggregate::cEngineEntityLoadedMeshAggregate(iEntityWrappe
 	msFilename = asFilename;
 	mbLightsActive = true;
 	mbParticleSystemsActive = true;
+	mbBillboardsActive = true;
 }
 
 cEngineEntityLoadedMeshAggregate::~cEngineEntityLoadedMeshAggregate()

@@ -155,7 +155,7 @@ namespace hpl {
 		cResources* GetResources(){ return mpResources;}
 		cInput*	GetInput() { return mpInput; }
 
-
+		cGuiGfxElement* GetBlankRect() { return mpBlankRect; }
 
 		static cGuiGfxElement* mpGfxRect;
 
