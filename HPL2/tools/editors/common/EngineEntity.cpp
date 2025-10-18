@@ -340,6 +340,7 @@ cEngineEntityLoadedMeshAggregate::cEngineEntityLoadedMeshAggregate(iEntityWrappe
 	mbLightsActive = true;
 	mbParticleSystemsActive = true;
 	mbBillboardsActive = true;
+	mbShowMesh = true;
 }
 
 cEngineEntityLoadedMeshAggregate::~cEngineEntityLoadedMeshAggregate()
@@ -373,6 +374,8 @@ bool cEngineEntityLoadedMeshAggregate::Create(const tString& asName)
 	mvBillboards = pLoader->GetBillboards();
 	mvParticleSystems = pLoader->GetParticleSystems();
 	mvSounds = pLoader->GetSounds();
+	
+	mbShowMesh = pLoader->GetVarBool("ShowMesh", true);
 
 	for(int i=0;i<(int)mvLights.size();++i)
 		mpEntity->AddChild(mvLights[i]);
@@ -407,11 +410,16 @@ void cEngineEntityLoadedMeshAggregate::Update()
 		mvLights[i]->SetVisible(bLit);
 	}
 
+	bool bIsBlocker = IsBlockerMesh() && bActive && bVisible;
+	bool bBlockerVisible = cEditorHelper::GetVisibilityTypeState(eEditorVisibilityType_Blockers);
 	cMeshEntity* pMeshEntity = GetMeshEntity();
 	for (int i = 0; i < pMeshEntity->GetSubMeshEntityNum(); ++i)
 	{
 		cSubMeshEntity* pSubMeshEntity = pMeshEntity->GetSubMeshEntity(i);
-		pSubMeshEntity->SetIlluminationAmount(bLit ? 1 : 0);
+		pSubMeshEntity->SetIlluminationAmount(bLit ? 1.0f : 0);
+		
+		if (bIsBlocker)
+			pSubMeshEntity->SetVisible(bBlockerVisible);
 	}
 
 	for (int i = 0;i < (int)mvParticleSystems.size();++i)

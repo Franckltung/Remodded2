@@ -184,6 +184,16 @@ enum eEditorEntityLightType
 	eEditorEntityLightType_LastEnum,
 };
 
+enum eEditorVisibilityType
+{
+	eEditorVisibilityType_Icons,
+	eEditorVisibilityType_Areas,
+	eEditorVisibilityType_Blockers,
+	eEditorVisibilityType_GlobalFog,
+
+	eEditorVisibilityType_LastEnum
+};
+
 //-------------------------------------------------------------
 
 typedef std::list<iEditorAction*>	tEditorActionList;

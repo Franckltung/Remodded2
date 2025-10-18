@@ -54,6 +54,7 @@ iEditorWindowLowerToolbar::iEditorWindowLowerToolbar(iEditorBase* apEditor) : iE
 	mpHandleLighting =NULL;
 	mpBGlobalAmbientLight = NULL;
 	mpBGlobalPointLight = NULL;
+	mpBIconsEnabled = NULL;
 
 	mpHandleCamera = NULL;
 	mpBCameraLockToGrid = NULL;
@@ -152,8 +153,6 @@ iWidget* iEditorWindowLowerToolbar::AddLightingControls()
 	mpBIconsEnabled->SetToolTip(_W("Toggle icon rendering"));
 	mpBIconsEnabled->AddShortcut(eKeyModifier_None, eKey_I);
 	mpBIconsEnabled->SetToolTipEnabled(true);
-	mpBIconsEnabled->SetPressed(true, false);
-	mpEditor->SetIconRenderingEnabled(true);
 
 	return mpHandleLighting;
 }
@@ -229,6 +228,34 @@ iWidget* iEditorWindowLowerToolbar::AddClipPlaneControls()
 	return mpGClipPlanes;
 }
 
+iWidget* iEditorWindowLowerToolbar::AddVisibilityControls()
+{
+	mpHandleVisibility = mpSet->CreateWidgetDummy(0, mpBGFrame);
+
+	mpBAreas = mpSet->CreateWidgetButton(cVector3f(0, 0, 0.1f), cVector2f(50,20), _W("Areas"), mpHandleVisibility);
+	mpBAreas->SetDefaultFontSize(11);
+	mpBAreas->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(InputCallback));
+	mpBAreas->SetToolTip(_W("Toggle Area gizmo rendering"));
+	mpBAreas->SetToolTipEnabled(true);
+	mpBAreas->SetToggleable(true);
+
+	mpBBlockers = mpSet->CreateWidgetButton(cVector3f(0, 23, 0.1f), cVector2f(50, 20), _W("Blockers"), mpHandleVisibility);
+	mpBBlockers->SetDefaultFontSize(11);
+	mpBBlockers->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(InputCallback));
+	mpBBlockers->SetToolTip(_W("Toggle Blocker rendering"));
+	mpBBlockers->SetToolTipEnabled(true);
+	mpBBlockers->SetToggleable(true);
+
+	mpBFog = mpSet->CreateWidgetButton(cVector3f(53, 0, 0.1f), cVector2f(50, 20), _W("Fog"), mpHandleVisibility);
+	mpBFog->SetDefaultFontSize(11);
+	mpBFog->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(InputCallback));
+	mpBFog->SetToolTip(_W("Toggle Global fog rendering"));
+	mpBFog->SetToolTipEnabled(true);
+	mpBFog->SetToggleable(true);
+
+	return mpHandleVisibility;
+}
+
 //---------------------------------------------------------------
 
 void iEditorWindowLowerToolbar::SetFocusedClipPlane(int alX)
@@ -276,6 +303,8 @@ void iEditorWindowLowerToolbar::OnUpdate(float afTimeStep)
 	{
 		mpBGlobalAmbientLight->SetPressed(pWorld->GetGlobalAmbientLightEnabled(), false);
 		mpBGlobalPointLight->SetPressed(pWorld->GetGlobalPointLightEnabled(), false);
+		//technically its not lighting but who cares, its the group anyways.
+		mpBIconsEnabled->SetPressed(mpEditor->GetVisibilityTypeState(eEditorVisibilityType_Icons), false);
 	}
 
 	if(mpHandleViewportControls)
@@ -318,6 +347,13 @@ void iEditorWindowLowerToolbar::OnUpdate(float afTimeStep)
 			mpInpClipPlanes->SetValue(lIndex, false);
 		}
 		UpdateClipPlaneControls();
+	}
+
+	if(mpHandleVisibility)
+	{
+		mpBAreas->SetPressed(mpEditor->GetVisibilityTypeState(eEditorVisibilityType_Areas), false);
+		mpBBlockers->SetPressed(mpEditor->GetVisibilityTypeState(eEditorVisibilityType_Blockers), false);
+		mpBFog->SetPressed(mpEditor->GetVisibilityTypeState(eEditorVisibilityType_GlobalFog), false);
 	}
 }
 
@@ -434,8 +470,8 @@ bool iEditorWindowLowerToolbar::InputCallback(iWidget* apWidget, const cGuiMessa
 	// Icon toggle button
 	else if(apWidget==mpBIconsEnabled)
 	{
-		bool bIconsEnabled = mpEditor->GetIconRenderingEnabled();
-		mpEditor->SetIconRenderingEnabled(!bIconsEnabled);
+		bool bIconsEnabled = mpEditor->GetVisibilityTypeState(eEditorVisibilityType_Icons);
+		mpEditor->SetVisibilityTypeState(eEditorVisibilityType_Icons, !bIconsEnabled);
 		mpBIconsEnabled->SetPressed(!bIconsEnabled, false);
 	}
 	///////////////////////////
@@ -479,6 +515,29 @@ bool iEditorWindowLowerToolbar::InputCallback(iWidget* apWidget, const cGuiMessa
 		{
 			pAction = hplNew(cEditorActionClipPlaneSetCullingOnPositiveSide,(pWorld, lClipPlaneIdx, !pClipPlane->GetCullingOnPositiveSide()));
 		}
+	}
+	///////////////////////////
+	// Visibility types
+	else if (apWidget == mpBAreas)
+	{
+		bool bAreaVisibility = !mpEditor->GetVisibilityTypeState(eEditorVisibilityType_Areas);
+		mpEditor->SetVisibilityTypeState(eEditorVisibilityType_Areas, bAreaVisibility);
+		mpBAreas->SetPressed(bAreaVisibility, false);
+	}
+	else if (apWidget == mpBBlockers)
+	{
+		bool bBlockerVisibility = !mpEditor->GetVisibilityTypeState(eEditorVisibilityType_Blockers);
+		mpEditor->SetVisibilityTypeState(eEditorVisibilityType_Blockers, bBlockerVisibility);
+		mpBBlockers->SetPressed(bBlockerVisibility, false);
+	}
+	else if (apWidget == mpBFog)
+	{
+		bool bFogVisibility = !mpEditor->GetVisibilityTypeState(eEditorVisibilityType_GlobalFog);
+		mpEditor->SetVisibilityTypeState(eEditorVisibilityType_GlobalFog, bFogVisibility);
+		mpBFog->SetPressed(bFogVisibility, false);
+
+		//refresh
+		mpEditor->GetEditorWorld()->SetFogActive(mpEditor->GetEditorWorld()->GetFogActive());
 	}
 	
 	mpEditor->AddAction(pAction);
