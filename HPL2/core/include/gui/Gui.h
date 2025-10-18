@@ -155,7 +155,7 @@ namespace hpl {
 		cResources* GetResources(){ return mpResources;}
 		cInput*	GetInput() { return mpInput; }
 
-
+		cGuiGfxElement* GetBlankRect() { return mpBlankRect; }
 
 		static cGuiGfxElement* mpGfxRect;
 
@@ -174,6 +174,7 @@ namespace hpl {
 		tGuiSkinMap m_mapSkins;
 
 		iGuiMaterial *mvMaterials[eGuiMaterial_LastEnum];
+		cGuiGfxElement *mpBlankRect;
 
 		tGuiGfxElementList mlstGfxElements;
 		tGuiGfxElementList mlstToBeDestroyedGfxElements;

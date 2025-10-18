@@ -53,9 +53,10 @@ public:
 
 	void Save(cXmlElement* apElement);
 
+	void BuildThumbnail();
+
 protected:
 	void BuildEntryName(tString& asEntryName);
-	void BuildThumbnail();
 
 	eEditorTextureResourceType GetTextureTypeFromTypeString(const tString& asType);
 

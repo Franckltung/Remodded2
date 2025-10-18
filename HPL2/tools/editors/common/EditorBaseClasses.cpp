@@ -184,6 +184,11 @@ iEditorBase::iEditorBase(const tWString& asFileCategoryName, const tWString& asF
 	mbDestroyingEditor = false;
 	mbWorldModified = false;
 
+	mbVisibilityTypes[eEditorVisibilityType_Icons] = true;
+	mbVisibilityTypes[eEditorVisibilityType_Areas] = true;
+	mbVisibilityTypes[eEditorVisibilityType_Blockers] = true;
+	mbVisibilityTypes[eEditorVisibilityType_GlobalFog] = true;
+
 	msFileCategoryName = asFileCategoryName;
 	msFileCategoryString = asFileCategoryString;
 
@@ -241,6 +246,14 @@ iEditorBase::~iEditorBase()
 /////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------
+
+void iEditorBase::SetVisibilityTypeState(eEditorVisibilityType aType, bool abEnabled)
+{
+	mbVisibilityTypes[aType] = abEnabled;
+
+	mpEditorWorld->SetVisibilityUpdated();
+	mpEditorWorld->UpdateVisibility();
+}
 
 //-----------------------------------------------------------------------
 

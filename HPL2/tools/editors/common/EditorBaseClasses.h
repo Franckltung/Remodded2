@@ -171,8 +171,8 @@ public:
 	void SetSelectionChanged() { mbSelectionChanged = true; }
 	cEditorSelection* GetSelection() { return mpSelection; }
 
-	void SetIconRenderingEnabled(bool abX) { mbIconRenderingEnabled = abX; }
-	bool GetIconRenderingEnabled() { return mbIconRenderingEnabled; }
+	void SetVisibilityTypeState(eEditorVisibilityType aType, bool abEnabled);
+	bool GetVisibilityTypeState(eEditorVisibilityType aType) { return mbVisibilityTypes[aType]; }
 
 	///////////////////////////////////////////////
 	// Editor Windows Management
@@ -480,7 +480,7 @@ protected:
 	bool mbDestroyingEditor;
 	bool mbWorldModified;
 	bool mbSelectionChanged;
-	bool mbIconRenderingEnabled;
+	bool mbVisibilityTypes[eEditorVisibilityType_LastEnum];
 
 	iEditorEditMode* mpCurrentEditMode;
 	iEditorWorld* mpEditorWorld;

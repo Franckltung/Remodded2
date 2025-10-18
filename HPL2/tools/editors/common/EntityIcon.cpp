@@ -86,7 +86,7 @@ void cEntityIcon::DrawIcon(cEditorWindowViewport* apViewport,
 						   bool abIsActive,
 						   const cColor& aDisabledCol)
 {
-	if(cEditorHelper::GetIconRenderingEnabled() == false)
+	if(cEditorHelper::GetVisibilityTypeState(eEditorVisibilityType_Icons) == false)
 		return;
 
 	if(mbVisible==false)

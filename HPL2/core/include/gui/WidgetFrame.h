@@ -45,7 +45,7 @@ namespace hpl {
 		void SetBackGroundColor(const cColor &aColor){ mBackGroundColor = aColor;}
 		const cColor& GetBackGroundColor(){ return mBackGroundColor;}
 
-		void ChangeBackgroundForColorPicking();
+		void SetBackgroundBgfx(eGuiSkinGfx aType);
 
 		void OnAttachChild(iWidget* apChild);
 		void OnRemoveChild(iWidget* apChild);

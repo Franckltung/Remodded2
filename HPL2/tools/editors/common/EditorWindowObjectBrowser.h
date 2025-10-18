@@ -57,8 +57,10 @@ public:
 	void Save(cXmlElement* apElement);
 
 	virtual cMeshEntity* CreateTempEntity(cWorld* apWorld);
-protected:
+
 	void BuildThumbnail();
+
+protected:
 
 	cVector3f mvBVMin;
 	cVector3f mvBVMax;
@@ -69,6 +71,29 @@ protected:
 	tWString msMeshFileName;
 };
 
+//----------------------------------------------------------
+
+////////////////////////////////////////////////////////////
+// MESH LIST ITEM
+////////////////////////////////////////////////////////////
+
+//----------------------------------------------------------
+
+class cWidgetMeshObjectBrowserItem : public iWidgetMeshObjectItem
+{
+public:
+	cWidgetMeshObjectBrowserItem(const tWString& asName, iEditorObjectIndexEntry* apObject, iEditorBase* apEditor);
+	~cWidgetMeshObjectBrowserItem();
+
+	void LoadThumbnail();
+	void DisposeThumbnail();
+
+protected:
+
+	iEditorObjectIndexEntry* mpObject;
+	iEditorBase* mpEditor;
+
+};
 
 //----------------------------------------------------------
 
@@ -99,14 +124,14 @@ protected:
 	bool ObjectList_OnChangeSelection(iWidget* apWidget, const cGuiMessageData& aData);
 	kGuiCallbackDeclarationEnd(ObjectList_OnChangeSelection);
 
-	bool Input_OnTextBoxEnter(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(Input_OnTextBoxEnter);
+	bool Input_OnFilterTextChanged(iWidget* apWidget, const cGuiMessageData& aData);
+	kGuiCallbackDeclarationEnd(Input_OnFilterTextChanged);
 
 	bool Refresh_OnPressed(iWidget* apWidget, const cGuiMessageData& aData);
 	kGuiCallbackDeclarationEnd(Refresh_OnPressed);
 
 	void BuildObjectSetList();
-	void BuildObjectSetListHelper(const tWString& asFolder, int alLevel);
+	void BuildObjectSetListHelper(const tWString& asFolder, int alLevel, cWidgetTreeNode* apNode);
 
 	void BuildObjectList();
 	void BuildObjectListHelper(const tWString& asBaseFolder, const tWString& asCurrentFolder, tWStringList& alstInvalidFiles);
@@ -118,7 +143,7 @@ protected:
 	void UpdateObjectInfo();
 	void AddEntriesInDirToList(iEditorObjectIndexDir* apDir,std::vector<iEditorObjectIndexEntryMeshObject*>& avEntries);
 
-	iEditorObjectIndex* CreateIndex(const tWString& asFolder);
+	iEditorObjectIndex* CreateIndex(cWidgetTreeNode* apNode);
 	virtual iEditorObjectIndex* CreateSpecificIndex(iEditorBase* apEditorBase, const tWString& asFolder)=0;
 
 	virtual cMeshEntity* CreatePreviewEntity(iEditorObjectIndexEntryMeshObject* apEntry)=0;
@@ -126,20 +151,31 @@ protected:
 	////////////////////////////////////////////////////
 	// Data
 	tWStringVec mvBaseDirs;
-	
-	tWStringVec mvDirectories;
 
 	// Layout stuff
-	cWidgetGroup* mpSelectionGroup;
-	cWidgetComboBox* mpObjectSets;
-	cWidgetListBox* mpObjectList;
-	cWidgetButton* mpButtonRefresh;
+	//cWidgetGroup* mpSelectionGroup;
+	//cWidgetComboBox* mpObjectSets;
+	//cWidgetListBox* mpObjectList;
+	//cWidgetButton* mpButtonRefresh;
 
-	cWidgetGroup* mpInfoGroup;
-	cWidgetLabel* mvLabelBVSize[2];
-	cWidgetLabel* mvLabelPolyCount[2];
-	cWidgetLabel* mpLabelThumbnail;
-	cWidgetImage* mpThumbnail;
+	//cWidgetGroup* mpInfoGroup;
+	//cWidgetLabel* mvLabelBVSize[2];
+	//cWidgetLabel* mvLabelPolyCount[2];
+	//cWidgetLabel* mpLabelThumbnail;
+	//cWidgetImage* mpThumbnail;
+
+	cWidgetDummy* mpSurface;
+
+	cWidgetFrame* mpDirectoryFrame;
+	cWidgetNodeTree* mpDirectoryTree;
+	cWidgetTreeNode* mpRootDirectory;
+
+	cWidgetTextBox* mpObjectFilter;
+	cWidgetLabel* mpObjectFilterTempText;
+
+	cWidgetFrame* mpObjectSelectGroup;
+	cWidgetMeshObjectList* mpObjectList;
+
 
 	tWStringVec mvCategoryStrings;
 

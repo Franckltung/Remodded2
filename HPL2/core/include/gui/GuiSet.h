@@ -49,6 +49,7 @@ namespace hpl {
 	class cWidgetLabel;
 	class cWidgetSlider;
 	class cWidgetTextBox;
+	class cWidgetNodeTree;
 	class cWidgetCheckBox;
 	class cWidgetImage;
 	class cWidgetListBox;
@@ -62,6 +63,7 @@ namespace hpl {
 	class cWidgetTabFrame;
 	class cWidgetGroup;
 	class cWidgetDummy;
+	class cWidgetMeshObjectList;
 
 	class cGuiPopUpMessageBox;
 	class cGuiPopUpFilePicker;
@@ -264,6 +266,10 @@ namespace hpl {
 											bool abShowButtons=true,
 											const tString& asName = "" );
 
+		cWidgetNodeTree* CreateWidgetNodeTree(float afContainerSize=0,
+											  iWidget *apParent=NULL,
+											  const tString& asName = "");
+
 		cWidgetCheckBox* CreateWidgetCheckBox(const cVector3f &avLocalPos=0,
 											const cVector2f &avSize=0,
 											const tWString &asText=_W(""),
@@ -339,6 +345,10 @@ namespace hpl {
 												iWidget *apParent=NULL,
 												const tString& asName = "");
 
+		cWidgetMeshObjectList* CreateWidgetMeshObjectList(const cVector3f& avLocalPos = 0,
+															const cVector2f& avSize = 0,
+															iWidget* apParent = NULL,
+															const tString& asName = "");
 
 		iWidget *GetWidgetFromName(const tString& asName);
 
@@ -475,6 +485,8 @@ namespace hpl {
 		void SetFocusDrawCallback(void* apObject, tGuiCallbackFunc apCallback)	{ mpFocusDrawObject = apObject; mpFocusDrawCallback = apCallback; }
 		
 		bool GetDrawFocus() { return mbDrawFocus; }
+
+		void DisableFrameToolTip();
 
 	private:
 		void DrawTextFromCharArry(	const wchar_t* apString, iFontData *apFont,

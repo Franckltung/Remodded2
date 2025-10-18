@@ -58,6 +58,7 @@
 #include "gui/WidgetLabel.h"
 #include "gui/WidgetSlider.h"
 #include "gui/WidgetTextBox.h"
+#include "gui/WidgetNodeTree.h"
 #include "gui/WidgetCheckBox.h"
 #include "gui/WidgetImage.h"
 #include "gui/WidgetListBox.h"
@@ -69,6 +70,7 @@
 #include "gui/WidgetTabFrame.h"
 #include "gui/WidgetGroup.h"
 #include "gui/WidgetDummy.h"
+#include "gui/WidgetMeshObjectList.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -804,6 +806,17 @@ namespace hpl {
 		return pTextBox;
 	}
 
+	cWidgetNodeTree* cGuiSet::CreateWidgetNodeTree( float afContainerWidth,
+													iWidget *apParent,
+													const tString &asName)
+	{
+		cWidgetNodeTree* pNodeTree = hplNew(cWidgetNodeTree, (this, mpSkin));
+		pNodeTree->SetSize(cVector2f(afContainerWidth, 16));
+		pNodeTree->SetName(asName);
+		AddWidget(pNodeTree, apParent);
+		return pNodeTree;
+	}
+
 	cWidgetCheckBox* cGuiSet::CreateWidgetCheckBox(	const cVector3f &avLocalPos,
 													const cVector2f &avSize,
 													const tWString &asText,
@@ -1013,6 +1026,19 @@ namespace hpl {
 		pDummy->SetName(asName);
 		AddWidget(pDummy,apParent);
 		return pDummy;	
+	}
+
+	cWidgetMeshObjectList* cGuiSet::CreateWidgetMeshObjectList(const cVector3f& avLocalPos,
+														const cVector2f& avSize,
+														iWidget* apParent,
+														const tString& asName)
+	{
+		cWidgetMeshObjectList* pMeshObjectList = hplNew(cWidgetMeshObjectList, (this, mpSkin));
+		pMeshObjectList->SetPosition(avLocalPos);
+		pMeshObjectList->SetSize(avSize);
+		pMeshObjectList->SetName(asName);
+		AddWidget(pMeshObjectList, apParent);
+		return pMeshObjectList;
 	}
 
 	//-----------------------------------------------------------------------
@@ -2640,4 +2666,14 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	void cGuiSet::DisableFrameToolTip()
+	{
+		if (mpFrameToolTip)
+		{
+			mpFrameToolTip->SetVisible(false);
+			mfToolTipTimer = 0;
+		}
+	}
+
+	//-----------------------------------------------------------------------
 }

@@ -503,8 +503,6 @@ bool iEditorObjectIndexEntry::CreateFromFile(const tWString& asFilename)
 	BuildEntryName(msEntryName);
 	msDateModified = cPlatform::FileModifiedDate(GetFileNameFullPath()).ToString();
 
-	BuildThumbnail();
-
 	return true;
 }
 
@@ -525,8 +523,6 @@ bool iEditorObjectIndexEntry::CreateFromXmlElement(cXmlElement* apElement)
 
 		return CreateFromFile(cString::To16Char(msFileName));
 	}
-
-	BuildThumbnail();
 
 	return true;
 }
