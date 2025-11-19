@@ -506,20 +506,22 @@ void cLevelEditor::OnInit()
 	/////////////////////////////////////////////////////////
 	// Add any extra dirs to resources!
 	// static objects
-	for(int i=0;i<(int)mvExtraSODirs.size();++i)
+	for (size_t i = 0;i < mvExtraSODirs.size();++i)
 	{
 		const tWString& sExtraDir = mvExtraSODirs[i];
 		mpEngine->GetResources()->AddResourceDir(sExtraDir, true);
 	}
 	// entities
-	for(int i=0;i<(int)mvExtraEntDirs.size();++i)
+	for (size_t i = 0;i < mvExtraEntDirs.size();++i)
 	{
 		const tWString& sExtraDir = mvExtraEntDirs[i];
 		mpEngine->GetResources()->AddResourceDir(sExtraDir, true);
 	}
 	///////////////////////////////////////////////////
 	// Add EditModes here!
-	mpEngine->GetPhysics()->LoadSurfaceData("materials.cfg");
+	tString materialsOverride = mpMainConfig->GetString("Directories", "MaterialsOverride", "");
+	if (materialsOverride != "") mpEngine->GetPhysics()->LoadSurfaceData(materialsOverride);
+	else mpEngine->GetPhysics()->LoadSurfaceData("materials.cfg");
 
 	AddEditMode(hplNew(cEditorEditModeSelect,(this, mpEditorWorld)));
 	AddEditMode(hplNew(cEditorEditModeLights,(this, mpEditorWorld)));
@@ -561,6 +563,9 @@ void cLevelEditor::OnInitLayout()
 	vHandlePos += cVector3f(pHandle->GetSize().x+10, 0, 0);
 	pHandle = mpLowerToolbar->AddClipPlaneControls();
 	pHandle->SetPosition(vHandlePos);
+	vHandlePos += cVector3f(pHandle->GetSize().x+10, 0, 0);
+	pHandle = mpLowerToolbar->AddVisibilityControls();
+	pHandle->SetPosition(vHandlePos);
 
 	////////////////////////////////////
 	// Search Window
@@ -577,6 +582,21 @@ void cLevelEditor::OnSetUpDirectories()
 	mpDirHandler->AddLookUpDir(eDir_StaticObjects, sWorkingDir + mpMainConfig->GetStringW("Directories", "StaticObjectsDir", _W("static_objects")), true);
 	mpDirHandler->AddLookUpDir(eDir_Entities, sWorkingDir + mpMainConfig->GetStringW("Directories", "EntitiesDir", _W("entities")), true);
 	mpDirHandler->AddLookUpDir(eDir_Decals, sWorkingDir + mpMainConfig->GetStringW("Directories", "DecalsDir", _W("textures/decals")), true);
+
+	/////////////////////////////////////////////////////////
+	// Add any extra dirs!
+	// static objects
+	for (size_t i = 0; i < mvExtraSODirs.size(); ++i)
+	{
+		const tWString& sExtraDir = mvExtraSODirs[i];
+		mpDirHandler->AddLookUpDir(eDir_StaticObjects, sExtraDir, true);
+	}
+	// entities
+	for (size_t i = 0; i < mvExtraEntDirs.size(); ++i)
+	{
+		const tWString& sExtraDir = mvExtraEntDirs[i];
+		mpDirHandler->AddLookUpDir(eDir_Entities, sExtraDir, true);
+	}
 }
 
 //--------------------------------------------------------------------
@@ -685,7 +705,7 @@ void cLevelEditor::OnLoadConfig()
 	}
 
 	// Window caption
-	msCaption = "HPL Level Editor";
+	msCaption = "HPL2[R] Level Editor";
 	
 	SetLogFile(GetHomeDir() + _W("LevelEditor.log"));
 
@@ -696,7 +716,7 @@ void cLevelEditor::OnLoadConfig()
 	int j=1;
 	while(true)
 	{
-		tWString sExtraDir = mpLocalConfig->GetStringW("Directories", "ExtraStaticObjectDir" + cString::ToString(j), _W(""));
+		tWString sExtraDir = mpMainConfig->GetStringW("Directories", "ExtraStaticObjectDir" + cString::ToString(j), _W(""));
 		if(sExtraDir==_W(""))
 		{
 			break;
@@ -719,7 +739,7 @@ void cLevelEditor::OnLoadConfig()
 	j=1;
 	while(true)
 	{
-		tWString sExtraDir = mpLocalConfig->GetStringW("Directories", "ExtraEntityDir" + cString::ToString(j), _W(""));
+		tWString sExtraDir = mpMainConfig->GetStringW("Directories", "ExtraEntityDir" + cString::ToString(j), _W(""));
 		if(sExtraDir==_W(""))
 		{
 			break;
@@ -773,17 +793,17 @@ void cLevelEditor::OnSaveConfig()
 	mpLocalConfig->SetString("Directories", "LastUsedPath", (const tString&)cString::To8Char(msLastLoadPath));
 
 	// Save extra dirs
-	for(int j=0;j<(int)mvExtraSODirs.size();++j)
+	for (size_t j = 0;j < mvExtraSODirs.size();++j)
 	{
 		tString sExtraDir = cString::S16BitToUTF8(mvExtraSODirs[j]);
 		
-		mpLocalConfig->SetString("Directories", "ExtraStaticObjectDir" + cString::ToString(j+1), sExtraDir);
+		mpLocalConfig->SetString("Directories", "ExtraStaticObjectDir" + cString::ToString((int)j + 1), sExtraDir);
 	}
-	for(int j=0;j<(int)mvExtraEntDirs.size();++j)
+	for (size_t j = 0;j < mvExtraEntDirs.size();++j)
 	{
 		tString sExtraDir = cString::S16BitToUTF8(mvExtraEntDirs[j]);
 		
-		mpLocalConfig->SetString("Directories", "ExtraEntityDir" + cString::ToString(j+1), sExtraDir);
+		mpLocalConfig->SetString("Directories", "ExtraEntityDir" + cString::ToString((int)j + 1), sExtraDir);
 	}
 
 	mpLocalConfig->Save();
@@ -806,14 +826,15 @@ cWidgetMainMenu* cLevelEditor::CreateMainMenu()
 	// New
 	mpMainMenuNew = pItem->AddMenuItem(_W("New"));
 	mpMainMenuNew->AddCallback(eGuiMessage_ButtonPressed,this,kGuiCallback(MainMenu_ItemClick));
+	mpMainMenuNew->AddShortcut(eKeyModifier_Ctrl, eKey_N);
 
 	pItem->AddSeparator();
 
 	// Open
 	mpMainMenuLoad = pItem->AddMenuItem(_W("Open"));
 	mpMainMenuLoad->AddCallback(eGuiMessage_ButtonPressed,this,kGuiCallback(MainMenu_ItemClick));
+	mpMainMenuLoad->AddShortcut(eKeyModifier_Ctrl, eKey_O);
 
-	pItem->AddSeparator();
 	// Save
 	mpMainMenuSave = pItem->AddMenuItem(_W("Save"));
 	mpMainMenuSave->AddCallback(eGuiMessage_ButtonPressed,this,kGuiCallback(MainMenu_ItemClick));

@@ -45,6 +45,19 @@
 + AttachPlayerCameraToEntity(string &in asEntity)
 + DetachPlayerCamera() [Legacy, does the same as AttachPlayerCameraToEntity("");]
 
++ ForceSave(string &in asFile) [I don't recommend using anything but "AutoSave" and "HardMode" for asFile, but it's there for fine control.]
++ bool GetHardmodeEnabled()
+
+//NOT WORKING AT THE MOMENT, HIGHLY TECHNICAL.
++ SetPropAwake(string &in asName, bool abAwake) (supports wildcards * )
++ bool GetPropAwake(string &in asName)
+//--------------------------------------------
+
++ SetWorldGravity(float afX, float afY, float afZ)
++ ResetWorldGravity()
++ SetPlayerGravity(float afX, float afY, float afZ)
++ ResetPlayerGravity()
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 -----------------------------
@@ -71,3 +84,30 @@
 ᒪ "FuelDrainSpeed" type float
 |
 ᒪ They will default to their corresponding values inside game.cfg if not set.
+
+/ Implemented third party fixes to a bunch of base HPL2 bugs, courtesy of @BoxFigs:
+ᒪ (FIXED) Persistent sanity gain flash in inventory and journal
+ᒪ (FIXED) StopPlayerSpawnPS does not destroy the particle system
+ᒪ (FIXED) InsanityEventIsActive uses wrong return type
+ᒪ (FIXED) Darkness sanity drain reactivates when loading a save
+ᒪ (FIXED) Enemy sight range increases exponentially while the lantern is on
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+-----------------------------
+----     NEW EDITORS     ----
+-----------------------------
+
++ Added an improved version of the HPL2 level editor (BETA)
+|
+ᒪ Added the HPL3 object selectors (entity, static object) (MOSTLY STABLE)
+ᒪ Added visibility toggles for Areas, Blockers, and Fog.
+ᒪ Plane primitive shadows now render correctly.
+ᒪ Added optional support for the Community Edition editors' dark theme.
+ᒪ Added new shortcuts for snapping (Legacy, HPL3)
+ᒪ Added new EditorSetupVars variables for EntityTypes.cfg:
+	ᒪ "AffectBillboardsVar" the var assigned by this setup var controls whether or not billboards are rendered on an entity.
+ᒪ Added new configs for MainEditorSettings.cfg; "Directories":
+	ᒪ "ExtraStaticObjectDir" adds extra static object directories. Can add as many as you want, with the naming scheme "ExtraStaticObjectDir1", "ExtraStaticObjectDir2", etc.
+	ᒪ "ExtraEntityDir" adds extra entity directories. Can add as many as you want, with the naming scheme "ExtraEntityDir1", "ExtraEntityDir2", etc.
+	ᒪ "ResourcesOverride" allow the editors to load a custom resources.cfg instead of the default one.

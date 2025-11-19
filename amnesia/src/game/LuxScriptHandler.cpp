@@ -418,6 +418,7 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void StartDemoEnd()",(void *)StartDemoEnd);
 
 	AddFunc("void AutoSave()", (void *)AutoSave);
+	AddFunc("void ForceSave(string &in asFile)", (void*)ForceSave);
 	AddFunc("void CheckPoint(string &in asName,string &in asStartPos ,string &in asCallback, string &in asDeathHintCat, string &in asDeathHintEntry)", (void *)CheckPoint);
 
 	AddFunc("void ChangeMap(string &in asMapName, string &in asStartPos, string &in asStartSound, string &in asEndSound)",(void *)ChangeMap);
@@ -464,7 +465,7 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void StartRandomInsanityEvent()", (void *)StartRandomInsanityEvent);
 	AddFunc("void StartInsanityEvent(string &in asEventName)", (void *)StartInsanityEvent);
 	AddFunc("void StopCurrentInsanityEvent()", (void *)StopCurrentInsanityEvent);
-	AddFunc("void InsanityEventIsActive()", (void *)InsanityEventIsActive);
+	AddFunc("bool InsanityEventIsActive()", (void *)InsanityEventIsActive);
 
 	AddFunc("void StartPlayerSpawnPS(string &in asSPSFile)", (void *)StartPlayerSpawnPS);
 	AddFunc("void StopPlayerSpawnPS()", (void *)StartPlayerSpawnPS);
@@ -496,6 +497,8 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("float GetPlayerYSpeed()",(void *)GetPlayerYSpeed);
 	AddFunc("void MovePlayerForward(float afAmount)",(void *)MovePlayerForward);
 	AddFunc("void SetPlayerPermaDeathSound(string &in asSound)",(void *)SetPlayerPermaDeathSound);
+
+	AddFunc("bool GetHardmodeEnabled()",(void *)GetHardmodeEnabled);
 
 	AddFunc("void SetSanityDrainDisabled(bool abX)",(void *)SetSanityDrainDisabled);
 	AddFunc("void GiveSanityBoost()",(void *)GiveSanityBoost);
@@ -696,6 +699,13 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void SetBodyMass(string &in asName, float afMass)", (void *)SetBodyMass);
 	AddFunc("float GetBodyMass(string &in asName)", (void *)GetBodyMass);
 
+	AddFunc("void SetPropAwake(string &in asName, bool abAwake)", (void*)SetPropAwake);
+	AddFunc("bool GetPropAwake(string &in asName)", (void*)GetPropAwake);
+
+	AddFunc("void SetWorldGravity(float afX, float afY, float afZ)", (void*)SetWorldGravity);
+	AddFunc("void ResetWorldGravity()", (void*)ResetWorldGravity);
+	AddFunc("void SetPlayerGravity(float afX, float afY, float afZ)", (void*)SetPlayerGravity);
+	AddFunc("void ResetPlayerGravity()", (void*)ResetPlayerGravity);
 
 	AddFunc("void AddEntityCollideCallback(string &in asParentName, string &in asChildName, string &in asFunction, bool abDeleteOnCollide, int alStates)",(void *)AddEntityCollideCallback);
 	AddFunc("void RemoveEntityCollideCallback(string &in asParentName, string &in asChildName)", (void *)RemoveEntityCollideCallback);
@@ -1047,6 +1057,13 @@ void __stdcall cLuxScriptHandler::AutoSave()
 
 //-----------------------------------------------------------------------
 
+void __stdcall cLuxScriptHandler::ForceSave(string& asFile)
+{
+	gpBase->mpSaveHandler->ForceSave(cString::To16Char(asFile));
+}
+
+//-----------------------------------------------------------------------
+
 void __stdcall cLuxScriptHandler::CheckPoint(string& asName,string& asStartPos ,string& asCallback, string &asDeathHintCat, string &asDeathHintEntry)
 {
 	gpBase->mpMapHandler->GetCurrentMap()->SetCheckPoint(asName, asStartPos, asCallback);
@@ -1271,7 +1288,7 @@ void __stdcall cLuxScriptHandler::StartPlayerSpawnPS(string& asSPSFile)
 
 void __stdcall cLuxScriptHandler::StopPlayerSpawnPS()
 {
-	gpBase->mpPlayer->GetHelperSpawnPS()->Stop();
+	gpBase->mpPlayer->GetHelperSpawnPS()->Reset();
 }
 
 //-----------------------------------------------------------------------
@@ -1545,6 +1562,13 @@ void __stdcall cLuxScriptHandler::SetPlayerPermaDeathSound(string& asSound)
 
 //-----------------------------------------------------------------------
 
+bool __stdcall cLuxScriptHandler::GetHardmodeEnabled()
+{
+	return gpBase->mbHardMode;
+}
+
+//-----------------------------------------------------------------------
+
 void __stdcall cLuxScriptHandler::SetSanityDrainDisabled(bool abX)
 {
 	gpBase->mpPlayer->SetSanityDrainDisabled(abX);
@@ -1753,9 +1777,9 @@ const string& __stdcall cLuxScriptHandler::GetCurrentLantern()
 
 //-----------------------------------------------------------------------
 
-void __stdcall cLuxScriptHandler::SetCurrentHands(string& asLantern)
+void __stdcall cLuxScriptHandler::SetCurrentHands(string& asHands)
 {
-	gpBase->mpPlayer->GetHands()->SetCurrentHands(asLantern);
+	gpBase->mpPlayer->GetHands()->SetCurrentHands(asHands);
 }
 
 //-----------------------------------------------------------------------
@@ -3798,6 +3822,66 @@ float __stdcall cLuxScriptHandler::GetBodyMass(string& asName)
 	}
 
 	return pBody->GetMass();
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetPropAwake(string& asName, bool abAwake)
+{
+	BEGIN_SET_PROPERTY(eLuxEntityType_Prop, -1)
+
+	iLuxProp* pProp = ToProp(pEntity);
+	for (int i = 0; i < pProp->GetBodyNum(); ++i)
+	{
+		iPhysicsBody* pBody = pProp->GetBody(i);
+		if (pBody == NULL) continue;
+		if (abAwake) pBody->Enable();
+		//there isn't a way to force bodies to sleep yet..
+	}
+
+	END_SET_PROPERTY
+}
+
+//-----------------------------------------------------------------------
+
+bool __stdcall cLuxScriptHandler::GetPropAwake(string& asName)
+{
+	iLuxProp* pProp = ToProp(GetEntity(asName, eLuxEntityType_Prop, -1));
+	if (pProp == NULL) return false;
+
+	return pProp->GetMainBody()->GetEnabled();
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetWorldGravity(float afX, float afY, float afZ)
+{
+	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+	if(pMap != NULL)
+		pMap->GetPhysicsWorld()->SetGravity(cVector3f(afX, afY, afZ));
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::ResetWorldGravity()
+{
+	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+	if (pMap != NULL)
+		pMap->GetPhysicsWorld()->SetGravity(cVector3f(0, -9.81f, 0));
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetPlayerGravity(float afX, float afY, float afZ)
+{
+	gpBase->mpPlayer->GetCharacterBody()->SetCustomGravity(cVector3f(afX, afY, afZ));
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::ResetPlayerGravity()
+{
+	gpBase->mpPlayer->GetCharacterBody()->SetCustomGravity(gpBase->mpGameCfg->GetVector3f("Player_Body", "GravityForce", 0));
 }
 
 //-----------------------------------------------------------------------

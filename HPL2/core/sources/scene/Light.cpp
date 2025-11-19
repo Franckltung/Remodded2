@@ -577,7 +577,13 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	void iLight::UpdateBillboard(cBillboard* apBillboard, const cColor& aBaseColor)
+	{
+		apBillboard->SetColor(aBaseColor * cColor(mDiffuseColor.r, mDiffuseColor.g, mDiffuseColor.b, 1));
+		apBillboard->SetVisible(IsVisible());
+	}
 
+	//-----------------------------------------------------------------------
 	
 	//////////////////////////////////////////////////////////////////////////
 	// PROTECTED METHODS

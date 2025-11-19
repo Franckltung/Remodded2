@@ -109,6 +109,7 @@ float iEngineEntityMesh::mfDisabledCoverage = 0.5f;
 
 iEngineEntityMesh::iEngineEntityMesh(iEntityWrapper* apParent) : iEngineEntity(apParent), mpMesh(NULL)
 {
+	mbShowMesh = true;
 }
 
 iEngineEntityMesh::~iEngineEntityMesh()
@@ -178,7 +179,9 @@ void iEngineEntityMesh::Update()
 void iEngineEntityMesh::UpdateVisibility()
 {
 	Update();
-	((cMeshEntity*)mpEntity)->SetVisible(mpParent->IsVisible() && mpParent->IsCulledByClipPlanes()==false);
+	bool bBlockerVis = true;
+	if(!mbShowMesh) bBlockerVis = cEditorHelper::GetVisibilityTypeState(eEditorVisibilityType_Blockers);
+	((cMeshEntity*)mpEntity)->SetVisible(mpParent->IsVisible() && mpParent->IsCulledByClipPlanes()==false && bBlockerVis);
 }
 
 //-----------------------------------------------------------------------
@@ -339,6 +342,7 @@ cEngineEntityLoadedMeshAggregate::cEngineEntityLoadedMeshAggregate(iEntityWrappe
 	msFilename = asFilename;
 	mbLightsActive = true;
 	mbParticleSystemsActive = true;
+	mbBillboardsActive = true;
 }
 
 cEngineEntityLoadedMeshAggregate::~cEngineEntityLoadedMeshAggregate()
@@ -372,6 +376,8 @@ bool cEngineEntityLoadedMeshAggregate::Create(const tString& asName)
 	mvBillboards = pLoader->GetBillboards();
 	mvParticleSystems = pLoader->GetParticleSystems();
 	mvSounds = pLoader->GetSounds();
+	
+	mbShowMesh = pLoader->GetVarBool("ShowMesh", true);
 
 	for(int i=0;i<(int)mvLights.size();++i)
 		mpEntity->AddChild(mvLights[i]);
@@ -398,11 +404,30 @@ void cEngineEntityLoadedMeshAggregate::Update()
 	iEditorWorld* pWorld = mpParent->GetEditorWorld();
 	bool bLightsVisible = pWorld->GetTypeVisibility(eEditorEntityType_Light);
 	bool bPSVisible = pWorld->GetTypeVisibility(eEditorEntityType_ParticleSystem);
+	bool bBillboardsVisible = pWorld->GetTypeVisibility(eEditorEntityType_Billboard);
 
-	for(int i=0;i<(int)mvLights.size();++i)
-		mvLights[i]->SetVisible(mbLightsActive && bLightsVisible && bActive && bVisible);
-	for(int i=0;i<(int)mvParticleSystems.size();++i)
+	bool bLit = mbLightsActive && bLightsVisible && bActive && bVisible;
+	for (int i = 0;i < (int)mvLights.size();++i)
+	{
+		mvLights[i]->SetVisible(bLit);
+	}
+
+	cMeshEntity* pMeshEntity = GetMeshEntity();
+	for (int i = 0; i < pMeshEntity->GetSubMeshEntityNum(); ++i)
+	{
+		cSubMeshEntity* pSubMeshEntity = pMeshEntity->GetSubMeshEntity(i);
+		pSubMeshEntity->SetIlluminationAmount(bLit ? 1.0f : 0);
+	}
+
+	for (int i = 0;i < (int)mvParticleSystems.size();++i)
+	{
 		mvParticleSystems[i]->SetVisible(mbParticleSystemsActive && bPSVisible && bActive && bVisible);
+	}
+
+	for (int i = 0;i < (int)mvBillboards.size();++i)
+	{
+		mvBillboards[i]->SetVisible(mbBillboardsActive && bBillboardsVisible && bActive && bVisible);
+	}
 }
 
 //-----------------------------------------------------------------------

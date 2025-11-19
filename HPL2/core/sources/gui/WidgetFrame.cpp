@@ -98,6 +98,13 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	void cWidgetFrame::SetBackgroundBgfx(eGuiSkinGfx aType)
+	{
+		mpGfxBackground = mpSkin->GetGfx(aType);
+	}
+
+	//-----------------------------------------------------------------------
+
 	void cWidgetFrame::OnAttachChild(iWidget* apChild)
 	{
 		mbScrollBarsNeedUpdate = true;

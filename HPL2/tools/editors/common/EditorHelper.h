@@ -104,6 +104,8 @@ public:
 
 	static void GetViewSpacePosAndSize(cCamera* apCamera, const cVector3f& avWorldPosition, const cVector3f& avWorldSize, cVector3f& avViewSpacePosition, cVector3f& avViewSpaceSize);
 
+	static bool GetVisibilityTypeState(eEditorVisibilityType aType);
+
 	static iEditorBase* mpEditor;
 };
 

@@ -296,6 +296,8 @@ cTextureBrowserIcon::cTextureBrowserIcon(cEditorWindowTextureBrowser* apBrowser,
 	mpBrowser = apBrowser;
 	mpEntry = apEntry;
 	mpSet = mpBrowser->GetEditor()->GetSet();
+
+	mpEntry->BuildThumbnail();
 	
 	int lWidth = mpEntry->GetTextureSize().x;
 	int lHeight = mpEntry->GetTextureSize().y;

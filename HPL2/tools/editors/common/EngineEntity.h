@@ -132,6 +132,8 @@ protected:
 
 	cMesh* mpMesh;
 
+	bool mbShowMesh;
+
 	static float mfDisabledCoverage;
 };
 

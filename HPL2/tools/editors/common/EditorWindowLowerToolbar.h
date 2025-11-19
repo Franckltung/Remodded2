@@ -41,6 +41,7 @@ public:
 	iWidget* AddLightingControls();
 	iWidget* AddCameraControls();
 	iWidget* AddClipPlaneControls();
+	iWidget* AddVisibilityControls();
 
 	void SetFocusedClipPlane(int alX);
 	int GetFocusedClipPlane();
@@ -77,6 +78,7 @@ protected:
 	cWidgetDummy* mpHandleLighting;
 	cWidgetButton* mpBGlobalAmbientLight;
 	cWidgetButton* mpBGlobalPointLight;
+	cWidgetButton* mpBIconsEnabled;
 
 	// Camera controls
 	cWidgetDummy* mpHandleCamera;
@@ -96,6 +98,12 @@ protected:
 	cWidgetButton* mpBClipNormalSwitch;
 	cEditorInputNumber* mpInpClipPlaneHeight;
 	cWidgetButton* mpBClipPlaneCullSide;
+
+	// Visibility controls
+	cWidgetDummy* mpHandleVisibility;
+	cWidgetButton* mpBAreas;
+	cWidgetButton* mpBBlockers;
+	cWidgetButton* mpBFog;
 };
 
 //--------------------------------------------------------------------

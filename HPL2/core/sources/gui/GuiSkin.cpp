@@ -282,7 +282,12 @@ namespace hpl {
 		// Error checking, see so all elements are there
 		for(int i=0; i<eGuiSkinGfx_LastEnum; ++i)
 		{
-			if(mvGfxElements[i]==NULL) Error("Could not find gui skin '%s' gfx %s!\n", msName.c_str(),mpGui->GetSkinGfxString((eGuiSkinGfx)i).c_str());
+			if (mvGfxElements[i] == NULL)
+			{
+				//automatically support the community editor formats, and base formats, without throwing an error.
+				if (i == eGuiSkinGfx_FrameBackgroundColorPicking) mvGfxElements[i] = mpGui->GetBlankRect();
+				else Error("Could not find gui skin '%s' gfx %s!\n", msName.c_str(), mpGui->GetSkinGfxString((eGuiSkinGfx)i).c_str());
+			}
 		}
 
 		hplDelete(pXmlDoc);

@@ -184,6 +184,11 @@ iEditorBase::iEditorBase(const tWString& asFileCategoryName, const tWString& asF
 	mbDestroyingEditor = false;
 	mbWorldModified = false;
 
+	mbVisibilityTypes[eEditorVisibilityType_Icons] = true;
+	mbVisibilityTypes[eEditorVisibilityType_Areas] = true;
+	mbVisibilityTypes[eEditorVisibilityType_Blockers] = true;
+	mbVisibilityTypes[eEditorVisibilityType_GlobalFog] = true;
+
 	msFileCategoryName = asFileCategoryName;
 	msFileCategoryString = asFileCategoryString;
 
@@ -241,6 +246,14 @@ iEditorBase::~iEditorBase()
 /////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------
+
+void iEditorBase::SetVisibilityTypeState(eEditorVisibilityType aType, bool abEnabled)
+{
+	mbVisibilityTypes[aType] = abEnabled;
+
+	mpEditorWorld->SetVisibilityUpdated();
+	mpEditorWorld->UpdateVisibility();
+}
 
 //-----------------------------------------------------------------------
 
@@ -727,6 +740,12 @@ cEngine* iEditorBase::Init(cEngine* apEngine, const char* asName, const char* as
 		vars.mGraphics.mbFullscreen = cString::ToBool(GetSetting("FullScreen").c_str(), false);
 		vars.mGraphics.msWindowCaption = msCaption;
 
+		vars.mSound.mbUseHRTF = false;
+
+#if defined(_WIN32)
+		iLowLevelSound::SetSoundDeviceNameFilter("soft");
+#endif
+
 		iRenderer::SetShadowMapQuality(eShadowMapQuality_Medium);		
 
 		mpEngine = CreateHPLEngine(eHplAPI_OpenGL, eHplSetup_All, &vars);
@@ -738,7 +757,9 @@ cEngine* iEditorBase::Init(cEngine* apEngine, const char* asName, const char* as
 #ifdef USERDIR_RESOURCES
 		mpEngine->GetResources()->LoadResourceDirsFile("resources.cfg", mpDirHandler->GetUserResourceDir());
 #else
-		mpEngine->GetResources()->LoadResourceDirsFile("resources.cfg");
+		tString customResources = mpMainConfig->GetString("Directories", "ResourcesOverride", "");
+		if (customResources != "") mpEngine->GetResources()->LoadResourceDirsFile(customResources);
+		else mpEngine->GetResources()->LoadResourceDirsFile("resources.cfg");
 #endif
 	}
 

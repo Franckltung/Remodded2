@@ -125,6 +125,7 @@ namespace hpl {
 
 		void AttachBillboard(cBillboard *apBillboard, const cColor &aBaseColor);
 		void RemoveBillboard(cBillboard *apBillboard);
+		void UpdateBillboard(cBillboard* apBillboard, const cColor& aBaseColor);
 		std::vector<cLightBillboardConnection>* GetBillboardVec(){ return &mvBillboards;}
 
 		//////////////////////////

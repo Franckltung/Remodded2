@@ -82,6 +82,8 @@ void cLuxSavedMap::FromMap(cLuxMap *apMap)
 	mbCheckPointMusicResume = apMap->mbCheckPointMusicResume;
 	mfCheckPointMusicVolume = apMap->mfCheckPointMusicVolume;
 
+	mvWorldGravity = apMap->GetPhysicsWorld()->GetGravity();
+
 
 	/////////////////////////////////
 	// Sky box
@@ -241,6 +243,8 @@ void cLuxSavedMap::ToMap(cLuxMap *apMap)
 	apMap->mlCheckPointMusicPrio = mlCheckPointMusicPrio;
 	apMap->mbCheckPointMusicResume = mbCheckPointMusicResume;
 	apMap->mfCheckPointMusicVolume = mfCheckPointMusicVolume;
+
+	apMap->GetPhysicsWorld()->SetGravity(mvWorldGravity);
 
 	/////////////////////////////////
 	// Sky box

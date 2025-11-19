@@ -100,7 +100,8 @@ void cViewportCallback::OnPostSolidDraw(cRendererCallbackFunctions* apFunctions)
 		vClipPlanes[i]->Draw(apFunctions, 0);
 	}
 
-	apFunctions->GetLowLevelGfx()->DrawSphere(mpViewport->GetVCamera()->GetTargetPosition(),0.1f, cColor(0,1,1,1));
+	//Old HPL2 target point gizmo
+	//apFunctions->GetLowLevelGfx()->DrawSphere(mpViewport->GetVCamera()->GetTargetPosition(),0.1f, cColor(0,1,1,1));
 
 	apFunctions->SetMatrix(NULL);
 	apFunctions->SetBlendMode(eMaterialBlendMode_None);

@@ -893,3 +893,10 @@ void cEditorHelper::GetViewSpacePosAndSize(cCamera* apCamera, const cVector3f& a
 }
 
 //----------------------------------------------------------------------------------
+
+bool cEditorHelper::GetVisibilityTypeState(eEditorVisibilityType aType)
+{
+	return mpEditor->GetVisibilityTypeState(aType);
+}
+
+//----------------------------------------------------------------------------------

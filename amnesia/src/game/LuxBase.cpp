@@ -781,7 +781,7 @@ bool cLuxBase::InitApp()
 	msCustomStoryPath = pInitCfg->GetString("Directories", "CustomStoryPath", "");
 
 	//Various variables
-	msGameName = pInitCfg->GetString("Variables","GameName","");
+	msGameName = pInitCfg->GetString("Variables","GameName","") + " [R]";
 	mbAllowHardmode = pInitCfg->GetBool("Variables", "AllowHardMode", false);
 	
 	//Start map

@@ -118,6 +118,7 @@ namespace hpl {
 		mvMaterials[eGuiMaterial_Modulative] = hplNew( cGuiMaterial_Modulative,(mpGraphics->GetLowLevel()) );
 		mvMaterials[eGuiMaterial_PremulAlpha] = hplNew( cGuiMaterial_PremulAlpha,(mpGraphics->GetLowLevel()) );
 
+		mpBlankRect = CreateGfxFilledRect(cColor(1), eGuiMaterial_Alpha);
 
 		//////////////////////////////
 		// Skin setup
@@ -787,6 +788,7 @@ namespace hpl {
 		AddGfx(FrameCornerLD);
 
 		AddGfx(FrameBackground);
+		AddGfx(FrameBackgroundColorPicking);
 
 		///////////////////////////////////
 		// Check box Graphics
