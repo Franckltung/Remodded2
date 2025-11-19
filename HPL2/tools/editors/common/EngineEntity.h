@@ -132,6 +132,8 @@ protected:
 
 	cMesh* mpMesh;
 
+	bool mbShowMesh;
+
 	static float mfDisabledCoverage;
 };
 
@@ -159,15 +161,12 @@ public:
 	void SetParticlesActive(bool abX) { mbParticleSystemsActive = abX; }
 	void SetBillboardsActive(bool abX) { mbBillboardsActive = abX; }
 
-	bool IsBlockerMesh() { return !mbShowMesh; }
-
 protected:
 	tString msFilename;
 
 	bool mbLightsActive;
 	bool mbParticleSystemsActive;
 	bool mbBillboardsActive;
-	bool mbShowMesh;
 
 	tLightVec mvLights;
 	std::vector<cParticleSystem*> mvParticleSystems;

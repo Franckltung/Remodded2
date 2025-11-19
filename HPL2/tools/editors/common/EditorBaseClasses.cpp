@@ -740,6 +740,12 @@ cEngine* iEditorBase::Init(cEngine* apEngine, const char* asName, const char* as
 		vars.mGraphics.mbFullscreen = cString::ToBool(GetSetting("FullScreen").c_str(), false);
 		vars.mGraphics.msWindowCaption = msCaption;
 
+		vars.mSound.mbUseHRTF = false;
+
+#if defined(_WIN32)
+		iLowLevelSound::SetSoundDeviceNameFilter("soft");
+#endif
+
 		iRenderer::SetShadowMapQuality(eShadowMapQuality_Medium);		
 
 		mpEngine = CreateHPLEngine(eHplAPI_OpenGL, eHplSetup_All, &vars);

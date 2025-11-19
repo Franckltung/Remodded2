@@ -109,6 +109,7 @@ float iEngineEntityMesh::mfDisabledCoverage = 0.5f;
 
 iEngineEntityMesh::iEngineEntityMesh(iEntityWrapper* apParent) : iEngineEntity(apParent), mpMesh(NULL)
 {
+	mbShowMesh = true;
 }
 
 iEngineEntityMesh::~iEngineEntityMesh()
@@ -178,7 +179,9 @@ void iEngineEntityMesh::Update()
 void iEngineEntityMesh::UpdateVisibility()
 {
 	Update();
-	((cMeshEntity*)mpEntity)->SetVisible(mpParent->IsVisible() && mpParent->IsCulledByClipPlanes()==false);
+	bool bBlockerVis = true;
+	if(!mbShowMesh) bBlockerVis = cEditorHelper::GetVisibilityTypeState(eEditorVisibilityType_Blockers);
+	((cMeshEntity*)mpEntity)->SetVisible(mpParent->IsVisible() && mpParent->IsCulledByClipPlanes()==false && bBlockerVis);
 }
 
 //-----------------------------------------------------------------------
@@ -340,7 +343,6 @@ cEngineEntityLoadedMeshAggregate::cEngineEntityLoadedMeshAggregate(iEntityWrappe
 	mbLightsActive = true;
 	mbParticleSystemsActive = true;
 	mbBillboardsActive = true;
-	mbShowMesh = true;
 }
 
 cEngineEntityLoadedMeshAggregate::~cEngineEntityLoadedMeshAggregate()
@@ -410,16 +412,11 @@ void cEngineEntityLoadedMeshAggregate::Update()
 		mvLights[i]->SetVisible(bLit);
 	}
 
-	bool bIsBlocker = IsBlockerMesh() && bActive && bVisible;
-	bool bBlockerVisible = cEditorHelper::GetVisibilityTypeState(eEditorVisibilityType_Blockers);
 	cMeshEntity* pMeshEntity = GetMeshEntity();
 	for (int i = 0; i < pMeshEntity->GetSubMeshEntityNum(); ++i)
 	{
 		cSubMeshEntity* pSubMeshEntity = pMeshEntity->GetSubMeshEntity(i);
 		pSubMeshEntity->SetIlluminationAmount(bLit ? 1.0f : 0);
-		
-		if (bIsBlocker)
-			pSubMeshEntity->SetVisible(bBlockerVisible);
 	}
 
 	for (int i = 0;i < (int)mvParticleSystems.size();++i)

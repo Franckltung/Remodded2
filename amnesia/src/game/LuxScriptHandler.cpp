@@ -699,6 +699,11 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void SetBodyMass(string &in asName, float afMass)", (void *)SetBodyMass);
 	AddFunc("float GetBodyMass(string &in asName)", (void *)GetBodyMass);
 
+	AddFunc("void SetPropAwake(string &in asName, bool abAwake)", (void*)SetPropAwake);
+	AddFunc("bool GetPropAwake(string &in asName)", (void*)GetPropAwake);
+
+	AddFunc("void SetWorldGravity(float afX, float afY, float afZ)", (void*)SetWorldGravity);
+	AddFunc("void ResetWorldGravity()", (void*)ResetWorldGravity);
 
 	AddFunc("void AddEntityCollideCallback(string &in asParentName, string &in asChildName, string &in asFunction, bool abDeleteOnCollide, int alStates)",(void *)AddEntityCollideCallback);
 	AddFunc("void RemoveEntityCollideCallback(string &in asParentName, string &in asChildName)", (void *)RemoveEntityCollideCallback);
@@ -3815,6 +3820,52 @@ float __stdcall cLuxScriptHandler::GetBodyMass(string& asName)
 	}
 
 	return pBody->GetMass();
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetPropAwake(string& asName, bool abAwake)
+{
+	BEGIN_SET_PROPERTY(eLuxEntityType_Prop, -1)
+
+	iLuxProp* pProp = ToProp(pEntity);
+	for (int i = 0; i < pProp->GetBodyNum(); ++i)
+	{
+		iPhysicsBody* pBody = pProp->GetBody(i);
+		if (pBody == NULL) continue;
+		if (abAwake) pBody->Enable();
+		//there isn't a way to force bodies to sleep yet..
+	}
+
+	END_SET_PROPERTY
+}
+
+//-----------------------------------------------------------------------
+
+bool __stdcall cLuxScriptHandler::GetPropAwake(string& asName)
+{
+	iLuxProp* pProp = ToProp(GetEntity(asName, eLuxEntityType_Prop, -1));
+	if (pProp == NULL) return;
+
+	return pProp->GetMainBody()->GetEnabled();
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetWorldGravity(float afX, float afY, float afZ)
+{
+	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+	if(pMap != NULL)
+		pMap->GetPhysicsWorld()->SetGravity(cVector3f(afX, afY, afZ));
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::ResetWorldGravity()
+{
+	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+	if (pMap != NULL)
+		pMap->GetPhysicsWorld()->SetGravity(cVector3f(0, -9.81f, 0));
 }
 
 //-----------------------------------------------------------------------
