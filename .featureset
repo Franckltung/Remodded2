@@ -48,8 +48,10 @@
 + ForceSave(string &in asFile) [I don't recommend using anything but "AutoSave" and "HardMode" for asFile, but it's there for fine control.]
 + bool GetHardmodeEnabled()
 
+//NOT WORKING AT THE MOMENT, HIGHLY TECHNICAL.
 + SetPropAwake(string &in asName, bool abAwake) (supports wildcards * )
 + bool GetPropAwake(string &in asName)
+//--------------------------------------------
 
 + SetWorldGravity(float afX, float afY, float afZ)
 + ResetWorldGravity()
