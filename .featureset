@@ -53,6 +53,8 @@
 
 + SetWorldGravity(float afX, float afY, float afZ)
 + ResetWorldGravity()
++ SetPlayerGravity(float afX, float afY, float afZ)
++ ResetPlayerGravity()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,4 +108,4 @@
 ᒪ Added new configs for MainEditorSettings.cfg; "Directories":
 	ᒪ "ExtraStaticObjectDir" adds extra static object directories. Can add as many as you want, with the naming scheme "ExtraStaticObjectDir1", "ExtraStaticObjectDir2", etc.
 	ᒪ "ExtraEntityDir" adds extra entity directories. Can add as many as you want, with the naming scheme "ExtraEntityDir1", "ExtraEntityDir2", etc.
-	ᒪ "ResourcesOverride" allows the editor to load a custom resources.cfg instead of the default one.
+	ᒪ "ResourcesOverride" allow the editors to load a custom resources.cfg instead of the default one.

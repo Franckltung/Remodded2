@@ -704,6 +704,8 @@ void cLuxScriptHandler::InitScriptFunctions()
 
 	AddFunc("void SetWorldGravity(float afX, float afY, float afZ)", (void*)SetWorldGravity);
 	AddFunc("void ResetWorldGravity()", (void*)ResetWorldGravity);
+	AddFunc("void SetPlayerGravity(float afX, float afY, float afZ)", (void*)SetPlayerGravity);
+	AddFunc("void ResetPlayerGravity()", (void*)ResetPlayerGravity);
 
 	AddFunc("void AddEntityCollideCallback(string &in asParentName, string &in asChildName, string &in asFunction, bool abDeleteOnCollide, int alStates)",(void *)AddEntityCollideCallback);
 	AddFunc("void RemoveEntityCollideCallback(string &in asParentName, string &in asChildName)", (void *)RemoveEntityCollideCallback);
@@ -3845,7 +3847,7 @@ void __stdcall cLuxScriptHandler::SetPropAwake(string& asName, bool abAwake)
 bool __stdcall cLuxScriptHandler::GetPropAwake(string& asName)
 {
 	iLuxProp* pProp = ToProp(GetEntity(asName, eLuxEntityType_Prop, -1));
-	if (pProp == NULL) return;
+	if (pProp == NULL) return false;
 
 	return pProp->GetMainBody()->GetEnabled();
 }
@@ -3866,6 +3868,20 @@ void __stdcall cLuxScriptHandler::ResetWorldGravity()
 	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
 	if (pMap != NULL)
 		pMap->GetPhysicsWorld()->SetGravity(cVector3f(0, -9.81f, 0));
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetPlayerGravity(float afX, float afY, float afZ)
+{
+	gpBase->mpPlayer->GetCharacterBody()->SetCustomGravity(cVector3f(afX, afY, afZ));
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::ResetPlayerGravity()
+{
+	gpBase->mpPlayer->GetCharacterBody()->SetCustomGravity(gpBase->mpGameCfg->GetVector3f("Player_Body", "GravityForce", 0));
 }
 
 //-----------------------------------------------------------------------

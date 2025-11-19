@@ -366,6 +366,8 @@ public:
 	float mfHurtMoveSpeedMul;
 	float mfInsanityCollapseSpeedMul;
 
+	cVector3f mvPlayerGravity;
+
 	float mfScriptJumpForceMul;
 
 	float mfLookSpeedMul;

@@ -518,6 +518,8 @@ private:
 
 	static void __stdcall SetWorldGravity(float afX, float afY, float afZ);
 	static void __stdcall ResetWorldGravity();
+	static void __stdcall SetPlayerGravity(float afX, float afY, float afZ);
+	static void __stdcall ResetPlayerGravity();
 
 	// Parent can have asterix in name but mot child! Entity callbacks alStates = 1=only enter, -1=only leave 0=both. Syntax: void Func(string &in asParent, string &in asChild, int alState). alState: 1=enter, -1=leave.
 	static void __stdcall AddEntityCollideCallback(string& asParentName, string& asChildName, string& asFunction, bool abDeleteOnCollide, int alStates);

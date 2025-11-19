@@ -71,6 +71,8 @@ public:
 	int mlCheckPointMusicPrio;
 	bool mbCheckPointMusicResume;
 	float mfCheckPointMusicVolume;
+
+	cVector3f mvWorldGravity;
 	
 	cContainerList<cEngineRope_SaveData> mlstRopes;
 	cContainerList<cEngineLight_SaveData> mlstLights;

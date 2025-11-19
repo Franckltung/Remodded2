@@ -1129,6 +1129,8 @@ void cLuxPlayer_SaveData::FromPlayer(cLuxPlayer *apPlayer)
 	kCopyFromVar(apPlayer, mfHurtMoveSpeedMul);
 	kCopyFromVar(apPlayer, mfInsanityCollapseSpeedMul);
 
+	mvPlayerGravity = apPlayer->GetCharacterBody()->GetCustomGravity();
+
 	kCopyFromVar(apPlayer, mfScriptJumpForceMul);
 
 	kCopyFromVar(apPlayer, mfAspectMul);
@@ -1310,6 +1312,8 @@ void cLuxPlayer_SaveData::ToPlayer(cLuxMap *apMap,cLuxPlayer *apPlayer)
 	kCopyToVar(apPlayer, mfHurtMoveSpeedMul);
 	kCopyToVar(apPlayer, mfInsanityCollapseSpeedMul);
 
+	apPlayer->GetCharacterBody()->SetCustomGravity(mvPlayerGravity);
+
 	kCopyToVar(apPlayer, mfScriptJumpForceMul);
 
 	kCopyToVar(apPlayer, mfAspectMul);
@@ -1434,6 +1438,8 @@ kSerializeVar(mfScriptRunSpeedMul, eSerializeType_Float32)
 kSerializeVar(mfLookSpeedMul, eSerializeType_Float32)
 kSerializeVar(mfHurtMoveSpeedMul, eSerializeType_Float32)
 kSerializeVar(mfInsanityCollapseSpeedMul, eSerializeType_Float32)
+
+kSerializeVar(mvPlayerGravity, eSerializeType_Vector3f)
 
 kSerializeVar(mfScriptJumpForceMul, eSerializeType_Float32)
 
