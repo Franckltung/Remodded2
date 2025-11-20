@@ -945,7 +945,7 @@ void cLuxPlayerHands_SaveData::FromPlayerHands(cLuxPlayerHands *apPlayerHands)
 
 void cLuxPlayerHands_SaveData::ToPlayerHands(cLuxMap *apMap, cLuxPlayerHands *apPlayerHands)
 {
-	apPlayerHands->SetCurrentHands(msCurrentHands);
+	apPlayerHands->SetCurrentHands(msCurrentHands, false);
 	apPlayerHands->mHandState = (eLuxHandsState)mlState;
 
 	if(msCurrentHandObject != "")

@@ -58,6 +58,8 @@
 + SetPlayerGravity(float afX, float afY, float afZ)
 + ResetPlayerGravity()
 
++ SetParticleSystemActive(string &in asName, bool abActive)
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 -----------------------------

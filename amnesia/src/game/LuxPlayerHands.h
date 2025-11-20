@@ -105,7 +105,7 @@ public:
 	const tString& GetCurrentAnimation(){ return msCurrentAnim; }
 	cMeshEntity *GetHandsEntity(){ return mpHandsEntity;}
 
-	void SetCurrentHands(const tString& asHands);
+	void SetCurrentHands(const tString& asHands, bool abUseEffects);
 	const tString& GetCurrentHands() { return msCurrentHands; }
     
 public://Only used by hand object

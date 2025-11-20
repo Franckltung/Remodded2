@@ -481,6 +481,8 @@ kSerializeVar(mlCheckPointMusicPrio, eSerializeType_Int32)
 kSerializeVar(mbCheckPointMusicResume, eSerializeType_Bool)
 kSerializeVar(mfCheckPointMusicVolume, eSerializeType_Float32)
 
+kSerializeVar(mvWorldGravity, eSerializeType_Vector3f)
+
 kSerializeClassContainer(mlstLights, cEngineLight_SaveData, eSerializeType_Class)
 kSerializeClassContainer(mlstRopes, cEngineRope_SaveData, eSerializeType_Class)
 kSerializeClassContainer(mlstSounds, cEngineSound_SaveData, eSerializeType_Class)

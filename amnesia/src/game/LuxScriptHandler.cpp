@@ -295,6 +295,69 @@ bool cLuxScriptHandler::GetEntities(const tString& asName,tLuxEntityList &alstEn
 
 //-----------------------------------------------------------------------
 
+bool cLuxScriptHandler::GetParticleSystems(const tString& asName, std::list<cParticleSystem*>& alstParticleSystems)
+{
+	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+	if (pMap == NULL)
+	{
+		Error("GetParticleSystems(..) failed! No map was set!\n");
+		return false;
+	}
+
+	///////////////////
+	// Exact match
+	if (cString::CountCharsInString(asName, "*") == 0)
+	{
+		cParticleSystem* pPS = pMap->GetWorld()->GetParticleSystem(asName);
+		if (pPS == NULL)
+		{
+			Warning("Particle system '%s' does not exist!\n", asName.c_str());
+			return false;
+		}
+
+		alstParticleSystems.push_back(pPS);
+	}
+	///////////////////
+	// Wild card
+	else
+	{
+		tStringVec vWantedStrings;
+		tString sSepp = "*";
+		cString::GetStringVec(asName, vWantedStrings, &sSepp);
+
+		cParticleSystemIterator it = pMap->GetWorld()->GetParticleSystemIterator();
+		while (it.HasNext())
+		{
+			cParticleSystem* pPS = it.Next();
+			bool bContainsStrings = true;
+			int lLastPos = -1;
+
+			//Iterate wanted strings and name make sure they exist and show up in correct order.
+			for (size_t i = 0; i < vWantedStrings.size(); ++i)
+			{
+				int lPos = cString::GetFirstStringPos(pPS->GetName(), vWantedStrings[i]);
+				if (lPos <= lLastPos)
+				{
+					bContainsStrings = false;
+					break;
+				}
+			}
+
+			if (bContainsStrings) alstParticleSystems.push_back(pPS);
+		}
+
+		if (alstParticleSystems.empty())
+		{
+			Warning("Could not find any particle systems with string '%s'\n", asName.c_str());
+			return false;
+		}
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------
+
 iLuxEntity* cLuxScriptHandler::GetEntity(const tString& asName, eLuxEntityType aType, int alSubType)
 {
 	cLuxMap *pMap = gpBase->mpMapHandler->GetCurrentMap();
@@ -369,6 +432,15 @@ iPhysicsBody* cLuxScriptHandler::GetBodyInEntity(iLuxEntity* apEntity, const tSt
 	iLuxEntity *pEntity = *it;
 
 #define END_SET_PROPERTY }
+
+#define BEGIN_ITERATE_PARTICLESYSTEM()\
+	std::list<cParticleSystem *> lstParticleSystems;\
+	if(GetParticleSystems(asName, lstParticleSystems)==false) return;\
+	for(std::list<cParticleSystem *>::iterator it = lstParticleSystems.begin(); it != lstParticleSystems.end(); ++it)\
+	{\
+	cParticleSystem * pParticleSystem = *it;
+
+#define END_ITERATE_PARTICLESYSTEM }
 
 //-----------------------------------------------------------------------
 
@@ -592,6 +664,8 @@ void cLuxScriptHandler::InitScriptFunctions()
 	AddFunc("void SetLightVisible(string &in asLightName, bool abVisible)",(void *)SetLightVisible);
 	AddFunc("void FadeLightTo(string &in asLightName, float afR, float afG, float afB, float afA, float afRadius, float afTime)",(void *)FadeLightTo);
 	AddFunc("void SetLightFlickerActive(string& asLightName, bool abActive)", (void *)SetLightFlickerActive);
+
+	AddFunc("void SetParticleSystemActive(string &in asName, bool abActive)", (void*)SetParticleSystemActive);
 
 	AddFunc("void SetEntityActive(string &in asName, bool abActive)",(void *)SetEntityActive);
 	AddFunc("void SetEntityVisible(string &in asName, bool abVisible)",(void *)SetEntityVisible);
@@ -1779,7 +1853,7 @@ const string& __stdcall cLuxScriptHandler::GetCurrentLantern()
 
 void __stdcall cLuxScriptHandler::SetCurrentHands(string& asHands)
 {
-	gpBase->mpPlayer->GetHands()->SetCurrentHands(asHands);
+	gpBase->mpPlayer->GetHands()->SetCurrentHands(asHands, true);
 }
 
 //-----------------------------------------------------------------------
@@ -2292,6 +2366,15 @@ void __stdcall cLuxScriptHandler::SetLightVisible(string& asLightName, bool abVi
 	}
 
 	pLight->SetVisible(abVisible);
+}
+
+//-----------------------------------------------------------------------
+
+void __stdcall cLuxScriptHandler::SetParticleSystemActive(string& asName, bool bActive)
+{
+	BEGIN_ITERATE_PARTICLESYSTEM()
+		pParticleSystem->SetActive(bActive);
+	END_ITERATE_PARTICLESYSTEM
 }
 
 //-----------------------------------------------------------------------
@@ -3847,7 +3930,11 @@ void __stdcall cLuxScriptHandler::SetPropAwake(string& asName, bool abAwake)
 bool __stdcall cLuxScriptHandler::GetPropAwake(string& asName)
 {
 	iLuxProp* pProp = ToProp(GetEntity(asName, eLuxEntityType_Prop, -1));
-	if (pProp == NULL) return false;
+	if (pProp == NULL)
+	{
+		Error("Could not find prop '%s' for sleep state!\n", asName.c_str());
+		return false;
+	}
 
 	return pProp->GetMainBody()->GetEnabled();
 }

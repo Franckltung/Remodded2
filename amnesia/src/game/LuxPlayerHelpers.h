@@ -405,7 +405,7 @@ public:
 
 	iLight* GetLight(){ return mpLight;}
 
-	void SetCurrentLantern(const tString& asLantern) { msCurrentLantern = asLantern; }
+	void SetCurrentLantern(const tString& asLantern);
 	const tString& GetCurrentLantern() { return msCurrentLantern; }
 
 	tString& GetDefaultOnSound() { return msDefaultTurnOnSound; }

@@ -1872,6 +1872,13 @@ void cLuxPlayerLantern::SetDisabled(bool abX)
 		SetActive(false, true);
 }
 
+void cLuxPlayerLantern::SetCurrentLantern(const tString& asLantern)
+{
+	msCurrentLantern = asLantern;
+	if(mbActive)
+		mpPlayer->GetHands()->SetActiveHandObject(msCurrentLantern);
+}
+
 //-----------------------------------------------------------------------
 
 

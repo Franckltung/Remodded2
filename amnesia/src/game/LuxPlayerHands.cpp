@@ -176,6 +176,10 @@ void cLuxPlayerHands::Update(float afTimeStep)
 	{
 		if(AnimOver())
 		{
+			mHandState = eLuxHandsState_Disabled;
+			if (msNextHands != msCurrentHands)
+				SetCurrentHands(msNextHands, false);
+
 			////////////////////
 			//Draw up new object
 			if(mpCurrentHandObject)
@@ -194,9 +198,6 @@ void cLuxPlayerHands::Update(float afTimeStep)
 				HideAllHandObjects();
 				mpHandsEntity->SetVisible(false);
 				mHandState = eLuxHandsState_Disabled;
-
-				if (msNextHands != msCurrentHands)
-					SetCurrentHands(msNextHands);
 			}
 		}
 	}	
@@ -437,22 +438,55 @@ void cLuxPlayerHands::SetState(eLuxHandsState aState)
 
 //-----------------------------------------------------------------------
 
-void cLuxPlayerHands::SetCurrentHands(const tString& asHands)
+void cLuxPlayerHands::SetCurrentHands(const tString& asHands, bool abUseEffects)
 {
 	if (asHands == msCurrentHands) return;
 	msNextHands = asHands;
 
+	bool bWasEnabled = false;
+
 	if (mHandState != eLuxHandsState_Disabled)
 	{
-		SetCurrentHandObject(NULL);
-		return;
+		bWasEnabled = true;
+
+		if (abUseEffects)
+		{
+			if (mHandState != eLuxHandsState_Holster)
+			{
+				ResetHandObjectVars();
+				PlayAnim(mpCurrentHandObject->GetAnimHolster(), false);
+
+				mHandState = eLuxHandsState_Holster;
+			}
+			return;
+		}
+		else
+		{
+			ResetHandObjectVars();
+
+			HideAllHandObjects();
+			mpHandsEntity->SetVisible(false);
+			mHandState = eLuxHandsState_Disabled;
+		}
 	}
 
 	msCurrentHands = asHands;
 	if (!gpBase->mpMapHandler->MapIsLoaded()) return;
 
-	DestroyWorldEntities(gpBase->mpMapHandler->GetCurrentMap());
-	if (mpCurrentHandObject == NULL) { CreateWorldEntities(gpBase->mpMapHandler->GetCurrentMap()); }
+	cLuxMap* pMap = gpBase->mpMapHandler->GetCurrentMap();
+
+	DestroyWorldEntities(pMap);
+	CreateWorldEntities(pMap);
+	if(mpCurrentHandObject) mpHandsEntity->SetVisible(true);
+
+	if(bWasEnabled && !abUseEffects)
+	{
+		CreateAndAttachHandObject(pMap, mpCurrentHandObject);
+
+		PlayAnim(mpCurrentHandObject->GetAnimIdle(), true);
+		mpHandsEntity->SetVisible(true);
+		mHandState = eLuxHandsState_Idle;
+	}
 }
 
 //-----------------------------------------------------------------------
@@ -519,6 +553,7 @@ void cLuxPlayerHands::CreateAndAttachHandObject(cLuxMap *apMap, iLuxHandObject *
 		}
 				
 		pBone->AddEntity(pMeshEntity);
+		pBone->UpdateEntityChildren();
 	}
 	apHandObject->SetSetEntitiesVisible(true);
 

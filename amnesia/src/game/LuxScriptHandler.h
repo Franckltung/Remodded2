@@ -57,6 +57,8 @@ private:
 	static iLuxEntity* GetEntity(const tString& asName, eLuxEntityType aType, int alSubType);
 	static iPhysicsBody* GetBodyInEntity(iLuxEntity* apEntity, const tString& asName);
 
+	static bool GetParticleSystems(const tString& asName, std::list<cParticleSystem*>& alstParticleSystems);
+
 	// Debug
 	static void __stdcall Print(string& asString);
 	static void __stdcall AddDebugMessage(string& asString, bool abCheckForDuplicates);
@@ -353,6 +355,8 @@ private:
 	 */
 	static void __stdcall FadeLightTo(string& asLightName, float afR, float afG, float afB, float afA, float afRadius, float afTime);
 	static void __stdcall SetLightFlickerActive(string& asLightName, bool abActive);
+
+	static void __stdcall SetParticleSystemActive(string& asName, bool abActive);
 
 
 
