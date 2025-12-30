@@ -252,7 +252,7 @@ void iLuxPlayerState_InteractRotateBase::Update(float afTimeStep)
 	///////////////////////////////////
 	//Change the speed and cap it o max if needed
 	
-	mfRotSpeed +=  fSpeedAdd * 3000.0f * mpMoveBaseData->mfMoveSpeedFactor * afTimeStep;	
+	mfRotSpeed +=  fSpeedAdd * 3000.0f * mpMoveBaseData->mfMoveSpeedFactor * (1.0f / 60.0f);	
 	if(mfRotSpeed > mpMoveBaseData->mfMoveMaxSpeed)	mfRotSpeed = mpMoveBaseData->mfMoveMaxSpeed;
 	if(mfRotSpeed < -mpMoveBaseData->mfMoveMaxSpeed)	mfRotSpeed = -mpMoveBaseData->mfMoveMaxSpeed;
 
