@@ -1523,6 +1523,10 @@ void __stdcall cLuxScriptHandler::AddPlayerBodyForce(float afX, float afY, float
 		vForce = cVector3f(afX, afY, afZ);
 	}
 
+	// Scale force to be independent of framerate
+	float fTimeStep = gpBase->mpEngine->GetStepSize();
+	vForce = vForce * ((1.0f / 60.0f) / fTimeStep);
+
 	pBody->AddForce(vForce);
 }
 
@@ -1612,14 +1616,14 @@ float __stdcall cLuxScriptHandler::GetPlayerLampOil()
 
 float __stdcall cLuxScriptHandler::GetPlayerSpeed()
 {
-	return gpBase->mpPlayer->GetCharacterBody()->GetVelocity(1.0f/60.0f).Length();
+	return gpBase->mpPlayer->GetCharacterBody()->GetVelocity(gpBase->mpEngine->GetStepSize()).Length();
 }
 
 //-----------------------------------------------------------------------
 
 float __stdcall cLuxScriptHandler::GetPlayerYSpeed()
 {
-	return gpBase->mpPlayer->GetCharacterBody()->GetVelocity(1.0f/60.0f).y;
+	return gpBase->mpPlayer->GetCharacterBody()->GetVelocity(gpBase->mpEngine->GetStepSize()).y;
 }
 
 //-----------------------------------------------------------------------
@@ -3818,6 +3822,10 @@ void __stdcall cLuxScriptHandler::AddPropForce(string& asName, float afX, float 
 	if(pProp==NULL) return;
 	cVector3f vVec(afX, afY, afZ);
     
+	// Scale force to be independent of framerate
+	float fTimeStep = gpBase->mpEngine->GetStepSize();
+	vVec = vVec * ((1.0f / 60.0f) / fTimeStep);
+
 	for(int i=0; i<pProp->GetBodyNum(); ++i)
 	{
 		iPhysicsBody *pBody = pProp->GetBody(i);
@@ -3848,6 +3856,10 @@ void __stdcall cLuxScriptHandler::AddBodyForce(string& asName, float afX, float 
 		return;
 	}
 	cVector3f vVec(afX, afY, afZ);
+    
+	// Scale force to be independent of framerate
+	float fTimeStep = gpBase->mpEngine->GetStepSize();
+	vVec = vVec * ((1.0f / 60.0f) / fTimeStep);
 
 	pBody->AddForce(VecToCoordSystem(pBody, vVec, asCoordSystem));
 

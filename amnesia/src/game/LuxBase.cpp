@@ -1124,6 +1124,9 @@ bool cLuxBase::InitEngine()
 	vars.mGraphics.mbFullscreen =  mpConfigHandler->mbFullscreen;
 	vars.mGraphics.msWindowCaption = msGameName + " Loading...";
 
+	// Note: this should not be set lower than 60 or it breaks the physics engine (see `HPL2\dependencies\sources\Newton\newton\NewtonClass.h` MAX_TIMESTEP)
+	vars.mGame.mlUpdateRate = mpConfigHandler->mlPhysicsUpdateRate;
+
 	vars.mSound.mlSoundDeviceID = mpConfigHandler->mlSoundDevID;
 	vars.mSound.mlMaxChannels = mpConfigHandler->mlMaxSoundChannels;
 	vars.mSound.mlStreamBufferCount = mpConfigHandler->mlSoundStreamBuffers;

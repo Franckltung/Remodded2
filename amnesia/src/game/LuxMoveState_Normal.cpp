@@ -332,6 +332,10 @@ void cLuxMoveState_Normal::Jump()
 	float fStartForce = mbCrouching ? mfJumpCrouchStartForce : mfJumpStartForce;
 	fStartForce *= mpPlayer->GetScriptJumpForceMul();
 
+	// Scale force to be independent of framerate
+	float fTimeStep = gpBase->mpEngine->GetStepSize();
+	fStartForce *= (1.0f / 60.0f) / fTimeStep;
+
 	pCharBody->AddForce(cVector3f(0, fStartForce * mpPlayer->GetDefaultMass(),0));		
 	mbJumping = true;
 	mfJumpCount = 0;

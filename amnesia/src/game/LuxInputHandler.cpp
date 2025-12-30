@@ -325,8 +325,10 @@ cLuxInputHandler::cLuxInputHandler() : iLuxUpdateable("LuxInputHandler")
 
 	////////////////////////////////////
 	// Game settings init
-	mlMaxSmoothMousePos = gpBase->mpGameCfg->GetInt("Input","MaxSmoothMousePos",0);
-	mfPrevSmoothMousePosMul = gpBase->mpGameCfg->GetFloat("Input","PrevSmoothMousePosMul",0);
+	// Scale smoothing based on update rate
+	float fRateMul = (float)gpBase->mpEngine->GetUpdatesPerSec() / 60.0f;
+	mlMaxSmoothMousePos = (int)((float)gpBase->mpGameCfg->GetInt("Input", "MaxSmoothMousePos", 0) * fRateMul);
+	mfPrevSmoothMousePosMul = pow(gpBase->mpGameCfg->GetFloat("Input", "PrevSmoothMousePosMul", 0), 1.0f / fRateMul);
 
 #ifdef USE_GAMEPAD
 	////////////////////////////////////

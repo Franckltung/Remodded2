@@ -191,6 +191,9 @@ namespace hpl {
 									NewtonSetSolverModel(mpNewtonWorld,0);
 									NewtonSetFrictionModel(mpNewtonWorld,0);
 									break;
+		default:
+									Error("Physics accuracy level %d is not a valid value!\n", mAccuracy);
+									break;
 		}
 	}
 

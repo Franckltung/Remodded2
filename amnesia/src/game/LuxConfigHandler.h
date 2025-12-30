@@ -81,6 +81,9 @@ public:
 	bool mbFastStaticLoad;
 	bool mbFastEntityLoad;
 
+	int mlPhysicsUpdateRate;
+	int mlPhysicsAccuracy;
+
 	int mlSoundDevID;
 	int mlMaxSoundChannels;
 	int mlSoundStreamBuffers;

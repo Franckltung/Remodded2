@@ -468,6 +468,12 @@ void cLuxMapHandler::SetCurrentMap(cLuxMap* apMap, bool abRunScript, bool abFirs
 		//Set this as world in viewport
 		mpViewport->SetWorld(mpCurrentMap->GetWorld());
 
+		// Override the physics max step to match our configured update rate
+		mpCurrentMap->GetPhysicsWorld()->SetMaxTimeStep(1.0f / (float)gpBase->mpEngine->GetUpdatesPerSec());
+
+		// Override the physics accuracy to match the config (valid values are from 1 to 3)
+		mpCurrentMap->GetPhysicsWorld()->SetAccuracyLevel((ePhysicsAccuracy)(ePhysicsAccuracy_Low + gpBase->mpConfigHandler->mlPhysicsAccuracy - 1));
+
 		mRenderCallback.mpPhysicsWorld = mpCurrentMap->GetPhysicsWorld();
 		mRenderCallback.mpLowLevelGfx = gpBase->mpEngine->GetGraphics()->GetLowLevel();
 	}

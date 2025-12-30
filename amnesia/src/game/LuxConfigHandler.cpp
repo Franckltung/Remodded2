@@ -87,6 +87,11 @@ void cLuxConfigHandler::LoadMainConfig()
 	mbFastEntityLoad =	gpBase->mpMainConfig->GetBool("MapLoad","FastEntityLoad", false);
 
 	/////////////////////
+	// Physics
+	mlPhysicsUpdateRate = gpBase->mpMainConfig->GetInt("Physics", "UpdatesPerSec", 60);
+	mlPhysicsAccuracy = gpBase->mpMainConfig->GetInt("Physics", "PhysicsAccuracy", 2);
+
+	/////////////////////
 	// Graphics variables
 
 	// General

@@ -1415,7 +1415,7 @@ void cLuxInventory::SetPickedItem(cLuxInventory_Item *apItem, const cVector2f& a
 
 void cLuxInventory::SetCurrentWidget(iWidget *apWidget)
 { 
-	if(mfPickedUpAt + 1.0f/60.0f < gpBase->mpEngine->GetGameTime())
+	if (mfPickedUpAt + gpBase->mpEngine->GetStepSize() < gpBase->mpEngine->GetGameTime())
 	{
 		mbPickedObjectMoved = true;
 	}
