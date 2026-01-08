@@ -1619,7 +1619,12 @@ namespace hpl {
 	void iCharacterBody::CheckStepClimbing(const cVector3f &avPosAdd, float afTimeStep)
 	{
 		if(mfCheckStepClimbCount > 0) return;
-		if(avPosAdd.SqrLength() < kEpsilonf) return;
+		// Scale epsilon with timestep
+		float fScaledEpsilon = kEpsilonf * (afTimeStep / (1.0f / 60.0f));
+		if(avPosAdd.SqrLength() < fScaledEpsilon)
+		{
+			return;
+		}
 		
 		//Send a ray in front of the player.
 		float fRadius = mpCurrentShape->GetRadius();
@@ -1672,7 +1677,9 @@ namespace hpl {
 			
 			float fHeight = mvSize.y/2.0f - fMinDist[i];
 
-			if(fHeight <= fMaxHeight && fHeight>0.025f)
+			// Scale min height threshold with timestep
+			float fMinStepHeight = 0.025f * (afTimeStep / (1.0f / 60.0f));
+			if (fHeight <= fMaxHeight && fHeight > fMinStepHeight)
 			{
 				//Check if there is any collision on the new pos
 				cVector3f vStepPos = mvPosition + cVector3f(0,fHeight+mfClimbHeightAdd,0)+ (vMoveDir*fForwadAdd*mfClimbForwardMul);
